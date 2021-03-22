@@ -1,0 +1,39 @@
+<div *ngIf="(Selected$ | async) as selected">
+    <div class="nav-toolbar">
+
+        <h2 class="nav-title">
+            Project Manager
+        </h2>
+
+        <ng-template [ngIf]="IsCeloxisReachable">
+            <ng-container *actionOutlet="NavigationMap.Home.menu" style="margin-top:30px"></ng-container>
+            <ng-container *actionOutlet="NavigationMap.Projects.menu" style="margin-top:30px"></ng-container>
+            <ng-container *actionOutlet="NavigationMap.People.menu" style="margin-top:30px"></ng-container>
+            <ng-container *actionOutlet="NavigationMap.Scheduling.menu" style="margin-top:30px"></ng-container>
+            <ng-container *actionOutlet="NavigationMap.System.menu" style="margin-top:30px"></ng-container>
+        </ng-template>
+
+        <div *ngIf="IsAuthorized" class="nav-user">
+            <app-user [User]="User" [Photo]="MyPhoto"></app-user>
+        </div>
+    </div>
+
+    <div class="nav-ctrl-bar" [style.background]="selected.background">
+        <div class="nav-ctrl-titles">
+            <h2 class="page-title nav-title">
+                {{selected.name}}
+            </h2>
+            <ng-container *ngIf="(PageTitles$ | async) as subtitles">
+
+                <ng-container *ngFor="let subtitle of subtitles">
+                    <h2 class="page-title nav-title">
+                        | 
+                    </h2>
+                    <h2 class="page-title nav-title">
+                        {{subtitle}}
+                    </h2>
+                </ng-container>
+            </ng-container>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<div *ngIf="User" class="user-avatar">
+    <div style="display:flex">
+        <div class="user-displayName">
+            {{User.surname}}, {{User.givenName}}
+        </div>
+        <ng-template [ngIf]="Photo" [ngIfThen]="thenBlock" [ngIfElse]="elseBlock"></ng-template>
+        <ng-template #thenBlock>
+            <img class="user-photo" [src]="Photo" />
+        </ng-template>
+        <ng-template #elseBlock>
+            <div class="avatar-circle">
+                <div class="initials-circle">
+                    AC
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</div>

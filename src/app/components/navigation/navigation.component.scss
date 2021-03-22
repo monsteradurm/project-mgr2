@@ -1,0 +1,95 @@
+:host ::ng-deep .mat-icon-button {
+    background: transparent;
+    color: #ccc;
+    line-height:30px;
+    height:30px;
+    width:30px;
+    margin-left:35px;
+    margin-right:35px;
+  }
+
+.nav-toolbar {
+    position:relative;
+    height:35px;
+    display:flex;
+    justify-content: center;
+    background:black;
+}
+.nav-content {
+    height:35px;
+    vertical-align: middle;
+}
+
+.nav-title {
+    color: white;
+    font-family: Calibri;
+    text-decoration: none;
+    width:200px;
+    color:#DDD;
+    position:absolute;
+    left:15px;
+    top:1px;
+}
+.nav-user {
+    position:absolute;
+    right:15px;
+    top:1px;
+    width:200px;
+    font-family:Calibri;
+    color: #DDD;
+}
+.nav-user :hover {
+    color: white;
+}
+.page-title {
+    font-size:18px;
+    top:-1px;
+    position:relative;
+    width:unset;
+    margin-left:10px;
+}
+.nav-ctrl-titles {
+    position:relative;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content: flex-start;
+}
+.nav-button {
+    width:90px;
+    color:#CCC;
+    position:absolute;
+    top:0px;
+    height:35px;
+    display:flex;
+    justify-content: center;
+}
+
+fa-icon {
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.nav-button > .icon-selected {
+    position: absolute;
+    top: calc(50% - 10px);
+
+}
+.nav-button:hover {
+    color:white;
+}
+
+.nav-button.nav-selected {
+    color:white;
+    height:60px;
+}
+
+.nav-ctrl-bar {
+    padding-left: 5px;
+    vertical-align: middle;
+    box-shadow: inset 0px 15px 15px -10px rgb(0 0 0 / 60%);
+    border-bottom: solid 1px black;
+    height: 30px !important;
+}

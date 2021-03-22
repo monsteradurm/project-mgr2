@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "project-mgr2"
+    }
+  },
+  "defaultProject": "project-mgr2",
+  "cli": {
+    "analytics": "7fb6d636-b6a2-41f4-8f00-568ffeba0d1e"
+  }
 }
