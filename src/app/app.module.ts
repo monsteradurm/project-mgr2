@@ -35,7 +35,11 @@ import { ActionMatModule, ICON_TYPE } from '@ng-action-outlet/material';
 
 //routing
 import { HomeComponent } from './components/home/home.component';
-import { UserComponent } from './components/UI/user/user.component'
+import { UserComponent } from './components/UI/user/user.component';
+import { PersonComponent } from './components/people/person/person.component';
+import { PeopleComponent } from './components/people/people.component';
+import { SchedulingComponent } from './components/scheduling/scheduling.component';
+import { SystemComponent } from './components/system/system.component'
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -74,7 +78,7 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
 }
 
 export function MSALGuardConfigFactory(): MsalGuardConfiguration {
-  return { 
+  return {
     interactionType: InteractionType.Redirect,
     authRequest: {
       scopes: OAuthSettings.consentScopes,
@@ -89,14 +93,19 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AppComponent,
     NavigationComponent,
     HomeComponent,
-    UserComponent
+    UserComponent,
+    PersonComponent,
+    PeopleComponent,
+    SchedulingComponent,
+    SystemComponent
+
   ],
-  
+
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-  
+
     //material design
     MatButtonModule,
     MatToolbarModule,

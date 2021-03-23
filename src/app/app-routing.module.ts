@@ -3,20 +3,40 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MsalGuard } from '@azure/msal-angular';
 import { FailedComponent } from './components/failed/failed.component';
+import { SchedulingComponent } from './components/scheduling/scheduling.component';
+import { PeopleComponent } from './components/people/people.component';
+import { SystemComponent } from './components/system/system.component';
+import { ProjectComponent } from './components/projects/project/project.component';
 
 const routes: Routes = [
-  { 
-    path: 'Projects', 
+  {
+    path: 'Projects',
+    component: ProjectComponent,
     loadChildren: () => import('./components/projects/projects.module').then(m => m.ProjectsModule),
-    canLoad: [MsalGuard]
   },
   {
     path: 'Home',
-    component: HomeComponent
+    component: HomeComponent,
+  },
+  {
+    path: 'code',
+    component: HomeComponent,
   },
   {
     path: '',
     component: HomeComponent
+  },
+  {
+    path: 'Scheduling',
+    component: SchedulingComponent
+  },
+  {
+    path: 'People',
+    component: PeopleComponent
+  },
+  {
+    path: 'System',
+    component: SystemComponent
   },
   {
     path: 'login-failed',

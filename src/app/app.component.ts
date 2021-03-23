@@ -16,7 +16,7 @@ import { UserService } from './services/user.service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Project Manager';
   isIframe = false;
-  
+
   private readonly _destroying$ = new Subject<void>();
 
   private Token = new BehaviorSubject<string>(null);
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
   IsCeloxisReachable: boolean = true;
   IsAuthorized: boolean = true;
   IsAdmin: boolean = false;
-  
+
   @Output() User: UserIdentity = null;
   @Output() MyPhoto: any;
 
@@ -92,7 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
           this.authService.loginPopup()
             .subscribe((response: AuthenticationResult) => {
-              
+
               this.authService.instance.setActiveAccount(response.account);
             });
       }

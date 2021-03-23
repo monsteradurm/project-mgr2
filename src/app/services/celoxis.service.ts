@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from './../../environments/environment';
-import { switchMap, tap, shareReplay, catchError, map } from 'rxjs/operators';
+import { switchMap, tap, shareReplay, catchError, map, take } from 'rxjs/operators';
 import { of, BehaviorSubject, throwError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { HttpErrorResponse, HttpClient, HttpHeaders } from '@angular/common/http';
@@ -29,6 +29,52 @@ export class CeloxisService {
     )
   )}`)
 
+  GetCategory$(projectId: string, category: string) {
+    return this.QueryArray$(`tasks?filter=${encodeURIComponent(
+      JSON.stringify(
+        {
+          custom_element_type: 'Category',
+          'project.id' : projectId,
+          name: category
+        }
+      )
+    )}`).pipe(take(1))
+  }
+
+  GetCollections$(projectId: string, category: string) {
+    return this.QueryArray$(`tasks?filter=${encodeURIComponent(
+      JSON.stringify(
+        {
+          custom_element_type: 'Collection',
+          'project.id' : projectId,
+          'custom_parent_id' : category,
+        }
+      )
+    )}`).pipe(take(1))
+  }
+
+  GetCollection$(projectId: string, category: string, collection: string) {
+    return this.QueryArray$(`tasks?filter=${encodeURIComponent(
+      JSON.stringify(
+        {
+          custom_element_type: 'Collection',
+          'project.id' : projectId,
+          'custom_parent_id' : category,
+          name: collection
+        }
+      )
+    )}`).pipe(take(1))
+  }
+
+  GetProjectByName$(name: string) {
+    return this.QueryArray$(`projects?filter=${encodeURIComponent(
+      JSON.stringify(
+        {
+          state: 'Active', name
+        }
+      )
+    )}`).pipe(take(1))
+  }
   MinProjects$ = this.Projects$.pipe(
     map((projects: any[]) => _.map(projects, p => ({
       name: p.name,
@@ -55,20 +101,6 @@ export class CeloxisService {
       map((result: CeloxisQueryResult) => result.data)
     );
   }
-
-  handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Unknown error!';
-    if (error.error instanceof ErrorEvent) {
-      // Client-side errors
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Server-side errors
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    window.alert(errorMessage);
-    return throwError(errorMessage);
-  }
-
 }
 
 class CeloxisQueryResult {

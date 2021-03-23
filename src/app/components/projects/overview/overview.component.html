@@ -1,1 +1,11 @@
-<p>overview works!</p>
+<div class="overview-toolbar">
+  <div class="toolbar-container">
+    <ng-template [ngIf]="(HasCollections$ | async)">
+      <div class="collection-container">
+        <ng-container *actionOutlet="CollectionMenu"></ng-container>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+{{(parent.Collection$ | async)?.name}}
