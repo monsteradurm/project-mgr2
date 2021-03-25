@@ -17,14 +17,15 @@ import {MatTabsModule} from '@angular/material/tabs';
 //directives
 import { TabUnderlineDirective } from './../../directives/material/tab-underline.directive';
 import { ElementComponent } from './overview/element/element.component';
+import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterItemsBydepartment.directive';
 
 @NgModule({
   declarations: [
     ProjectComponent,
     OverviewComponent,
-    
+
     TabUnderlineDirective,
-    
+    FilterItemsByDepartmentPipe,
     ElementComponent
   ],
   imports: [

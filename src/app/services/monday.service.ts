@@ -22,20 +22,19 @@ export class MondayService {
 
   private IsReachable = new BehaviorSubject<boolean>(true);
   IsReachable$ = this.IsReachable.asObservable().pipe(shareReplay(1));
-  
+
   Users$ = this.Query$('users { id, name }').pipe(
     map((res:any) => res.data && res.data.users ? res.data.users : of([]))
   )
 
-  BoardItems$(boardId: string, groupId: string) { 
-    let query = `boards(limit:1 ids:[${boardId}]) {
-        groups(ids:["${groupId}"]) {
-        items { id name }
+  BoardItems$(boardId: string, groupId: string) {
+    let query = `boards(limit:1 ids:${boardId}) {
+        groups(ids:"${groupId}") {
+        items { id name column_values { title text id additional_info value } }
       }
     }`
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data:any) => data.boards[0].groups[0].items),
-      tap(console.log),
       catchError(err => [])
     )
   }
@@ -62,22 +61,22 @@ export class MondayService {
             let last = grouping[grouping.length - 1];
 
             grouping.forEach(g => {
-              
+
               let index = _.findIndex(siblings, p => p.name == g);
               if (index >= 0)
                 siblings = siblings[index].children;
               else {
-                
+
                 if (g != last) {
                   let parent = { name: g, children: []}
                   siblings.push(parent);
                   siblings = parent['children'];
                 }
                 else {
-                  siblings.push({ 
-                    id: b.id, 
-                    name: g, 
-                    path: b.name, 
+                  siblings.push({
+                    id: b.id,
+                    name: g,
+                    path: b.name,
                     groups: b.groups});
                   siblings = w.children;
                 }
@@ -88,7 +87,7 @@ export class MondayService {
       return workspaces;
     }),
   )
-  
+
   Query$(query) {
     return new Observable( observer => {
       monday.api('query { ' + query + ' }').then((res) => {
@@ -107,29 +106,29 @@ export class MondayService {
 
 /*
 
-  
+
 
 #  /*
 #  boards(limit:1) {
 #    name
-#    
+#
 #    columns {
 #      title
 #      id
 #      type
 #    }
-#    
+#
 #    groups {
 #    	 title
 #      id
 #    }
-    
+
  #   items {
  #     name
  #     group {
  #       id
  #     }
- #     
+ #
  #     column_values {
  #       id
  #       value
@@ -138,7 +137,7 @@ export class MondayService {
 #    }
 #  }
 #}
-query { 
+query {
   boards(
     limit:1
     ids:[1156753578]

@@ -6,11 +6,15 @@
     width:30px;
     margin-left:35px;
     margin-right:35px;
+    padding-top:3px;
   }
-
+  :host ::ng-deep .mat-icon-button :hover {
+  color: white !important
+}
 .nav-toolbar {
     position:relative;
     height:35px;
+    line-height:31px;
     display:flex;
     justify-content: center;
     background:black;
@@ -49,6 +53,8 @@
     position:relative;
     width:unset;
     margin-left:10px;
+    color:white !important;
+    opacity:0.8;
 }
 .nav-ctrl-titles {
     position:relative;

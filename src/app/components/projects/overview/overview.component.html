@@ -1,22 +1,56 @@
-<ng-container *ngIf="(BoardItems$ | async) as boardItems">
-    <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
+<div *ngIf="(ErrorMessage$ | async) as errorMessage; else overviewblock">
+  <pre class="pm-console-error"> {{ errorMessage }}</pre>
+</div>
+
+<ng-template #overviewblock>
+  <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
+    <nav mat-tab-nav-bar
+          pmTabUnderline [primaryColor]="primaryColor">
+      <ng-container *ngIf="(Department$ | async) as department">
+
+          <a mat-tab-link *ngFor="let d of (Departments$ | async)"
+          (click)="SetDepartment(d)" [active]="department.id == d.id"> {{d.text}} </a>
+        </ng-container>
         <div class="collection-container">
-            <ng-container *actionOutlet="groupsMenu">
-
-            </ng-container>
+          <ng-container *actionOutlet="groupsMenu"></ng-container>
         </div>
-    </ng-container>
+    </nav>
 
-    {{boardItems | json}}
+    <div *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" class="element-overview">
+      <div class="element-row" *ngFor="let i of items">
+        <div class="element-container">
+          <div class="title-container">
+            <div class="element-title">{{ i.element }}</div>
+          </div>
 
-</ng-container>
+          <div class="status-container">
+            <div class="task-status">
+              Not started
+            </div>
+          </div>
 
+          <div class="task-container">
+            <div class="task-description">
+              {{ i.task }}
+            </div>
+          </div>
+        </div>
+        <div class="gantt-row" fxLayout="row" [style.width]="min_halfDays*max_width">
+          <div class="gantt-cell" *ngFor="let c of cells">
+            A
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</ng-template>
 
 
 <!--
 <ng-container *ngIf="(Department$ | async) as department">
     <nav mat-tab-nav-bar *ngIf="(Departments$ | async) as departments" pmTabUnderline [primaryColor]="primaryColor">
-        <a mat-tab-link *ngFor="let d of departments" 
+        <a mat-tab-link *ngFor="let d of departments"
         (click)="SetDepartment(d)"
         [active]="department == d"> {{d}} </a>
 
@@ -27,25 +61,4 @@
         </ng-template>
     </nav>
 </ng-container>
-
-<div class="element-overview" *ngIf="(Elements$ | async) as elements">
-    <div class="element-container" *ngFor="let e of elements">
-        <ng-template [ngIf]="e.custom_element_type == 'Group'" [ngIfThen]="group" [ngIfElse]="element"></ng-template>
-
-        <ng-template #group>
-            <h2 class="element-group">{{e.name}}</h2>
-         
-            <ng-container *ngIf="(e.Elements$ | async) as childElements">
-                <ng-container *ngFor="let c of childElements">
-                    <app-element [Element]="c"></app-element>
-                </ng-container>
-            </ng-container>
-            
-        </ng-template>
-
-        <ng-template #element>
-
-        </ng-template>
-    </div>
-</div>
 -->

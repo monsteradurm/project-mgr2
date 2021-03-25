@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
-import { combineLatest } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-
+import { combineLatest, of } from 'rxjs';
+import { map, tap, shareReplay } from 'rxjs/operators';
 import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
 
 @Component({
@@ -13,17 +12,26 @@ import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-
 })
 export class OverviewComponent implements OnInit, OnDestroy {
 
+  editorOptions;
   subscriptions = [];
-  constructor(public parent: ProjectComponent, private actionOutlet: ActionOutletFactory) {
 
+  @Output() min_halfDays = 28;
+  @Output() min_width = 20;
+  @Output() max_width = 60;
+  @Output() cells = [...Array(this.min_halfDays).keys()]
+
+  constructor(public parent: ProjectComponent, private actionOutlet: ActionOutletFactory) {
   }
 
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('list');
 
 
   BoardItems$ = this.parent.BoardItems$;
-  Board$ = this.parent.Board$.pipe(tap(console.log))
+  Board$ = this.parent.Board$;
   Group$ = this.parent.Group$;
+  Departments$ = this.parent.Departments$;
+  Department$ = this.parent.Department$;
+  ErrorMessage$ = this.parent.ErrorMessage$;
 
   GroupsMenu$ = combineLatest([this.Board$, this.Group$]).pipe(
     map(([board, group]) => {
@@ -37,11 +45,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
     }),
   )
 
+
   SetGroup(g) {
     this.parent.SetGroup(g);
   }
-  
-  
+
+
   get primaryColor() { return this.parent.PrimaryColor; }
 
 
@@ -49,10 +58,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  //SetDepartment(d) { this.parent.SetDepartment(d); }
+  SetDepartment(d) { this.parent.SetDepartment(d); }
 
   ngOnInit(): void {
-   
+
   }
 
 }

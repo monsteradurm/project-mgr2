@@ -38,3 +38,15 @@ button.mat-menu-item, .mat-menu-item {
 .mat-icon {
   padding: 0px 5px;
 }
+.mat-menu-content:not(:empty) {
+  padding:0px !important;
+}
+.mat-menu-panel {
+  min-height:unset !important;
+}
+.pm-console-error{
+  margin: 15px;
+  text-align: center;
+  font-size: 20px;
+  font-family: 'Roboto';
+}
