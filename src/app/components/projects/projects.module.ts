@@ -18,6 +18,8 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { TabUnderlineDirective } from './../../directives/material/tab-underline.directive';
 import { ElementComponent } from './overview/element/element.component';
 import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterItemsBydepartment.directive';
+import { OverviewGanttComponent } from './overview/overview-gantt/overview-gantt.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterI
 
     TabUnderlineDirective,
     FilterItemsByDepartmentPipe,
-    ElementComponent
+    ElementComponent,
+    OverviewGanttComponent
   ],
   imports: [
     ActionOutletModule,
@@ -38,6 +41,7 @@ import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterI
     MatMenuModule,
     MatTabsModule,
 
+    FlexLayoutModule,
     CommonModule,
     ProjectsRoutingModule,
   ]
