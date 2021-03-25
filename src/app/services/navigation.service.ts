@@ -9,6 +9,8 @@ import { faCogs, faUsers, faThList, faCalendar} from '@fortawesome/free-solid-sv
 import { faWikipediaW} from '@fortawesome/free-brands-svg-icons'
 import { ActivationEnd, ActivationStart, NavigationEnd, Router } from '@angular/router';
 import { Dictionary } from '../models/Dictionary';
+import { MondayService } from './monday.service';
+import { Location } from '@angular/common';
 
 
 @Injectable({
@@ -16,7 +18,7 @@ import { Dictionary } from '../models/Dictionary';
 })
 export class NavigationService {
 
-
+  
   private NavigationEndEvent$ = this.router.events
     .pipe(
       filter(e => (e instanceof NavigationEnd)),
@@ -51,13 +53,18 @@ export class NavigationService {
   private Selected = new BehaviorSubject<any>(NavigationMap.Home);
   Selected$ = this.Selected.asObservable().pipe(shareReplay(1))
 
-  MinProjects$ = this.celoxis.MinProjects$;
-  IsCeloxisReachable$ = this.celoxis.IsReachable$;
+  Projects$ = this.monday.Projects$;
+  //MinProjects$ = this.celoxis.MinProjects$;
+  //IsCeloxisReachable$ = this.celoxis.IsReachable$;
+  
+  IsMondayReachable$ = this.monday.IsReachable$;
 
+  PrimaryColor$ = this.Selected$.pipe(
+    map(selected => selected.background)
+  )
 
   SetSelected(selected:any) {
     if (!selected) return;
-
     this.Selected.next(NavigationMap[selected]);
   }
 
@@ -65,11 +72,25 @@ export class NavigationService {
     this.router.navigate([route, params]);
   }
 
+  Relocate(route, params) {
+    let url = route + ';';
+    
+    if (url[0] != '/')
+      url = '/' + url;
+
+    Object.keys(params).filter(p => params[p]).forEach(p => url += p + '=' + params[p] + ';')
+
+    this.location.replaceState(url);
+  }
+  
   SetPageTitles(titles: string[]) {
     this.PageTitles.next(titles);
   }
 
-  constructor(private celoxis: CeloxisService, private router: Router) {
+  constructor(private celoxis: CeloxisService, 
+    private location:Location,
+    private monday: MondayService, 
+    private router: Router) {
     this.NavigationUrl$
       .subscribe( parent => {
 
@@ -78,7 +99,5 @@ export class NavigationService {
         this.SetSelected(parent)
 
       });
-
-    this.NavigationParameters$.subscribe((s) => console.log(s));
   }
 }

@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {}
 
-  IsCeloxisReachable: boolean = true;
+  IsMondayReachable: boolean = true;
   IsAuthorized: boolean = true;
   IsAdmin: boolean = false;
 
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.navigation.IsCeloxisReachable$.subscribe((state) => this.IsCeloxisReachable = state)
+      this.navigation.IsMondayReachable$.subscribe((state) => this.IsMondayReachable = state)
     );
 
     this.isIframe = window !== window.parent && !window.opener; // Remove this line to use Angular Universal

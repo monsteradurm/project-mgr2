@@ -1,116 +1,127 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, ɵɵsetComponentScope } from '@angular/core';
 import { ActivatedRoute, Router, RoutesRecognized, ActivationEnd } from '@angular/router';
-import { filter, map, switchMap, shareReplay, take } from 'rxjs/operators';
-import { combineLatest, of } from 'rxjs';
+import { filter, map, switchMap, shareReplay, take, tap, repeat, distinctUntilChanged, timestamp, first, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, of, race } from 'rxjs';
 
 import { NavigationService } from 'src/app/services/navigation.service';
 import { CeloxisService } from '../../../services/celoxis.service';
 
 import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
+import { MondayService } from '../../../services/monday.service';
+
+const _PAGE_ = '/Projects/Overview';
 
 @Component({
   selector: 'app-project',
   templateUrl: './project.component.html',
-  styleUrls: ['./project.component.scss']
+  styleUrls: ['./project.component.scss'],
 })
 export class ProjectComponent implements OnInit, OnDestroy
  {
 
   constructor(private navigation: NavigationService,
-              private celoxis: CeloxisService) { }
+              private monday: MondayService) { 
+                this.subscriptions.push(
+                  this.navigation.PrimaryColor$.subscribe(c => this.PrimaryColor = c)
+                )
+              }
 
-  Project$ = this.navigation.NavigationParameters$.pipe(
-    switchMap(params => {
-      if (!params['project'])
-        return of([]);
+  PrimaryColor;
 
-      return this.celoxis.GetProjectByName$(params['project'])
-    }),
-    map((filtered:any[]) => filtered && filtered.length > 0 ? filtered[0] : null),
-    shareReplay(1),
-  )
+  private internalRouteParams = new BehaviorSubject<any>(null);
+  InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
 
-  Category$ = combineLatest([this.Project$, this.navigation.NavigationParameters$]).pipe(
-     switchMap( ([project, params]) => {
-       if (!project || !project.id || !params['category'])
-          return of([]);
-
-       return this.celoxis.GetCategory$(project.id, params['category'])
-     }),
-     map((filtered:any[]) => filtered && filtered.length > 0 ? filtered[0] : null),
-     shareReplay(1),
-  )
-
-  Collections$ = combineLatest([this.Project$, this.Category$]).pipe(
-    switchMap( ([project, category]) => {
-      if (!project || !project.id || !category || !category.id)
-         return of(null);
-
-      return this.celoxis.GetCollections$(project.id, category.id);
-    }),
-    map(collections => _.sortBy(collections, 'name')),
-    shareReplay(1)
-  );
-
-  CollectionNames$ = this.Collections$.pipe(
-    map(collections => collections && collections.length > 0?
-        _.map(collections, c => c.name) : []),
-  );
-
-  HasCollections$ = this.CollectionNames$.pipe(
-    map((names: string[]) => names && names.length > 0 ? true : false)
-  )
-
-  Collection$ = combineLatest([this.Project$, this.Category$, this.CollectionNames$,
-      this.navigation.NavigationParameters$]).pipe(
-    switchMap(([project, category, collectionNames, params]) => {
-
-      if (!project || !project.id || !category || !category.id)
-         return of(null);
-
-      else if (!collectionNames || collectionNames.length < 1 || !params)
-        return of(null);
-
-
-      let col = params['collection'];
-      if (!col)
-        col = collectionNames[0];
-
-      return this.celoxis.GetCollection$(project.id, category.id, col);
-    }),
-    map((filtered:any[]) => filtered && filtered.length > 0 ? filtered[0] : null),
-    shareReplay(1)
-  )
-
-  Departments$ = this.Category$.pipe(
-    map(cat => cat && cat.custom_Departments ? cat.custom_Departments.trim().split(',') : [])
-  )
-
-  Department$ = combineLatest([this.Departments$, this.navigation.NavigationParameters$]).pipe(
-    map(([departments, params]) => {
-      let dep = params['department'];
-      if (dep != undefined && dep != null)
-        return dep;
-
-      if (departments)
-        return departments[0];
-    })
-  )
-
-  SetCollection(c) {
-    combineLatest([this.Project$, this.Category$, this.Department$]).pipe(take(1)).subscribe(
-      ([proj, cat, dep]) => {
-
-        this.navigation.Navigate('/Projects/Overview', {
-          project: proj.name, category: cat.name, collection: c, department: dep})
+  NavigationParameters$ = combineLatest([
+    this.navigation.NavigationParameters$.pipe(tap(console.log), timestamp()),
+    this.InternalRouteParams$.pipe(timestamp())]).pipe(
+    map(
+     ( [nav, internal] ) => {
+      if( internal.value == null || nav.timestamp > internal.timestamp ) {
+        return nav.value;
       }
-    )
+      return internal.value
+    } ),
+    distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+    shareReplay(1),
+    //tap(console.log),
+  )
+  
+  Board$ = combineLatest([this.monday.Boards$, this.NavigationParameters$]).pipe(
+    map(([boards, params]) => {
+      if (!params['board']) return null;
+      return _.find(boards, b => b.id == params['board']);
+    }),
+    distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+    shareReplay(1)
+  )
+
+  Group$ = combineLatest([this.Board$, this.NavigationParameters$]).pipe(
+    map(([board, params]) => {
+      if (!board || !board.groups) return null;
+      let groups = board.groups;
+      let groupId = params['group'];
+
+      if (!groupId)
+        return groups[0];
+
+      let group = _.find(groups, (g) => g.id == groupId);
+      if (!group) 
+        return groups[0];
+
+      return group;
+    }),
+    distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+    shareReplay(1)
+  )
+
+  Workspace$ = combineLatest([this.Board$, this.monday.Workspaces$]).pipe(
+    map(([board, workspaces]) => {
+      if (!board || !workspaces || workspaces.length < 1)
+        return of(null);
+      
+        return _.find(workspaces, w=> w.id == board.workspace.id);
+    }),
+    distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+    shareReplay(1)
+  )
+
+  Department$ = of(null);
+
+  SetGroup(g) {
+    combineLatest([this.Board$, this.Group$, this.Department$]).pipe(take(1))
+    .subscribe(
+      ([board, group, department]) => {
+        if (g != group) {
+          let params = {board: board.id, group: g, deparment: department}
+          this.internalRouteParams.next(params)
+          this.navigation.Relocate(_PAGE_, params)
+        }
+      })
   }
 
-  //Elements$ = combineLatest([this.Project$, this.Category$, this.Collection$])
+  BoardItems$ = combineLatest([this.Board$, this.Group$]).pipe(
+    switchMap(([board, group]) => 
+    board && board.id && group && group.id ?
+    this.monday.BoardItems$(board.id, group.id) : of([]))
+  );
+
   subscriptions = [];
   ngOnInit(): void {
+    
+    this.subscriptions.push(
+      combineLatest(
+        [this.Workspace$, this.Board$]).subscribe(
+          ([wspace, board]) => {
+              let titles = []
+              if (wspace)
+                titles.push(wspace.name);
+              if (board)
+                board.name.split('/').forEach(n => titles.push(n));
+              this.navigation.SetPageTitles(titles);
+          }
+      )
+    )
   }
 
   ngOnDestroy(): void {

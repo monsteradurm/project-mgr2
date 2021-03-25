@@ -10,6 +10,7 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 
 //Services
 import { CeloxisService } from './services/celoxis.service';
+import { MondayService } from './services/monday.service';
 import { NavigationService} from './services/navigation.service';
 import { UserService } from './services/user.service';
 
@@ -150,6 +151,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     //services
     CeloxisService,
     NavigationService,
+    MondayService,
     UserService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]

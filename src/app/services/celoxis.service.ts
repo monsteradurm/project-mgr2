@@ -53,6 +53,32 @@ export class CeloxisService {
     )}`).pipe(take(1))
   }
 
+  GetElements$(projectId: string, parent: string) {
+    let search = {
+      custom_element_type: ['Group', 'Element'],
+      'project.id' : projectId,
+      'custom_parent_id' : parent,
+    }
+
+    return this.QueryArray$(`tasks?filter=${encodeURIComponent(
+      JSON.stringify(
+        search
+      )
+    )}`).pipe(take(1))
+  }
+
+  GetCategories$(projectId) {
+
+    return this.QueryArray$(`tasks?filter=${encodeURIComponent(
+      JSON.stringify(
+        {
+          custom_element_type: 'Category',
+          'project.id' : projectId,
+        }
+      )
+    )}`).pipe(take(1))
+  }
+
   GetCollection$(projectId: string, category: string, collection: string) {
     return this.QueryArray$(`tasks?filter=${encodeURIComponent(
       JSON.stringify(
@@ -98,6 +124,7 @@ export class CeloxisService {
         if (!result.error && !this.IsReachable.value)
           this.SetReachable(true);
       }),
+
       map((result: CeloxisQueryResult) => result.data)
     );
   }

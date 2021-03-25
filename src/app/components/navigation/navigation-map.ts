@@ -22,7 +22,7 @@ export class DropDownMenuGroup {
 export const NavigationMap = {
     Home: new DropDownMenuGroup("Home", 'home', "rgb(64, 120, 251)", false),
     Projects: new DropDownMenuGroup("Projects", 'view_list', "rgb(0, 152, 118)"),
-    People: new DropDownMenuGroup("People", 'account_circle', "rgb(153, 87, 255)", false),
+    People: new DropDownMenuGroup("People", 'groups', "rgb(153, 87, 255)", false),
     Scheduling: new DropDownMenuGroup("Scheduling", 'schedule', "rgb(53, 179, 255)", false),
     System: new DropDownMenuGroup("System", 'settings', "#c80051", false)
 }

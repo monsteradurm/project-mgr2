@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { NavigationMap } from './navigation-map';
 import {BehaviorSubject} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { shareReplay, tap } from 'rxjs/operators';
+import { shareReplay, map } from 'rxjs/operators';
 import * as _ from 'underscore';
 import { CeloxisService } from 'src/app/services/celoxis.service';
 import { AppComponent } from './../../app.component';
@@ -24,17 +24,17 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   NavigationMap = NavigationMap;
   PageTitles$ = this.navigation.PageTitles$;
-
+  
   constructor(
     private actionOutlet: ActionOutletFactory,
-    private navigation: NavigationService) {
+    private navigation: NavigationService) { 
       const buttons = Object.keys(this.NavigationMap);
 
       buttons.forEach((k) => {
         if (NavigationMap[k].use_menu) {
           this.NavigationMap[k].menu = this.actionOutlet.createGroup()
             .enableDropdown()
-            .setIcon(NavigationMap[k].icon);
+            .setIcon(NavigationMap[k].icon);       
             this.NavigationMap[k].menu.createButton().setTitle('Loading...');
         }
         else {
@@ -45,42 +45,77 @@ export class NavigationComponent implements OnInit, OnDestroy {
               a => this.OnButtonAction(k))
           )
         }
+
+        //this.NavigationMap[k].menu.createButton().setTitle("NYI");
       });
     }
 
 
   OnButtonAction(ev) {
     this.navigation.Navigate('/' + ev, {})
+    this.navigation.SetPageTitles([]);
   }
 
-  OnProjectCategory(p, c) {
-    this.navigation.Navigate(`/Projects/Overview`, { project: p, category: c });
+  OnProjectOverview(p, b) {
+    this.navigation.Navigate('/Projects/Overview', { board: b.id });
   }
-  Selected$ = this.navigation.Selected$
+
+  Selected$ = this.navigation.Selected$;
   subscriptions = [];
-
+  
+  BuildOverviewDropDown(dropdown:ActionGroup, children: any[], project:any) {
+    if (!children || !children.length) {
+      console.log("No Children to Expand Dropdown", dropdown)
+    }
+    children.forEach(child => {
+      if (child['children']) {
+        let option = dropdown.createGroup()
+          .enableDropdown().setTitle(child.name);
+        this.BuildOverviewDropDown(option, child['children'], project);
+      } else {
+        dropdown.createButton().setTitle(child.name)
+          .fire$.subscribe(a => {
+            this.OnProjectOverview(project, child);
+          });
+      }
+    })
+  }
   ngOnInit(): void {
     this.subscriptions.push(
-      this.navigation.MinProjects$.subscribe((projects: any[]) =>
+      this.navigation.Projects$.subscribe((projects: any[]) => 
       {
         let menu = this.NavigationMap.Projects.menu
         menu.removeChildren();
         if (projects.length < 1) {
           menu.createButton({ title: "No Projects to Show" });
         }
-
         projects.forEach(p => {
+          let group = menu.createGroup()
+            .enableDropdown().setTitle(p.name);
+          group = group.createGroup()
+            .enableDropdown().setTitle('Overview');
+          if (p.children)
+            this.BuildOverviewDropDown(group, p['children'], p);
+          else 
+            group.createButton({title: 'No Boards to Show'});
+        })
+        
+        /*
+        projects.forEach(p => {
+
           let g = menu.createGroup().enableDropdown().setTitle(p.name);
-          p.categories.forEach(c => {
+
+          p.categories.forEach(c => { 
             let btn = g.createButton({title: c})
             this.subscriptions.push(
-              btn.fire$.subscribe(a =>
+              btn.fire$.subscribe(a => 
                 this.OnProjectCategory(p.name, c))
             )
           });
         })
+        */
     }));
-
+      
   }
 
   ngOnDestroy() {

@@ -22,27 +22,29 @@
 
 .nav-title {
     color: white;
-    font-family: Calibri;
+    font-family: Roboto;
     text-decoration: none;
     width:200px;
     color:#DDD;
     position:absolute;
     left:15px;
     top:1px;
+    font-weight: 400;
+    font-size: 17px;
 }
 .nav-user {
     position:absolute;
     right:15px;
     top:1px;
     width:200px;
-    font-family:Calibri;
+    font-family:Roboto;
     color: #DDD;
 }
 .nav-user :hover {
     color: white;
 }
 .page-title {
-    font-size:18px;
+    font-size:15px;
     top:-1px;
     position:relative;
     width:unset;
