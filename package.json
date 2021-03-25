@@ -30,7 +30,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@ng-action-outlet/core": "^1.18.0",
     "@ng-action-outlet/material": "^1.18.0",
-    "angular-gantt-schedule-timeline-calendar": "^1.1.22",
     "component": "^1.1.0",
     "monday-sdk-js": "^0.1.2",
     "rxjs": "~6.6.0",
