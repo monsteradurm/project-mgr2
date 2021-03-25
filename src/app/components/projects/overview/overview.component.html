@@ -3,8 +3,6 @@
 </div>
 
 <ng-template #overviewblock>
-  <div fxLayout="row">
-    
     <!-- OVERVIEW -->
     <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
       <nav mat-tab-nav-bar
@@ -19,6 +17,7 @@
           </div>
       </nav>
 
+      <div fxLayout="Row">
       <div *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" class="element-overview">
         <div class="element-row" *ngFor="let i of items">
           <div class="element-container">
@@ -48,12 +47,14 @@
         </div>
       </div>
 
-    </ng-container>
-  
-    <!-- GANTT -->
+      <!-- GANTT -->
 
     <app-overview-gantt></app-overview-gantt>
-  </div>
+    </div>
+    </ng-container>
+  
+    
+
 </ng-template>
 
 
