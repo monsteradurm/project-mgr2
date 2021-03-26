@@ -1,8 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ChartType, getPackageForChart, ScriptLoaderService } from 'angular-google-charts';
 import * as moment from 'moment';
 import * as _ from 'underscore';
-
+import { OverviewComponent } from '../overview.component';
+import { tap } from 'rxjs/operators';
 const _TASKNAME_ = 0;
 const _ARTIST_ = 1;
 const _STARTDATE_ = 2;
@@ -14,12 +15,17 @@ const _ENDDATE_ = 3;
   styleUrls: ['./overview-gantt.component.scss']
 })
 export class OverviewGanttComponent implements OnInit {
-  constructor() { }
+  @Input() set BoardItems(items) {
+    //let data = [];
+    console.log(items);
+  }
+
+  constructor(private parent: OverviewComponent) { }
 
   chartType = ChartType.Gantt;
   width=800;
   height=100;
-
+  
   data = [
     ['Phil Faily / Design Character', 'Walker, Rachael',
       new Date(2020, 2, 22), new Date(2020, 5, 20), null, 50, null],

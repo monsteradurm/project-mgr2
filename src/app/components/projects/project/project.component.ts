@@ -9,7 +9,7 @@ import { CeloxisService } from '../../../services/celoxis.service';
 import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
 import { MondayService } from '../../../services/monday.service';
-import { Department, DepartmentTags } from '../../../models/Department';
+import { Tags } from '../../../models/Tags';
 
 const _PAGE_ = '/Projects/Overview';
 
@@ -92,10 +92,6 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
 
-  GetItemDepartments(tags_column) {
-    return DepartmentTags.ToDepartments(tags_column);
-  }
-
   BoardItems$ = combineLatest([this.Board$, this.Group$]).pipe(
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     switchMap(([board, group]) =>
@@ -105,13 +101,15 @@ export class ProjectComponent implements OnInit, OnDestroy
       let arr = i.name.split('/');
       i.task = arr[arr.length - 1];
       i.element = arr[arr.length - 2];
-      i.department = this.GetItemDepartments(i.column_values);
+      i.department = Tags.ToTags(i.column_values, "Department");
+      i.artist = Tags.ToTags(i.column_values, "Artist");
+      i.director = Tags.ToTags(i.column_values, "Director");
       return i;
     })),
     //map((items) => _.filter(items, i=> i.))
     shareReplay(1)
   );
-
+  
   Departments$ = this.BoardItems$.pipe(
     map(items => _.map(items, i => i.column_values)),
     map(columns => _.map(columns, col => {
@@ -122,7 +120,7 @@ Please request the production data be extended to include this column.`)
         return column;
       }
     )),
-    map(values => DepartmentTags.ToDepartments(values)),
+    map(values => Tags.ToTags(values, "Department")),
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
     shareReplay(1),
     catchError(err => {

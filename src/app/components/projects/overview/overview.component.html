@@ -17,9 +17,9 @@
           </div>
       </nav>
 
-      <div fxLayout="Row" style="margin-top:30px;overflow-x:hidden" fxLayoutAlign="center stretch">
-      <div *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" 
-        class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
+      <div fxLayout="Row" style="margin-top:30px;overflow-x:hidden" fxLayoutAlign="center stretch"
+      *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" >
+      <div class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
         <div class="element-row" *ngFor="let i of items" fxLayout="row" fxLayoutAlign="start stretch">
           <div class="element-container" fxLayout="row" fxLayoutAlign="start stretch">
             <div class="title-container">
@@ -52,7 +52,7 @@
 
       <!-- GANTT -->
 
-    <app-overview-gantt></app-overview-gantt>
+    <app-overview-gantt [BoardItems]="items"></app-overview-gantt>
     </div>
     </ng-container>
   
