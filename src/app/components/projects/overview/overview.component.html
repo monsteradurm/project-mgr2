@@ -17,10 +17,11 @@
           </div>
       </nav>
 
-      <div fxLayout="Row">
-      <div *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" class="element-overview">
-        <div class="element-row" *ngFor="let i of items">
-          <div class="element-container">
+      <div fxLayout="Row" style="margin-top:30px;overflow-x:hidden" fxLayoutAlign="center stretch">
+      <div *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" 
+        class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
+        <div class="element-row" *ngFor="let i of items" fxLayout="row" fxLayoutAlign="start stretch">
+          <div class="element-container" fxLayout="row" fxLayoutAlign="start stretch">
             <div class="title-container">
               <div class="element-title">{{ i.element }}</div>
             </div>
@@ -31,11 +32,13 @@
               </div>
             </div>
 
+            
             <div class="task-container">
               <div class="task-description">
                 {{ i.task }}
               </div>
             </div>
+        
           </div>
           <!--
           <div class="gantt-row" fxLayout="row" [style.width]="min_halfDays*max_width">

@@ -1,1 +1,12 @@
-<p>overview-gantt works!</p>
+<div #overviewGantt thaResize class="overview-gantt" 
+(error)="onError($event)"
+(onResize)="onResized($event)" (ready)="onReady($event)">
+    <google-chart 
+    [dynamicResize]="true"
+    [data]="data" 
+    [width] = "width"
+    [height] = "height"
+    [columns]="columns"
+    [options]="options"
+    [type]="chartType"></google-chart>
+</div>

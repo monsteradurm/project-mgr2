@@ -20,6 +20,10 @@ import { ElementComponent } from './overview/element/element.component';
 import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterItemsBydepartment.directive';
 import { OverviewGanttComponent } from './overview/overview-gantt/overview-gantt.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { GoogleChartsModule } from 'angular-google-charts';
+import { ResizeModule } from '@thalesrc/ng-utils/resize';
+
+declare var google:any;
 
 @NgModule({
   declarations: [
@@ -41,8 +45,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatMenuModule,
     MatTabsModule,
 
+    GoogleChartsModule.forRoot({ version: '50'}),
     FlexLayoutModule,
+    ResizeModule, 
+    
     CommonModule,
+
     ProjectsRoutingModule,
   ]
 })

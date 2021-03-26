@@ -28,21 +28,21 @@
 }
 
 .element-overview {
-  margin: 25px 100px;
+  margin-left: 50px;
+  width:100%;
+
 }
 
 .element-container {
-  max-width:400px;
   border: solid 1px black;
   border-radius:5px;
-  //margin:5px;
-  display:flex;
-  height:100%;
-  min-width:400px;
+  width: 100%;
 }
+
 .element-row {
   height:35px;
   display:flex;
+  margin-top:5px;
   //padding: 5px 0px;
 }
 
@@ -66,7 +66,8 @@
   height:100%;
   max-width:150px;
   display:flex;
-  width:100%;
+  max-width:180px;
+  min-width:180px;
   justify-content:end;
   border-right: solid 1px black;
 }
@@ -83,7 +84,8 @@
 .status-container {
   height:100%;
   display:flex;
-  width:100%;
+  max-width:180px;
+  min-width: 180px;
   justify-content:end;
   background: black;
 }

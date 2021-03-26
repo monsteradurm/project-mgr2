@@ -48,6 +48,8 @@ export class MondayService {
 
   Workspaces$ = this.Boards$.pipe(
     map((boards:any) => _.map(boards, b => b.workspace)),
+    map((workspaces:any) => _.filter(workspaces, w => w && w.id)),
+    tap(console.log),
     map((workspaces:any) => _.uniq(workspaces, w => w.id))
   )
 
@@ -56,7 +58,7 @@ export class MondayService {
       workspaces.forEach(w => {
         w.children = [];
         let siblings = w.children;
-        _.filter(boards, b => b.workspace.id == w.id).forEach(b => {
+        _.filter(boards, b => b && b.workspace && b.workspace.id == w.id).forEach(b => {
             let grouping = b.name.split('/');
             let last = grouping[grouping.length - 1];
 
