@@ -78,6 +78,50 @@ export class MondayService {
     shareReplay(1)
   )
   
+  ColumnsIdsByTitle$(title:string) {
+    return this.Columns$.pipe(
+      map((columns:Column[]) => _.filter(columns, c=> c.title == title)),
+      map((columns:Column[]) => _.map(columns, c=> c.id))
+    )
+  }
+
+  ColumnIdsFromTitles$(titles: string[]) {
+    return this.Columns$.pipe(
+      map((columns:Column[]) => _.filter(columns, c=> titles.indexOf(c.title) > -1)),
+      map((columns:Column[]) => _.map(columns, c=> c.id))
+    )
+  }
+
+  ColumnValuesFromBoards$(board_ids: string[], col_ids: string[]) {
+    let query = `boards(ids:[${board_ids.join(" ")}]) {
+        name
+        items {
+          id
+          name
+          column_values(ids:["${col_ids.join("\" \"")}"]) {
+            title
+            value
+          }
+          board {
+            id
+            name
+          }
+          group {
+            id
+            title
+          }
+        }
+      } complexity { query } `
+
+    return this.Query$(query).pipe(
+      map((data:any) => data && data.boards ? data.boards : []),
+      map((boards:any) => _.map(boards, b => b.items)),
+      map((boardItems: any[]) => _.flatten(boardItems)),
+      tap(console.log),
+      map((items: any[]) => _.filter(items, i => i.column_values && i.column_values.length > 0))
+    )
+  }
+
   Boards$ = this.Query$(`boards(state:active) 
   { id, name, 
     workspace { name, id } 
