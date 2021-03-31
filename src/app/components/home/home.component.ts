@@ -63,7 +63,8 @@ export class HomeComponent implements OnInit {
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
       return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
-    })
+    }),
+    map((items:any) => )
   )
 
   ngOnInit(): void {
