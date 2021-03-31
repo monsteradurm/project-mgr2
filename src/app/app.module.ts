@@ -26,6 +26,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import {MatTableModule} from '@angular/material/table';
 
 //font-awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -41,6 +42,8 @@ import { PersonComponent } from './components/people/person/person.component';
 import { PeopleComponent } from './components/people/people.component';
 import { SchedulingComponent } from './components/scheduling/scheduling.component';
 import { SystemComponent } from './components/system/system.component'
+import { GoogleChartsModule } from 'angular-google-charts';
+import { MatBadgeModule } from '@angular/material/badge';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -113,7 +116,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatTooltipModule,
     MatIconModule,
     MatMenuModule,
-
+    MatBadgeModule,
+    MatTableModule,
     //font-awesome
     FontAwesomeModule,
 

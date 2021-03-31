@@ -10,8 +10,10 @@ export const OAuthSettings = {
   
     consentScopes: [
       "user.read.all",
+      "user.readwrite.all",
       "calendars.read",
       "mail.read",
+      "contacts.read",
       "openid"
     ]
   };

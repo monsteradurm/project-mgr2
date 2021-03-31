@@ -1,8 +1,8 @@
 <div *ngIf="(Selected$ | async) as selected">
     <div class="nav-toolbar">
 
-        <h2 class="nav-title">
-            Project Manager
+        <h2 class="nav-title" matBadge="2" matBadgePosition="below after">
+            <span style="z-index:12">Project Manager</span>
         </h2>
 
         <ng-template [ngIf]="IsCeloxisReachable">
@@ -14,7 +14,7 @@
         </ng-template>
 
         <div *ngIf="IsAuthorized" class="nav-user">
-            <app-user [User]="User" [Photo]="MyPhoto"></app-user>
+            <app-user [User]="User" [Photo]="MyPhoto" [IsNav]="true"></app-user>
         </div>
     </div>
 

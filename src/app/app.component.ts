@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { filter, takeUntil, shareReplay } from 'rxjs/operators';
+import { filter, takeUntil, shareReplay, tap } from 'rxjs/operators';
 import { UserIdentity } from './models/UserIdentity';
 import { NavigationService } from './services/navigation.service';
 import { UserService } from './services/user.service';
@@ -40,7 +40,9 @@ export class AppComponent implements OnInit, OnDestroy {
   subscriptions = [];
   ngOnInit(): void {
     this.subscriptions.push(
-      this.userService.User$.subscribe((user:UserIdentity) => this.User = user)
+      this.userService.User$.subscribe((user:UserIdentity) => {
+        this.User = user;
+      })
     );
 
     this.subscriptions.push(
@@ -92,7 +94,6 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
           this.authService.loginPopup()
             .subscribe((response: AuthenticationResult) => {
-
               this.authService.instance.setActiveAccount(response.account);
             });
       }

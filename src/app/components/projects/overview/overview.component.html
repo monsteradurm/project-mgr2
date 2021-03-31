@@ -7,72 +7,71 @@
     <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
       <nav mat-tab-nav-bar
             pmTabUnderline [primaryColor]="primaryColor">
-        <ng-container *ngIf="(Department$ | async) as department">
 
-            <a mat-tab-link *ngFor="let d of (Departments$ | async)"
-            (click)="SetDepartment(d)" [active]="department.id == d.id"> {{d.text}} </a>
+        <ng-container *ngIf="(Departments$ | async) as departments">
+          <ng-container *ngIf="(Department$ | async) as department">
+              <a mat-tab-link *ngFor="let d of departments"
+              (click)="SetDepartment(d)" [active]="department.id == d.id"> {{d.text}} </a>
           </ng-container>
-          <div class="collection-container">
-            <ng-container *actionOutlet="groupsMenu"></ng-container>
-          </div>
-      </nav>
+          <a mat-tab-link style="font-style: italic;" *ngIf="departments.length < 1">
+            No Departments Within Board.
+          </a>
+        </ng-container>
+        <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;">
 
-      <div fxLayout="Row" style="margin-top:30px;overflow-x:hidden" fxLayoutAlign="center stretch"
-      *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | async) as items" >
-      <div class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
-        <div class="element-row" *ngFor="let i of items" fxLayout="row" fxLayoutAlign="start stretch">
-          <div class="element-container" fxLayout="row" fxLayoutAlign="start stretch">
-            <div class="title-container">
-              <div class="element-title">{{ i.element }}</div>
-            </div>
-
-            <div class="status-container">
-              <div class="task-status">
-                Not started
-              </div>
-            </div>
-
-            
-            <div class="task-container">
-              <div class="task-description">
-                {{ i.task }}
-              </div>
-            </div>
-        
+          <div fxLayout="row" fxLayoutAlign="start end" style="margin-right:15px;">
+            <mat-icon class="search-icon">search</mat-icon>
+            <mat-form-field pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
+              style="max-width:200px;" >
+              <input matInput class="search-input">
+            </mat-form-field> 
           </div>
-          <!--
-          <div class="gantt-row" fxLayout="row" [style.width]="min_halfDays*max_width">
-            <div class="gantt-cell" *ngFor="let c of cells">
-              A
+          <ng-container *ngIf="(SortByMenu$ | async) as SortByMenu">
+            <div class="directors-menu-container">
+              <ng-container *actionOutlet="SortByMenu"></ng-container>
             </div>
+          </ng-container>
+
+        <ng-container *ngIf="(DirectorsMenu$ | async) as DirectorsMenu">
+          <div class="directors-menu-container">
+            <ng-container *actionOutlet="DirectorsMenu"></ng-container>
           </div>
-        -->
+        </ng-container>
+
+        <ng-container *ngIf="(ArtistsMenu$ | async) as ArtistsMenu">
+          <div class="artists-menu-container">
+            <ng-container *actionOutlet="ArtistsMenu"></ng-container>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="(StatusMenu$ | async) as StatusMenu">
+          <div class="status-menu-container">
+            <ng-container *actionOutlet="StatusMenu"></ng-container>
+          </div>
+        </ng-container>
+
+        <div class="collection-container">
+          <ng-container *actionOutlet="groupsMenu"></ng-container>
         </div>
       </div>
 
+      </nav>
+
+      <div fxLayout="Row" style="padding-top:30px;overflow-x:hidden" fxLayoutAlign="center stretch"
+      *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ | 
+              FilterItemsByArtist$ : IgnoredArtists$ | FilterItemsByDirector$ : IgnoredDirectors$ | async) as items" >
+        <div class="pm-console-error" *ngIf="items?.length < 1" style="width:calc(100vw);position:absolute">
+          This Project/Board/Group currently has no Items to Track.
+        </div>
+
+        <div class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
+          <app-overview-boarditem *ngFor="let item of items;trackby:" [boarditem]="item"></app-overview-boarditem>
+        </div>
+
       <!-- GANTT -->
 
-    <app-overview-gantt [BoardItems]="items"></app-overview-gantt>
-    </div>
+      <app-overview-gantt [BoardItems]="items"></app-overview-gantt>
+      
+      </div>
     </ng-container>
-  
-    
-
 </ng-template>
-
-
-<!--
-<ng-container *ngIf="(Department$ | async) as department">
-    <nav mat-tab-nav-bar *ngIf="(Departments$ | async) as departments" pmTabUnderline [primaryColor]="primaryColor">
-        <a mat-tab-link *ngFor="let d of departments"
-        (click)="SetDepartment(d)"
-        [active]="department == d"> {{d}} </a>
-
-        <ng-template [ngIf]="(HasCollections$ | async)">
-            <div class="collection-container">
-                <ng-container *actionOutlet="CollectionMenu"></ng-container>
-            </div>
-        </ng-template>
-    </nav>
-</ng-container>
--->

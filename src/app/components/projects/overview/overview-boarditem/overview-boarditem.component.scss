@@ -1,0 +1,123 @@
+
+.title-container {
+    height:100%;
+    max-width:150px;
+    display:flex;
+    max-width:180px;
+    min-width:180px;
+    justify-content:end;
+    border-right: solid 1px black;
+  }
+  
+  .task-container {
+    height:100%;
+    max-width:150px;
+    display:flex;
+    width:100%;
+    justify-content:start;
+    border-left: solid 1px black;
+  }
+  
+  .status-container {
+    height:100%;
+    display:flex;
+    max-width:180px;
+    min-width: 180px;
+    justify-content:end;
+    background: black;
+  }
+  .task-status {
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    margin:auto;
+    height: auto;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 500;
+    color:white;
+  }
+  .task-description {
+    width: 100%;
+    text-align: left;
+    vertical-align: middle;
+    margin:auto;
+    height: auto;
+    padding-left: 10px;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 500;
+    color:black;
+  }
+  
+  .element-title {
+    width: 100%;
+    text-align: right;
+    vertical-align: middle;
+    margin:auto;
+    height: auto;
+    padding-right: 10px;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 500;
+  
+  }
+  
+  .element-code {
+    width: 100%;
+      height: auto;
+      margin: auto;
+      font-family: 'Roboto';
+      font-weight: 100;
+      font-size: 10px;
+      margin-left: 10px;
+  }
+  
+  .subitem-control {
+    position:absolute;
+    width:30px;
+    left:-40px;
+  }
+  
+  .v-mini-fab {
+    height:30px;
+    width:30px;
+    background:gray;
+    border-radius:100%;
+    background:transparent !important;
+  }
+  
+  .mat-badge-small.mat-badge-above .mat-badge-content {
+    top: 7.5px;
+  }
+  
+  .v-mini-fab-icon{
+    width: auto;
+    line-height: 20px;
+    color: white;
+    margin: 0px;
+    padding: 0px;
+    font-size: 25px;
+    height: 30px;
+    color:#AAA;
+  }
+  
+.element-container {
+    border: solid 1px black;
+    border-radius:5px;
+    width: 100%;
+  }
+  
+  .element-row {
+    height:35px;
+    display:flex;
+    margin-top:5px;
+    position:relative;
+    //padding: 5px 0px;
+  }
+
+app-overview-subitem {
+    width: 100%;
+    display: flex;
+    height: 40.998px;
+}

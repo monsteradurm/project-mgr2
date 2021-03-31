@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import { Observable, combineLatest } from 'rxjs';
 import { of, from, merge } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
-import { Tag } from './../../models/Tags';
+import { Tag } from './../../models/Columns';
 
 @Pipe({
   name: 'FilterItemsByDepartment$'
@@ -17,9 +17,11 @@ export class FilterItemsByDepartmentPipe  {
         if (!department) return [];
         let dep = department.id;
 
-        return _.filter(items, i =>
+        let filtered = _.filter(items, i =>
           _.map(i.department, d=> d.id)
           .indexOf(dep) >= 0);
+          
+        return filtered;
       })
     )
   }

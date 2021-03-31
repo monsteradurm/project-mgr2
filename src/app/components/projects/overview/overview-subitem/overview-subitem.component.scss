@@ -1,0 +1,27 @@
+
+  .subitem-name-container {
+    height: 100%;
+    display: flex;
+    background: white;
+    justify-content: end;
+    z-index: 5;
+    padding-left: 5px;
+    font-size:12px;
+  }
+  .subitem-container {
+    width:100%;
+    height: auto;
+    width: 100%;
+    margin: auto;
+    text-align: right;
+    margin-right:10px;
+    font-weight:500;
+  }
+
+  .element-row {
+    height:35px;
+    display:flex;
+    margin-top:5px;
+    position:relative;
+    //padding: 5px 0px;
+  }

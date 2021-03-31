@@ -79,7 +79,6 @@ export class NavigationService {
       url = '/' + url;
 
     Object.keys(params).filter(p => params[p]).forEach(p => url += p + '=' + params[p] + ';')
-
     this.location.replaceState(url);
   }
   

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { ajax } from 'rxjs/ajax';
-import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject } from 'rxjs';
+import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError } from 'rxjs';
 import { switchMap, tap, shareReplay, map, take, catchError } from 'rxjs/operators';
 
 import mondaySdk from 'monday-sdk-js';
 import * as _ from 'underscore';
+import { UserService } from './user.service';
+import { UserIdentity } from '../models/UserIdentity';
+import { Column, MondayIdentity } from '../models/Monday';
 
 const monday = mondaySdk();
 
@@ -16,45 +19,90 @@ const _TENMINUTES_ = 1000 * 60 * 10;
 })
 export class MondayService {
 
-  constructor() {
+  constructor(private UserService: UserService) {
     monday.setToken(_ENV_.token);
+    this.Columns$.subscribe(console.log)
   }
 
   private IsReachable = new BehaviorSubject<boolean>(true);
   IsReachable$ = this.IsReachable.asObservable().pipe(shareReplay(1));
 
-  Users$ = this.Query$('users { id, name }').pipe(
-    map((res:any) => res.data && res.data.users ? res.data.users : of([]))
-  )
+  
+  MondayUsers$ = this.UserService.AllUsers$.pipe(
+    switchMap((users:any[]) => 
+      this.Query$(
+        `users(limit:${users.length}) { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
+      )
+    ),
+    map((res:any) => res && res.users ? res.users : []),
+    map((users:any[]) => _.map(users, u => new MondayIdentity(u))),
+  ).pipe(take(1));
+
+  SubItems$(ids: string[]) {
+    let query = `items(ids:[${ids.join(",")}]) { 
+      id name 
+          updates(limit:1) { id body creator { id } created_at }
+          column_values { title text id additional_info value }
+    }`
+
+    return this.Query$(query.split('\n').join('').trim()).pipe(
+      map((data:any) => data.items),
+      tap(t => console.log("SUBITEMS", t))
+    )
+  }
 
   BoardItems$(boardId: string, groupId: string) {
     let query = `boards(limit:1 ids:${boardId}) {
         groups(ids:"${groupId}") {
-        items { id name column_values { title text id additional_info value } }
+        items { 
+          id name 
+          updates(limit:1) { id body creator { id } created_at }
+          column_values { title text id additional_info value }
+        }
       }
     }`
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data:any) => data.boards[0].groups[0].items),
-      catchError(err => [])
+      catchError(err => {
+        console.log(err);
+        return err
+      })
     )
   }
 
-  Boards$ = this.Query$('boards(state:active) { id, name, workspace { name, id } groups { id, title }}')
+  Columns$ = this.Query$(`boards(state:active) { columns { type id title } }`).pipe(
+    map((data:any) => data && data.boards ? data.boards : []),
+    map((boards:any[]) => _.flatten(_.map(boards, b=> b.columns))),
+    map((columns: any[]) => _.uniq(columns, c => JSON.stringify(c))),
+    map((columns:any[]) => _.map(columns, c => new Column(c))),
+    shareReplay(1)
+  )
+  
+  Boards$ = this.Query$(`boards(state:active) 
+  { id, name, 
+    workspace { name, id } 
+    groups { id, title }}`)
   .pipe(
     map((data:any) => data && data.boards ? data.boards : []),
-    map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
+    //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
     map((boards:any) => _.sortBy(boards, b => b.name))
   );
 
   Workspaces$ = this.Boards$.pipe(
     map((boards:any) => _.map(boards, b => b.workspace)),
     map((workspaces:any) => _.filter(workspaces, w => w && w.id)),
-    tap(console.log),
     map((workspaces:any) => _.uniq(workspaces, w => w.id))
   )
 
-  Projects$ = combineLatest([this.Boards$, this.Workspaces$]).pipe(
+
+
+  Projects$ = combineLatest([
+    this.Boards$.pipe(
+      map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0))
+    ), 
+    this.Workspaces$]).pipe(
     map(([boards, workspaces]) => {
+
       workspaces.forEach(w => {
         w.children = [];
         let siblings = w.children;
@@ -105,64 +153,3 @@ export class MondayService {
     }).pipe(take(1))
   }
 }
-
-/*
-
-
-
-#  /*
-#  boards(limit:1) {
-#    name
-#
-#    columns {
-#      title
-#      id
-#      type
-#    }
-#
-#    groups {
-#    	 title
-#      id
-#    }
-
- #   items {
- #     name
- #     group {
- #       id
- #     }
- #
- #     column_values {
- #       id
- #       value
-#        text
-#      }
-#    }
-#  }
-#}
-query {
-  boards(
-    limit:1
-    ids:[1156753578]
-  ) {
-    	tags {
-    	  id
-        name
-    	}
-    	groups(ids:["group_title"]) {
-      items {
-        id
-        name
-        column_values {
-          title
-          value
-          text
-          id
-          type
-          additional_info
-        }
-      }
-    }
-	}
-}
-
-*/

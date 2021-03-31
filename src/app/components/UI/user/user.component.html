@@ -1,18 +1,26 @@
-<div *ngIf="User" class="user-avatar">
+<div *ngIf="User" [ngClass]="{'user-avatar-nav' : IsNav, 'user-avatar' : !IsNav}">
     <div style="display:flex">
-        <div class="user-displayName">
+        <div class="user-displayName displayName-left" *ngIf="!CircleOnly && !FlipText">
             {{User.surname}}, {{User.givenName}}
         </div>
-        <ng-template [ngIf]="Photo" [ngIfThen]="thenBlock" [ngIfElse]="elseBlock"></ng-template>
+        <ng-template [ngIf]="Photo || Photo$" [ngIfThen]="thenBlock" [ngIfElse]="elseBlock"></ng-template>
         <ng-template #thenBlock>
-            <img class="user-photo" [src]="Photo" />
+            <img class="user-photo" *ngIf="Photo" [src]="Photo" />
+            <img class="user-photo" *ngIf="(Photo$ | async) as photo" [src]="photo" />
         </ng-template>
         <ng-template #elseBlock>
-            <div class="avatar-circle">
-                <div class="initials-circle">
+            <div class="avatar-circle" 
+                [style.background]="backgroundColor" 
+                [style.border-color]="borderColor"
+                [style.border-width]="borderWidth"
+                [style.border-style]="borderStyle">
+                <div class="initials-circle" [style.color]="textColor">
                     AC
                 </div>
             </div>
         </ng-template>
+        <div class="user-displayName displayName-right" *ngIf="!CircleOnly && FlipText">
+            {{User.surname}}, {{User.givenName}}
+        </div>
     </div>
 </div>

@@ -1,12 +1,21 @@
-<div #overviewGantt thaResize class="overview-gantt" 
-(error)="onError($event)"
-(onResize)="onResized($event)" (ready)="onReady($event)">
-    <google-chart 
-    [dynamicResize]="true"
-    [data]="data" 
-    [width] = "width"
-    [height] = "height"
-    [columns]="columns"
-    [options]="options"
-    [type]="chartType"></google-chart>
-</div>
+
+<ng-container *ngIf="!DoNotRender">
+    <div *ngIf="(Data$ | async) as data" thaResize class="overview-gantt" (onResize)="onResized(data)">
+        <div #overviewGantt>
+            
+            <google-chart #chart (ready)="OnReady($event)" 
+            (mouseover)="OnOver($event)"
+            (mouseleave)="OnLeave($event)" (error)="onError($event)"
+                [dynamicResize]="true"
+                [data]=" data" 
+                [width] = "width"
+                [height] = "height"
+                [columns]="columns"
+                [options]="Options"
+
+                [type]="chartType"></google-chart>
+        </div>
+    
+
+    </div>
+</ng-container>

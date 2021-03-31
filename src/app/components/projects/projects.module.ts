@@ -13,16 +13,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatBadgeModule} from '@angular/material/badge';
 
 //directives
 import { TabUnderlineDirective } from './../../directives/material/tab-underline.directive';
-import { ElementComponent } from './overview/element/element.component';
 import { FilterItemsByDepartmentPipe } from './../../directives/elements/filterItemsBydepartment.directive';
 import { OverviewGanttComponent } from './overview/overview-gantt/overview-gantt.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { GoogleChartsModule } from 'angular-google-charts';
 import { ResizeModule } from '@thalesrc/ng-utils/resize';
+import { MatBadgeOverrideDirective } from '../../directives/material/mat-badge-override.directive'
 
+import { OverviewSubitemComponent } from './overview/overview-subitem/overview-subitem.component';
+import { OverviewBoarditemComponent } from './overview/overview-boarditem/overview-boarditem.component';
+import { FilterItemsByStatusPipe } from 'src/app/directives/elements/filterItemsByStatus.directive';
+import { FilterItemsByArtistPipe } from 'src/app/directives/elements/filterItemsByArtist.directive';
+import { FilterItemsByDirectorPipe } from 'src/app/directives/elements/filterItems.ByDirector.directive';
+import { FocusInputDirective } from 'src/app/directives/material/focusInput.directive';
 declare var google:any;
 
 @NgModule({
@@ -31,27 +38,36 @@ declare var google:any;
     OverviewComponent,
 
     TabUnderlineDirective,
+    FocusInputDirective,
+    
+    MatBadgeOverrideDirective,
+    FilterItemsByStatusPipe,
     FilterItemsByDepartmentPipe,
-    ElementComponent,
-    OverviewGanttComponent
+    FilterItemsByArtistPipe,
+    FilterItemsByDirectorPipe,
+
+    OverviewGanttComponent,
+    OverviewSubitemComponent,
+    OverviewBoarditemComponent
   ],
   imports: [
     ActionOutletModule,
     ActionMatModule.forRoot(ICON_TYPE.Font),
+
+    GoogleChartsModule,
 
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
     MatMenuModule,
     MatTabsModule,
-
-    GoogleChartsModule.forRoot({ version: '50'}),
+    MatBadgeModule,
     FlexLayoutModule,
-    ResizeModule, 
     
+    ResizeModule, 
     CommonModule,
 
     ProjectsRoutingModule,
-  ]
+  ],
 })
 export class ProjectsModule { }

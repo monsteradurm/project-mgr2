@@ -1,0 +1,58 @@
+.people-table {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 50px 0px;
+}
+
+table {
+    width: 100%;
+    margin: 0px 100px;
+}
+
+.mat-cell, .mat-footer-cell {
+    font-size: 14px;
+    //text-align: center;
+    font-size: 15px;
+    font-family: emoji;
+    letter-spacing:0.5px;
+}
+
+th.mat-header-cell {
+    //text-align: center;
+    color: rgb(153, 87, 255);
+    font-size: 15px;
+    font-family: emoji;
+    letter-spacing:0.5px;
+    font-weight:bold;
+}
+
+.no-icon {
+    color: rgb(255, 0, 43);
+    text-align: center;
+    width:100%;
+    margin: 0px;
+    padding: 0px;
+}
+.role-icon {
+    color:gray;
+    text-align: center;
+    width:100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.icon-caption {
+    margin: 0px;
+    padding: 0px;
+    margin-top: -10px;
+    font-size: 12px;
+    font-family: emoji;
+    letter-spacing:0.5px;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+tr.mat-row:nth-child(odd) :not(tr.mat-header-row) {
+    background: #fafafa;
+}

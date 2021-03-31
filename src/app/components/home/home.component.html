@@ -1,10 +1,9 @@
-<div *ngIf="!loginDisplay">
-    <p class="welcome">Welcome to the MSAL.js v2 Angular Quickstart!</p>
-    <p>This sample demonstrates how to configure MSAL Angular to login, logout, protect a route, and acquire an access token for a protected resource such as the Microsoft Graph.</p>
-    <p>Please sign-in to see your profile information.</p>
-  </div>
+<div *ngIf="!loginDisplay; else LoggedIn">
+    <p Error - Not Logged in></p>
+</div>
   
-  <div *ngIf="loginDisplay">
-    <p>Login successful!</p>
-    <p>Request your profile information by clicking Profile above.</p>
+<ng-template #LoggedIn>
+  <div *ngIf="(CalendarURL$ | async) as CalendarURL">
+    <iframe [src]="CalendarURL" style="width:100%;height:100%"></iframe>
   </div>
+</ng-template>

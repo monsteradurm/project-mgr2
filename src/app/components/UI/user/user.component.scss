@@ -1,10 +1,16 @@
-.user-avatar {
+.user-avatar-nav {
     position:absolute;
     right:0px;
     height:35px;
     width:200px;
     justify-content: end;
 }
+.user-avatar {
+    height:35px;
+    //width:200px;
+    justify-content: end;
+}
+
 .user-photo {
     height:27px;
     width:27px;
@@ -19,11 +25,16 @@
 .user-displayName {
     margin:auto;
     top:50%;
-    text-align:right;
-    margin-right:10px;
     padding-top:2px;
 }
-
+.displayName-left {
+    text-align:right;
+    margin-right:10px;
+}
+.displayName-right {
+    text-align:left;
+    margin-left:30px;
+}
 .avatar-circle {
     height: 27px;
     width: 27px;
@@ -34,7 +45,7 @@
   }
 
   .initials-circle {
-      font-family:Calibri;
+      font-family:Roboto;
       color:black;
       margin:auto;
       font-size:15px;
