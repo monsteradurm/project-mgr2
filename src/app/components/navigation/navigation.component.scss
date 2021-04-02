@@ -13,7 +13,7 @@
 }
 .nav-toolbar {
     position:relative;
-    height:35px;
+    height:40px;
     line-height:31px;
     display:flex;
     justify-content: center;
@@ -25,7 +25,7 @@
 }
 .mat-badge-content {
     right: -17px !important;
-    font-family: emoji !important;
+    font-family: cursive !important;
     font-size: 14px !important;
     opacity: 0.8 !important;
     top: 3px !important;
@@ -38,15 +38,15 @@
     color:#DDD;
     position:absolute;
     left:15px;
-    top:1px;
-    font-weight: 400;
+    top:3px;
+    font-weight: lighter;
     font-size: 17px;
     letter-spacing: 0.25px;
 }
 .nav-user {
     position:absolute;
     right:15px;
-    top:1px;
+    top:2px;
     width:200px;
     font-family:Arial;
     color: #DDD;
@@ -62,7 +62,7 @@
     margin-left:10px;
     color:white !important;
     opacity:0.9;
-    font-family: emoji;
+    font-family: cursive;
     letter-spacing: 0.5px;
 }
 .nav-ctrl-titles {

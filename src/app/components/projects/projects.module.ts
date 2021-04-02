@@ -36,9 +36,6 @@ declare var google:any;
   declarations: [
     ProjectComponent,
     OverviewComponent,
-
-    TabUnderlineDirective,
-    FocusInputDirective,
     
     MatBadgeOverrideDirective,
     FilterItemsByStatusPipe,

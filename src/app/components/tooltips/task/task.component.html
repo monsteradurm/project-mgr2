@@ -1,0 +1,15 @@
+<div #tooltipConcealer style="display:none">
+        <div [id]="Item.id">
+            <div class="tooltip-container">
+                <div fxLayout="row" fxLayoutAlign="space-between center" styl="border-bottom:solid 1px black">
+                    <div *ngIf="Item.workspace">{{Item.workspace.name}}, {{Item.board.name}}, {{Item.group.title}}</div>
+                    <div style="margin-left:35px">{{Department }}</div>
+                </div>
+                <div style="font-size:13px;margin-top:5px;">{{Item.name}}</div>
+                <div fxLayout="column" fxLayoutAlign="end end" style="margin-top:5px">
+                    <div>Assigned: {{Artist}}, {{Item.timeline.text}}</div>
+                    <div *ngIf="Director">Reviewing: {{Director}}</div>
+                </div>
+            </div>
+        </div>
+</div>

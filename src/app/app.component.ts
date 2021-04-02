@@ -3,10 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { filter, takeUntil, shareReplay, tap } from 'rxjs/operators';
+import { filter, takeUntil, shareReplay, tap, map } from 'rxjs/operators';
 import { UserIdentity } from './models/UserIdentity';
 import { NavigationService } from './services/navigation.service';
 import { UserService } from './services/user.service';
+
+import '@fullcalendar/core';
+import { ThrowStmt } from '@angular/compiler';
+import { MondayService } from './services/monday.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +23,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private readonly _destroying$ = new Subject<void>();
 
+  private MondayExhausted$ = this.monday.ComplexityExhausted$.pipe(
+    map((message:string) => {
+      if (!message)
+        return;
+
+      
+      return message;
+    })
+  )
+
+  MondayExhausted: string = null;
+
   private Token = new BehaviorSubject<string>(null);
   Token$ = this.Token.asObservable().pipe(shareReplay(1));
 
@@ -26,6 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private navigation: NavigationService,
+    private monday: MondayService,
     private msalBroadcastService: MsalBroadcastService,
     private userService: UserService
   ) {}
@@ -39,6 +56,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   subscriptions = [];
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.MondayExhausted$.subscribe(e => this.MondayExhausted = e)
+    )
+
     this.subscriptions.push(
       this.userService.User$.subscribe((user:UserIdentity) => {
         this.User = user;

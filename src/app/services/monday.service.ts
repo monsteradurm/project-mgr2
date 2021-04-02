@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { ajax } from 'rxjs/ajax';
 import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError } from 'rxjs';
-import { switchMap, tap, shareReplay, map, take, catchError } from 'rxjs/operators';
+import { switchMap, tap, shareReplay, map, take, catchError, takeWhile, retryWhen, retry, finalize } from 'rxjs/operators';
 
 import mondaySdk from 'monday-sdk-js';
 import * as _ from 'underscore';
@@ -27,7 +27,9 @@ export class MondayService {
   private IsReachable = new BehaviorSubject<boolean>(true);
   IsReachable$ = this.IsReachable.asObservable().pipe(shareReplay(1));
 
-  
+  private ComplexityExhausted = new BehaviorSubject<string>(null);
+  ComplexityExhausted$ = this.ComplexityExhausted.asObservable();
+
   MondayUsers$ = this.UserService.AllUsers$.pipe(
     switchMap((users:any[]) => 
       this.Query$(
@@ -77,7 +79,7 @@ export class MondayService {
     map((columns:any[]) => _.map(columns, c => new Column(c))),
     shareReplay(1)
   )
-  
+
   ColumnsIdsByTitle$(title:string) {
     return this.Columns$.pipe(
       map((columns:Column[]) => _.filter(columns, c=> c.title == title)),
@@ -95,14 +97,21 @@ export class MondayService {
   ColumnValuesFromBoards$(board_ids: string[], col_ids: string[]) {
     let query = `boards(ids:[${board_ids.join(" ")}]) {
         name
+
         items {
           id
           name
           column_values(ids:["${col_ids.join("\" \"")}"]) {
             title
             value
+            additional_info
+            text
           }
           board {
+            workspace {
+              id
+              name
+            }
             id
             name
           }
@@ -117,7 +126,6 @@ export class MondayService {
       map((data:any) => data && data.boards ? data.boards : []),
       map((boards:any) => _.map(boards, b => b.items)),
       map((boardItems: any[]) => _.flatten(boardItems)),
-      tap(console.log),
       map((items: any[]) => _.filter(items, i => i.column_values && i.column_values.length > 0))
     )
   }
@@ -182,18 +190,47 @@ export class MondayService {
     }),
   )
 
+  IsComplexityError(errors) {
+    if (!errors || errors.length < 1)
+      return;
+      let error = _.find(errors, e=> e.message && e.message.indexOf('Complexity') > -1)
+
+      let messageArr = error.message.split(' ')
+      return parseInt(messageArr.splice(messageArr.length - 2, 1));
+
+  }
   Query$(query) {
     return new Observable( observer => {
       monday.api('query { ' + query + ' }').then((res) => {
-        if (res.errors)
+        let cError:number = this.IsComplexityError(res.errors);
+
+        if (cError)  {
+          timer(0, 1000).pipe(
+            takeWhile(t => cError > 0)
+          ).subscribe(() => {
+              this.ComplexityExhausted.next(cError.toString())
+              cError -= 1;
+              if (cError == 0) 
+                observer.error({ retry: true })
+          })
+        }
+
+        else if (res.errors)
           observer.error([res.errors, query]);
+      
         else if (!res.data)
           observer.error('No Data!');
 
-
-        observer.next(res.data);
-        observer.complete();
+        else {
+          observer.next(res.data);
+          observer.complete();
+        }
       })
-    }).pipe(take(1))
+    }).pipe(
+      retry(),
+      finalize(() => {
+        this.ComplexityExhausted.next(null);
+      })
+    )
   }
 }

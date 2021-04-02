@@ -6,12 +6,21 @@
   [User]="User"></app-navigation>
 
 <div class="container">
+
   <ng-template [ngIf]="IsMondayReachable && IsAuthorized">
-    <router-outlet></router-outlet>
+    <ng-template [ngIf]="MondayExhausted" [ngIfThen]="exhausted" [ngIfElse]="mondayReady"></ng-template>
+    <ng-template #mondayReady>
+      <router-outlet></router-outlet>
+    </ng-template>
+
+    <ng-template #exhausted>
+      <h3>Monday complexity exceeded</h3> 
+      <h3>Automatically Resuming in {{ MondayExhausted }}...</h3>
+    </ng-template>
   </ng-template>
 
   <ng-template [ngIf]="!IsMondayReachable">
-    <h3>Celoxis is Unreachable.</h3>
+    <h3>"Monday" is Unreachable.</h3>
   </ng-template>
 
   <ng-template [ngIf]="!IsAuthorized">

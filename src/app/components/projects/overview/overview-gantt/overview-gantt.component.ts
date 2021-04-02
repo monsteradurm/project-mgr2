@@ -87,7 +87,7 @@ export class OverviewGanttComponent implements OnInit {
   }
 
   GetHtmlTooltip(name, artist, itemRange, i) {
-    let html = `<div style="font-family:Roboto;font-size:12px;">
+    let html = `<div style="font-family:cursive;font-size:12px;">
         <div style="border-bottom:solid 1px black;padding:5px;display:flex;font-weight:bold">
           <div style="font-weight:500;padding: 0px 10px;float:left">${i.element} / ${i.task}</div>`
 
@@ -203,7 +203,7 @@ export class OverviewGanttComponent implements OnInit {
           showRowLabels: false,
           barHeight: 25,
           rowLabelStyle: {
-            fontName: 'Roboto',
+            fontName: 'cursive',
             fontSize: 12,
             color: 'white',
           },
@@ -270,7 +270,7 @@ export class OverviewGanttComponent implements OnInit {
     let text = r[1];
 
     if (text) {
-      text.setAttribute('font-family', 'Roboto')
+      text.setAttribute('font-family', 'cursive')
       text.setAttribute('font-size', '12px')
       text.setAttribute('font-weight', '500');
       if (text.getAttribute('text-anchor') == 'end' || text.getAttribute('x') == NullTextPosition)

@@ -35,6 +35,15 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActionOutletModule } from '@ng-action-outlet/core';
 import { ActionMatModule, ICON_TYPE } from '@ng-action-outlet/material';
 
+//fullcalendar
+import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+import timeGridPlugin from '@fullcalendar/timegrid';
+import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin
+import interactionPlugin from '@fullcalendar/interaction'; // a plugin
+
+//primeng
+import {ScrollPanelModule} from 'primeng/scrollpanel';
+
 //routing
 import { HomeComponent } from './components/home/home.component';
 import { UserComponent } from './components/UI/user/user.component';
@@ -44,12 +53,24 @@ import { SchedulingComponent } from './components/scheduling/scheduling.componen
 import { SystemComponent } from './components/system/system.component'
 import { GoogleChartsModule } from 'angular-google-charts';
 import { MatBadgeModule } from '@angular/material/badge';
+import { FocusInputDirective } from './directives/material/focusInput.directive';
+import { TabUnderlineDirective } from './directives/material/tab-underline.directive';
+import { MatTabsModule } from '@angular/material/tabs';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { TaskTooltipComponent } from './components/tooltips/task/task.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
+
+FullCalendarModule.registerPlugins([ // register FullCalendar plugins
+  dayGridPlugin,
+  timeGridPlugin,
+  interactionPlugin
+]);
 
 export function loggerCallback(logLevel: LogLevel, message: string) {
   console.log(message);
 }
+
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
@@ -101,7 +122,11 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     PersonComponent,
     PeopleComponent,
     SchedulingComponent,
-    SystemComponent
+    SystemComponent,
+
+    TabUnderlineDirective,
+    FocusInputDirective,
+    TaskTooltipComponent
 
   ],
 
@@ -118,11 +143,20 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatMenuModule,
     MatBadgeModule,
     MatTableModule,
+    MatTabsModule,
+    FlexLayoutModule,
+
     //font-awesome
     FontAwesomeModule,
 
     HttpClientModule,
     MsalModule,
+
+    //prime
+    ScrollPanelModule,
+
+    //calendar
+    FullCalendarModule,
 
     //ng-action-outlet
     ActionOutletModule,

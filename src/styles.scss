@@ -15,19 +15,22 @@ $project-mgr2-theme: mat-light-theme((
 ));
 
 $custom-typography: mat-typography-config(
-  $font-family: 'emoji',
+  $font-family: cursive,
   $headline: mat-typography-level(32px, 48px, 700),
   $body-1: mat-typography-level(16px, 24px, 500)
 );
 @include angular-material-theme($project-mgr2-theme);
 
+@import '~@fullcalendar/daygrid/main.css';
+@import '~@fullcalendar/timegrid/main.css';
 /* You can add global styles to this file, and also import other style files */
 .mat-body, .mat-body-1, .mat-typography, a, div, input, span {
-  font-family: 'emoji' !important;
+  font-family: cursive !important;
   letter-spacing: 0.25px !important;
 }
 html, body { height: 100%; }
-body { margin: 0; font-family: "emoji", "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: "cursive", "Helvetica Neue", sans-serif; 
+overflow:hidden!important;}
 
 button.mat-menu-item, .mat-menu-item {
   line-height:30px !important;
@@ -60,7 +63,7 @@ button.mat-menu-item, .mat-menu-item {
   margin: 15px;
   text-align: center;
   font-size: 20px;
-  font-family: 'emoji';
+  font-family: cursive;
 }
 
 .mat-mini-fab .v-mini {
@@ -105,8 +108,78 @@ action-mat-group > button > span > mat-icon {
   opacity: 0.5;
   color: black;
 }
+.fc, .fc-toolbar-title {
+  font-family: cursive !important;
+}
 
 .nav-toolbar > action-mat-group > button > span > mat-icon {
   opacity: 1;
   color: white;
+}
+
+.fc-daygrid-event {
+  padding:3px;
+  height:40px;
+  padding-left:10px;
+  border: solid 1px black;
+  font-family: cursive !important;
+  font-size:12px;
+  font-weight:lighter;
+  letter-spacing:0.25px;
+  border: solid 1px black !important;
+  border-radius:5px !important;
+  //opacity:0.7 !important;
+}
+.fc-daygrid-event:hover {
+  opacity:1 !important;
+}
+th.fc-col-header-cell.fc-day.fc-day-sun,
+th.fc-col-header-cell.fc-day.fc-day-mon,
+th.fc-col-header-cell.fc-day.fc-day-tue,
+th.fc-col-header-cell.fc-day.fc-day-wed,
+th.fc-col-header-cell.fc-day.fc-day-thu,
+th.fc-col-header-cell.fc-day.fc-day-fri,
+th.fc-col-header-cell.fc-day.fc-day-sat {
+  background:white !important;
+  box-shadow:none;
+  height:30px;
+}
+.fc .fc-col-header-cell-cushion {
+  display: inline-block;
+  padding: 2px 4px;
+  line-height: 30px;
+}
+
+.fc-event-title {
+  letter-spacing: 0.5px !important;
+  font-size:12px;
+}
+
+.fc-day {
+  //box-shadow: inset 0px 0px 50px 0px rgb(0 0 0 / 15%);
+  background: #fafafa !important;
+}
+.fc-day-sun, .fc-day-sat {
+  box-shadow: inset 0px 0px 50px 0px rgb(0 0 0 / 5%);
+    background: #c0c6ce !important;
+}
+.fc-day-today {
+  background: #fffad252 !important;
+    box-shadow: inset 0px 0px 100px 0px #ffa90b0f;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border: 1px solid #c7c7c7;
+}
+
+app-home {
+  width:100%;
+}
+
+nav { 
+  overflow:hidden
+}
+
+.fc-button-primary:focus {
+  box-shadow:none !important;
 }

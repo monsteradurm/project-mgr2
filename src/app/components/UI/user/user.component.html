@@ -1,5 +1,5 @@
 <div *ngIf="User" [ngClass]="{'user-avatar-nav' : IsNav, 'user-avatar' : !IsNav}">
-    <div style="display:flex">
+    <div style="display:flex;height:36px">
         <div class="user-displayName displayName-left" *ngIf="!CircleOnly && !FlipText">
             {{User.surname}}, {{User.givenName}}
         </div>
