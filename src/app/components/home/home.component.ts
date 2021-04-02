@@ -99,22 +99,32 @@ export class HomeComponent implements OnInit {
 
   private viewModeMenu = new BehaviorSubject<ActionGroup>(this.ViewModeMenu);
 
-  ViewModeMenu$ = this.ViewMode$.pipe(
-    map(viewMode => {
+  ViewModeMenu$ = combineLatest([this.Tab$, this.ViewMode$]).pipe(
+    map(([tab, viewMode]) => {
       this.ViewModeMenu.setTitle(viewMode);
       return this.ViewModeMenu;
     })
-  ).pipe(shareReplay(1))
+  ).pipe(tap(console.log))
 
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
   Boards$ = this.monday.Boards$;
 
-  Allocations$ = combineLatest([this.Boards$, this.Columns$]).pipe(
+  Items$ = combineLatest([this.Boards$, this.Columns$]).pipe(
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
       return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
     }),
     map((items:any[]) => _.map(items, i => new ScheduledItem(i))),
+    shareReplay(1)
+  )
+
+  LoggedHours$ = this.Items$.pipe(
+    tap(console.log),
+    map(items => _.filter(items, i => i.timetracking)),
+    shareReplay(1)
+  ).subscribe((items) => console.log("TIMETRACKING", items))
+
+  Events$ = this.Items$.pipe(
     map((items:any[]) => _.filter(items, i => i.timeline && i.artist && i.artist.length > 0)),
     tap((items:any) => {
       this.entry.clear();
@@ -133,6 +143,14 @@ export class HomeComponent implements OnInit {
             end: i.timeline.value.to,
             backgroundColor: this.GetStatusColor(i)
           } );
+          /*
+          if (i.timetracking) {
+            _.forEach(i.timetracking.value, t => {
+              result.push({
+                id: 
+              })
+            })
+          } */
           counter += 1;
       })
       return result;
@@ -161,7 +179,7 @@ export class HomeComponent implements OnInit {
     return '#000'
   }
   
-  ListOptions$ = this.Allocations$.pipe(
+  ListOptions$ = this.Events$.pipe(
     map(allocations => 
     ({
       plugins: [listPlugin],
@@ -171,7 +189,7 @@ export class HomeComponent implements OnInit {
     )
   )
 
-  Options$ = combineLatest([this.ViewMode$, this.Allocations$]).pipe(
+  Options$ = combineLatest([this.ViewMode$, this.Events$]).pipe(
     map(([viewMode, allocations]) => ({
       plugins:  [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: this.ViewModeOptions[viewMode],

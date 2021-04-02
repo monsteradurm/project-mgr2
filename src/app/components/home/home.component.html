@@ -6,7 +6,8 @@
 
 
     <ng-contaer *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
-      <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;" *ngIf="tab == 'Calendar'">
+      <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;"
+        [style.display]="tab == 'Calendar' ? 'block' : 'none'">
           <div>
             <ng-container *actionOutlet="ViewModeMenu"></ng-container>
           </div>
