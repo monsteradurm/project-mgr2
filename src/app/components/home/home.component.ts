@@ -41,8 +41,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   showHoursDlg: boolean = false;
   TabOptions = ['Calendar', 'List', 'Kanban', 'Chart']
   
-  HourOptions = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-  MinuteOptions = ['00', '15', '30', '45'];
   private tab = new BehaviorSubject<string>('Calendar')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
 
@@ -298,13 +296,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
   }
-
-  onLogHoursBtn() {
-    this.showHoursDlg = true
+  
+  OnVisibilityChange(state) {
+    console.log(state);
+    this.showHoursDlg = state;
   }
-
   onCloseHoursDlg() {
-    this.showHoursDlg = false;
   }
 
   ngOnInit(): void {

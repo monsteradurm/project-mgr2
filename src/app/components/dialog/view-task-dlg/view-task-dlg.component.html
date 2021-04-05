@@ -1,1 +1,14 @@
-<p>view-task-dlg works!</p>
+<p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
+[style]="{width: '50vw', 
+          background: 'white',
+          padding:'5px',
+          'border-radius' : '5px',
+          'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
+          border: 'solid 1px black'}">
+    <div style="background: white !important;padding:20px" fxLayout="column">
+        <h2 style="margin-bottom:10px;color: #3767d8;">I am loggin hours for...</h2>
+
+        <div fxLayout="row" fxLayoutAlign="start center">
+        </div>
+    </div>
+</p-dialog>

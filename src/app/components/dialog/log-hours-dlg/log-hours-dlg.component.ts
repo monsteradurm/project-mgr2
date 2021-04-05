@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment from 'moment';
 import * as _ from 'underscore';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
@@ -15,13 +15,16 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   styleUrls: ['./log-hours-dlg.component.scss']
 })
 export class LogHoursDlgComponent implements OnInit {
+  
+  HourOptions = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+  MinuteOptions = ['00', '15', '30', '45'];
 
-  NewLog = new NewHourLog(this);
-  @Input() Show; boolean = false;
-  constructor(public monday: MondayService) { }
-
+  @Output() visbilityChanged = new EventEmitter<boolean>(false);
+  @Input() Show: boolean = false;
+  
   Boards$ = this.monday.Boards$;
 
+  constructor(public monday: MondayService) { }
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
   Items$ = combineLatest([this.Boards$, this.Columns$]).pipe(
     switchMap(([boards, c_ids]) => {
@@ -31,10 +34,14 @@ export class LogHoursDlgComponent implements OnInit {
     map((items:any[]) => _.map(items, i => new ScheduledItem(i))),
     shareReplay(1)
   )
-
+  ChangeVisibility(state) {
+    console.log("HERE", state)
+    this.visbilityChanged.next(state);
+    this.NewLog = new NewHourLog(this);
+  }
   ngOnInit(): void {
   }
-
+  NewLog = new NewHourLog(this);
 }
 
 export class NewHourLog {
@@ -46,9 +53,6 @@ export class NewHourLog {
 
   duration_hours: string = '01';
   duration_minutes: string = '00';
-
-  private parent: LogHoursDlgComponent;
-
   private SelectedBoard = new BehaviorSubject<Board>(null);
   SelectedBoard$ = this.SelectedBoard.asObservable().pipe(shareReplay(1));
 
@@ -71,12 +75,13 @@ export class NewHourLog {
     if (this.Validate())
       this.monday.AddHoursLog(this); 
   }
-  constructor(parent: LogHoursDlgComponent) {
+  parent: LogHoursDlgComponent;
 
+  constructor(parent: LogHoursDlgComponent) {
     this.parent = parent;
     this.monday = this.parent.monday;
     this.Boards$ = this.parent.Boards$.pipe(
-      map(boards => _.filter(boards, b=> b.name.indexOf('Subitems') < 0)),
+      map(boards => _.filter(boards, b => b.name.indexOf('Subitems') < 0)),
       take(1)
     )
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-view-task-dlg',
@@ -6,7 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./view-task-dlg.component.scss']
 })
 export class ViewTaskDlgComponent implements OnInit {
+  @Input() Show: boolean = true;
+  @Output() VisibilityChanged = new EventEmitter<boolean>(false);
 
+  @Input() primaryColors; 
   constructor() { }
 
   ngOnInit(): void {

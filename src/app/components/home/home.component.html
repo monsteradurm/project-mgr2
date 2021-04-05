@@ -38,7 +38,7 @@
           <div style="position:sticky;bottom:10px;" fxLayout="row" fxLayoutAlign="end end">
             <button addTippy mat-fab pmStyleOverride [styleOverrides]="[
               { className: 'mat-accent', style: 'background', override: primaryColor }
-            ]" tippyText="Log Hours" (click)="onLogHoursBtn()">
+            ]" tippyText="Log Hours" (click)="OnVisibilityChange(true)">
               <mat-icon class="app-fab-icon-btn  app-center-fab-icon">more_time</mat-icon>
             </button>
           </div>
@@ -47,4 +47,4 @@
   </ng-container>
 </div>
 
-<app-log-hours-dlg [Show]="ShowHrsDlg" (onClose)="onCloseHoursDlg()"></app-log-hours-dlg>
+<app-log-hours-dlg [Show]="showHoursDlg" (visbilityChanged)="OnVisibilityChange($event)"></app-log-hours-dlg>
