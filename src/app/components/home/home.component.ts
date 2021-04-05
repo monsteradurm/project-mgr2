@@ -1,9 +1,9 @@
-import { Component, ComponentFactoryResolver, OnInit, Output, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ElementRef, OnInit, Output, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import * as moment from 'moment';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, fromEvent, Observable, of } from 'rxjs';
 import { catchError, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ScheduledItem } from 'src/app/models/Monday';
@@ -24,6 +24,7 @@ import { FullCalendarComponent } from '@fullcalendar/angular';
 import { TaskTooltipComponent } from './../tooltips/task/task.component';
 
 import tippy from "tippy.js";
+import { Board, BoardItem } from 'src/app/models/BoardItem';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline', 
           'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -32,13 +33,16 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
 
+  showHoursDlg: boolean = false;
   TabOptions = ['Calendar', 'List', 'Kanban', 'Chart']
   
+  HourOptions = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+  MinuteOptions = ['00', '15', '30', '45'];
   private tab = new BehaviorSubject<string>('Calendar')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
 
@@ -61,12 +65,11 @@ export class HomeComponent implements OnInit {
       return result;
     })).pipe(shareReplay(1));
 
-
   constructor(
     private actionOutlet: ActionOutletFactory,
     private navigation: NavigationService,
     private cfr: ComponentFactoryResolver,
-    private monday: MondayService,
+    public monday: MondayService,
     private UserService : UserService,
     ) { 
       const name = Calendar.name; 
@@ -104,11 +107,12 @@ export class HomeComponent implements OnInit {
       this.ViewModeMenu.setTitle(viewMode);
       return this.ViewModeMenu;
     })
-  ).pipe(tap(console.log))
+  )
 
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
-  Boards$ = this.monday.Boards$;
 
+  Boards$ = this.monday.Boards$;
+  
   Items$ = combineLatest([this.Boards$, this.Columns$]).pipe(
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
@@ -119,10 +123,9 @@ export class HomeComponent implements OnInit {
   )
 
   LoggedHours$ = this.Items$.pipe(
-    tap(console.log),
     map(items => _.filter(items, i => i.timetracking)),
     shareReplay(1)
-  ).subscribe((items) => console.log("TIMETRACKING", items))
+  )
 
   Events$ = this.Items$.pipe(
     map((items:any[]) => _.filter(items, i => i.timeline && i.artist && i.artist.length > 0)),
@@ -134,30 +137,77 @@ export class HomeComponent implements OnInit {
       let result = [];
       let counter = 0;
       _.forEach(items, i=> {
+          let color = this.GetStatusColor(i);
           result.push( {
-            extendedProps: { index: counter },
+            extendedProps: { tooltipId: i.id, type: 'allocation' },
             id: i.id,
             title: i.itemcode && i.itemcode.text ? i.itemcode.text + ', ' + i.name : i.name
-            + ' (' +this.GetStatusText(i) + ')', 
+            + ' (' + this.GetStatusText(i) + ')', 
             start: i.timeline.value.from,
             end: i.timeline.value.to,
-            backgroundColor: this.GetStatusColor(i)
+            backgroundColor: color
           } );
-          /*
+          
           if (i.timetracking) {
-            _.forEach(i.timetracking.value, t => {
-              result.push({
-                id: 
+            let values = i.timetracking.additional_value;
+            if (values && values.length > 0) {
+              _.forEach(values, t => {
+                let started = moment(t.started_at);
+                let finished = moment(t.ended_at);
+                let time = finished.diff(started, 'minutes');
+                let tracked = time + ' minutes';
+
+                if (time >= 60) {
+                  time = time / 60;
+                  tracked = time + ' hours';
+                }
+
+                result.push({
+                  extendedProps: { tooltipId: i.id, type: 'timetracking' },
+                  id: t.id,
+                  backgroundColor: color,
+                  start: t.started_at,
+                  end: t.ended_at,
+                  title: `Logged ${tracked}`,
+                  display: 'list-item',
+                  classNames: ['log-item']
+                });
               })
-            })
-          } */
+
+            }
+            
+            
+          } 
           counter += 1;
       })
+      /*
+      _.forEach(this.GetLogDateArray(), (d) =>  { 
+        result.push({
+          extendedProps: { tooltipId: d, type: 'logbtn' },
+          start: d,
+          end: d,
+          classNames: ['log-hours-container']
+        })
+      })*/
       return result;
     }),
     shareReplay(1)
   )
 
+  GetLogDateArray() {
+    var start = moment().startOf('month').subtract(1, 'month');
+    var end = moment().endOf('month').add(1, 'month');
+
+    var days = [];
+    var day = moment(start);
+
+    while (day <= end) {
+        days.push(day.format('YYYY-MM-DD'));
+        day = day.clone().add(1, 'd');
+    }
+
+    return days;
+  }
   CreateToolTipComponent(i) {
     let component = this.cfr.resolveComponentFactory(TaskTooltipComponent);
     //component.inputs.
@@ -184,35 +234,55 @@ export class HomeComponent implements OnInit {
     ({
       plugins: [listPlugin],
       events: allocations,
-      initialView: 'listWeek'
+      initialView: 'listWeek',
+      eventDidMount: (r) => this.eventDidMount(r)
     })
     )
   )
+
+  onShow(r) {
+    let id = r.reference.getAttribute('data-id');
+    r.setContent(document.getElementById(id).innerHTML);
+  }
+  eventDidMount(info) {
+    let props = info.event.extendedProps;
+    if (props.type != 'logbtn') {
+      info.el.setAttribute('data-id', props.tooltipId);
+      let t = tippy(info.el, {
+          content: "",
+          allowHTML: true,
+          onShow: (r) => this.onShow(r)
+        });
+        return t;
+      }
+    } 
+  
+  eventContent(r) {
+    let t = r.event.extendedProps.type;
+
+    if (t == 'allocation')
+      return r.event.title; //{ html: '<i>some html</i>' }
+      let icon = `<mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" 
+        aria-hidden="true" data-mat-icon-type="font" style="    font-size: 18px;
+        line-height: 25px;">schedule</mat-icon>`
+    let html = `${icon} <span style="margin-left: 5px">${r.event.title}</span>`
+    return { html };
+  }
 
   Options$ = combineLatest([this.ViewMode$, this.Events$]).pipe(
     map(([viewMode, allocations]) => ({
       plugins:  [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: this.ViewModeOptions[viewMode],
       events: allocations,
-      viewDidMount: (view) => {
-        console.log(view)
-      },
-      eventDidMount: (info) => {
-        info.el.setAttribute('data-id', info.event.id);
-        let t = tippy(info.el, {
-            content: "",
-            allowHTML: true,
-            onShow(r) { 
-              let id = r.reference.getAttribute('data-id');
-              r.setContent(document.getElementById(id).innerHTML)
-            }
-          });
-          return t;
-        }
+      eventDidMount: (r) => this.eventDidMount(r),
+      eventContent: (r) => this.eventContent(r)
       })
     ),
   )
 
+  AddTippy(evt, text) {
+    console.log(evt);
+  }
   ViewModeChange(v) {
     this.ViewMode$.pipe(take(1)).subscribe(current => {
       if (current != v && v) {
@@ -224,13 +294,18 @@ export class HomeComponent implements OnInit {
   }
   primaryColor:string;
   subscriptions = [];
+  NewLog = new NewHourLog(this);
 
-  onEventClick(ev) {
-    console.log("EVENT", ev);
+  ngAfterViewInit() {
   }
 
-  onMouseOver(ev) {
-    console.log(ev);
+  onLogHoursBtn() {
+    this.NewLog = new NewHourLog(this);
+    this.showHoursDlg = true
+  }
+
+  onCloseHoursDlg() {
+    this.showHoursDlg = false;
   }
 
   ngOnInit(): void {
@@ -249,6 +324,58 @@ export class HomeComponent implements OnInit {
 
     this.subscriptions.push(
       this.DayBtn.fire$.subscribe(a => this.ViewModeChange('Day'))
+    )
+  }
+}
+
+export class NewHourLog {
+  item_id: string;
+  date: string = moment().format('YYYY-MM-DD');
+  hour: string = '09';
+  minute: string = '00';
+  half: string = 'AM';
+
+  duration_hours: string = '01';
+  duration_minutes: string = '00';
+
+  private parent: HomeComponent;
+
+  private SelectedBoard = new BehaviorSubject<Board>(null);
+  SelectedBoard$ = this.SelectedBoard.asObservable().pipe(shareReplay(1));
+
+  private SelectedTask = new BehaviorSubject<ScheduledItem>(null);
+  SelectedTask$ = this.SelectedTask.asObservable().pipe(shareReplay(1));
+
+  IsRevision: boolean = false;
+
+  monday: MondayService;
+  Boards$: Observable<Board[]>;
+  SetBoard(b) { this.SelectedBoard.next(b); }
+  SetTask(t) { this.SelectedTask.next(t); }
+  Items$;
+  
+  Validate() {
+    return true;
+  }
+  Submit() { 
+    console.log(this, this.SelectedTask.value);
+    if (this.Validate())
+      this.monday.AddHoursLog(this); 
+  }
+  constructor(parent: HomeComponent) {
+
+    this.parent = parent;
+    this.monday = this.parent.monday;
+    this.Boards$ = this.parent.Boards$.pipe(
+      map(boards => _.filter(boards, b=> b.name.indexOf('Subitems') < 0)),
+      take(1)
+    )
+
+    this.Items$ = combineLatest([this.SelectedBoard$, this.parent.Items$]).pipe(
+      map(([board, items]) => {
+        return _.filter(items, i=> i.board.id == board.id);
+      }),
+      take(1)
     )
   }
 }

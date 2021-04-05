@@ -8,7 +8,10 @@ import mondaySdk from 'monday-sdk-js';
 import * as _ from 'underscore';
 import { UserService } from './user.service';
 import { UserIdentity } from '../models/UserIdentity';
-import { Column, MondayIdentity } from '../models/Monday';
+import { Column, MondayIdentity, ScheduledItem } from '../models/Monday';
+import { Board } from '../models/BoardItem';
+import { NewHourLog } from '../components/home/home.component';
+import { ColumnType } from '../models/Columns';
 
 const monday = mondaySdk();
 
@@ -102,6 +105,7 @@ export class MondayService {
           id
           name
           column_values(ids:["${col_ids.join("\" \"")}"]) {
+            id
             title
             value
             additional_info
@@ -136,14 +140,17 @@ export class MondayService {
     groups { id, title }}`)
   .pipe(
     map((data:any) => data && data.boards ? data.boards : []),
+    map((boards:any) => _.map(boards, b=> new Board(b))),
     //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
-    map((boards:any) => _.sortBy(boards, b => b.name))
-  );
+    map((boards:Board[]) => _.sortBy(boards, b => b.selection))
+  ).pipe(take(1), shareReplay(1))
 
   Workspaces$ = this.Boards$.pipe(
-    map((boards:any) => _.map(boards, b => b.workspace)),
+    map((boards:Board[]) => _.map(boards, b => b.workspace)),
     map((workspaces:any) => _.filter(workspaces, w => w && w.id)),
-    map((workspaces:any) => _.uniq(workspaces, w => w.id))
+    map((workspaces:any) => _.uniq(workspaces, w => w.id)),
+    take(1),
+    shareReplay(1)
   )
 
 
@@ -188,6 +195,8 @@ export class MondayService {
       }) // end workspaces
       return workspaces;
     }),
+    take(1),
+    shareReplay(1)
   )
 
   IsComplexityError(errors) {
@@ -199,9 +208,37 @@ export class MondayService {
       return parseInt(messageArr.splice(messageArr.length - 2, 1));
 
   }
-  Query$(query) {
+
+  /*mutation {
+change_column_value (board_id: 20178755, item_id: 200819371, column_id: "status", value: "{\"index\": 1}") {
+id
+}
+}*/
+  AddHoursLog(log: NewHourLog) {
+     log.SelectedTask$.pipe(
+      map((task: ScheduledItem) => {
+        let col_id = task.column_ids[ColumnType.TimeTracking];
+
+        console.log(task.timetracking);
+        let value;
+
+        return `change_column_value(board_id: ${task.board.id}, item_id: "${task.id}", column_id: "${col_id}", value: ${value}) {
+          id
+        }`
+      }),
+      take(1)
+    ).subscribe((result) => {
+
+    });
+  }
+
+  Mutate$(cmd) {
+    return this.API_CMD$(cmd, 'mutation');
+  }
+
+  API_CMD$(cmd: string, type: string) {
     return new Observable( observer => {
-      monday.api('query { ' + query + ' }').then((res) => {
+      monday.api(type + ' { ' + cmd + ' }').then((res) => {
         let cError:number = this.IsComplexityError(res.errors);
 
         if (cError)  {
@@ -216,7 +253,7 @@ export class MondayService {
         }
 
         else if (res.errors)
-          observer.error([res.errors, query]);
+          observer.error([res.errors, cmd]);
       
         else if (!res.data)
           observer.error('No Data!');
@@ -232,5 +269,9 @@ export class MondayService {
         this.ComplexityExhausted.next(null);
       })
     )
+  }
+
+  Query$(cmd) {
+    return this.API_CMD$(cmd, 'query')
   }
 }

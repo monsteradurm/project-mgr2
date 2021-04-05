@@ -118,6 +118,7 @@ action-mat-group > button > span > mat-icon {
 }
 
 .fc-daygrid-event {
+  overflow:hidden;
   padding:3px;
   height:40px;
   padding-left:10px;
@@ -172,6 +173,10 @@ th.fc-col-header-cell.fc-day.fc-day-sat {
   border: 1px solid #c7c7c7;
 }
 
+.fc-event-time {
+  margin-right: 10px !important;
+}
+
 app-home {
   width:100%;
 }
@@ -182,4 +187,106 @@ nav {
 
 .fc-button-primary:focus {
   box-shadow:none !important;
+}
+
+.log-item {
+  border:none !important;
+}
+
+.log-hours-container {
+  background: transparent !important;
+    border: none !important;
+    color: #4078fb !important;
+    position: relative;
+    left:0px;
+    opacity: 0.3;
+    top: -30px;
+}
+.log-hours-container:hover {
+  opacity: 1 !important;
+}
+
+.log-hours-container > mat-button > mat-icon {
+  color:rgb(64, 120, 251) !important;
+}
+
+
+.app-fab-icon-btn {
+  font-size: 30px;
+    font-weight: bold;
+    line-height: 0px;
+    height: 0px !important;
+    width: auto !important;
+    margin: auto;
+    padding: 0px;
+}
+
+.cdk-overlay-container {
+  z-index:1002 !important;
+}
+
+.app-fab-icon-btm, .app-center-fab-icon {
+  margin-top:-3px;
+}
+
+h1 {
+  font-family:cursive !important;
+}
+h3 {
+  font-family:cursive !important;
+}
+h4 {
+  font-family:cursive !important;
+}
+
+h5 { 
+  font-family:cursive !important;
+}
+h6 {
+  font-family:cursive !important;
+}
+p-dialog {
+  font-family:cursive !important;
+}
+.mat-form-field-underline {
+  background-color:gray !important;
+}
+
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: #ffffff;
+  border: solid 1.5px black !important;
+}
+
+.mat-checkbox-background > svg > path {
+  transform: scale(1.5) translateY(-4px) translateX(-4px)
+}
+
+app-home {
+  .mat-checkbox-background > svg > path {
+    fill: rgb(64, 120, 251) !important;
+  }
+  
+  .mat-focused > .mat-form-field-wrapper > .mat-form-field-underline > .mat-form-field-ripple{
+    background-color:rgb(64, 120, 251) !important;
+  }  
+
+   .newlog-select.newlog-select {
+      text-align:center;
+      margin-left:5px;
+      padding-left:5px;
+      text-align:center
+  }
+  
+    mat-form-field.newlog-select {
+      max-width:50px !important;
+      width:50px !important;
+  }
+  
+  .mat-mini-fab.mat-accent.app-icon-close {
+    background-color: black !important; 
+  }
+  .mat-mini-fab.mat-accent {
+    background-color: rgb(64, 120, 251) !important; 
+  }
 }

@@ -49,6 +49,12 @@ export class ColumnValues {
       let values = this.ParseArray(tags, type);
       return values.length > 0 ? values[0] : null;
     }
+    public static ParseValue(tags:any[], type: ColumnType) {
+      let c = _.find(tags, v => v.title == type);
+        if (c && c.value)
+          return JSON.parse(c.value);
+        return null;
+    }
 
     public static IsTagType(type: ColumnType) {
       return type == ColumnType.Artist || type == ColumnType.Director
@@ -61,7 +67,14 @@ export class ColumnValues {
 
       return _.filter(values, v=> v.title == type && v.value);
     }
-    
+
+    public static FindColumnId(values: ColumnValues[], type: ColumnType) { 
+        let c = _.find(values, v => v.title == type);
+        if (c && c.value && type == ColumnType.TimeTracking)
+        if (c) return c.id;
+        return null;
+    }
+
     public static ParseArray(tags: any[], type:ColumnType) { 
       let values = _.map(tags, t=> new ColumnValues(t));
 

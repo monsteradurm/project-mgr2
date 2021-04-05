@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 //Components
 import { NavigationComponent } from './components/navigation/navigation.component';
@@ -27,6 +28,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatTableModule} from '@angular/material/table';
+import {MatDatepickerModule} from '@angular/material/datepicker/';
+import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter'
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 //font-awesome
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -43,6 +50,7 @@ import interactionPlugin from '@fullcalendar/interaction'; // a plugin
 
 //primeng
 import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {DialogModule} from 'primeng/dialog';
 
 //routing
 import { HomeComponent } from './components/home/home.component';
@@ -58,6 +66,8 @@ import { TabUnderlineDirective } from './directives/material/tab-underline.direc
 import { MatTabsModule } from '@angular/material/tabs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TaskTooltipComponent } from './components/tooltips/task/task.component';
+import { StyleOverrideDirective } from './directives/material/styleoverride.directive';
+import { AddTippyDirective } from './directives/addTippy.directive';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -125,6 +135,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     SystemComponent,
 
     TabUnderlineDirective,
+    AddTippyDirective,
+    StyleOverrideDirective,
     FocusInputDirective,
     TaskTooltipComponent
 
@@ -134,6 +146,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
 
     //material design
     MatButtonModule,
@@ -145,7 +158,13 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatTableModule,
     MatTabsModule,
     FlexLayoutModule,
-
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatMomentDateModule,
+    MatSelectModule,
+    MatCheckboxModule,
+     
     //font-awesome
     FontAwesomeModule,
 
@@ -154,6 +173,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 
     //prime
     ScrollPanelModule,
+    DialogModule,
 
     //calendar
     FullCalendarModule,
@@ -164,6 +184,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
   ],
 
   providers: [
+    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {strict: false}},
     //msal-angular
     {
       provide: HTTP_INTERCEPTORS,

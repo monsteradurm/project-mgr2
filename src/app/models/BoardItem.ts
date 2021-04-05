@@ -82,8 +82,24 @@ export class BoardItem {
 
         this.subitem_ids = _.map(subitems.value.linkedPulseIds, i => i.linkedPulseId);
     }
+}
 
-    
+export class Board {
+    id: number;
+    name: string;
+    workspace: { name: string, id: number};
+    groups: { id: string, title: string}[];
+
+    selection: string; // mat-select preview
+
+    constructor(i: any) {
+        this.id = i.id;
+        this.name = i.name;
+        this.workspace = {name: i.workspace.name, id: i.workspace.id};
+        this.groups = _.map(i.groups, g => ({ id: g.id, title: g.title }));
+        this.selection = this.workspace.name + ', ' + this.name
+    }
+
 }
 
 export class SubItem {
@@ -108,5 +124,7 @@ export class SubItem {
         this.timeline = ColumnValues.ParseFirst(i.column_values, ColumnType.Timeline);
         this.timetracking = ColumnValues.ParseFirst(i.column_values, ColumnType.TimeTracking);
         this.updates = i.updates;
+
+        
     }
 }
