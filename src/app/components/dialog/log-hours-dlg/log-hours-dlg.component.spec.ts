@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FailedComponent } from './failed.component';
+import { LogHoursDlgComponent } from './log-hours-dlg.component';
 
-describe('FailedComponent', () => {
-  let component: FailedComponent;
-  let fixture: ComponentFixture<FailedComponent>;
+describe('LogHoursDlgComponent', () => {
+  let component: LogHoursDlgComponent;
+  let fixture: ComponentFixture<LogHoursDlgComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FailedComponent ]
+      declarations: [ LogHoursDlgComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FailedComponent);
+    fixture = TestBed.createComponent(LogHoursDlgComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

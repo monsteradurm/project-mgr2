@@ -251,6 +251,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       let t = tippy(info.el, {
           content: "",
           allowHTML: true,
+          interactive: true,
           onShow: (r) => this.onShow(r)
         });
         return t;
@@ -294,13 +295,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
   primaryColor:string;
   subscriptions = [];
-  NewLog = new NewHourLog(this);
 
   ngAfterViewInit() {
   }
 
   onLogHoursBtn() {
-    this.NewLog = new NewHourLog(this);
     this.showHoursDlg = true
   }
 
@@ -328,54 +327,3 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 }
 
-export class NewHourLog {
-  item_id: string;
-  date: string = moment().format('YYYY-MM-DD');
-  hour: string = '09';
-  minute: string = '00';
-  half: string = 'AM';
-
-  duration_hours: string = '01';
-  duration_minutes: string = '00';
-
-  private parent: HomeComponent;
-
-  private SelectedBoard = new BehaviorSubject<Board>(null);
-  SelectedBoard$ = this.SelectedBoard.asObservable().pipe(shareReplay(1));
-
-  private SelectedTask = new BehaviorSubject<ScheduledItem>(null);
-  SelectedTask$ = this.SelectedTask.asObservable().pipe(shareReplay(1));
-
-  IsRevision: boolean = false;
-
-  monday: MondayService;
-  Boards$: Observable<Board[]>;
-  SetBoard(b) { this.SelectedBoard.next(b); }
-  SetTask(t) { this.SelectedTask.next(t); }
-  Items$;
-  
-  Validate() {
-    return true;
-  }
-  Submit() { 
-    console.log(this, this.SelectedTask.value);
-    if (this.Validate())
-      this.monday.AddHoursLog(this); 
-  }
-  constructor(parent: HomeComponent) {
-
-    this.parent = parent;
-    this.monday = this.parent.monday;
-    this.Boards$ = this.parent.Boards$.pipe(
-      map(boards => _.filter(boards, b=> b.name.indexOf('Subitems') < 0)),
-      take(1)
-    )
-
-    this.Items$ = combineLatest([this.SelectedBoard$, this.parent.Items$]).pipe(
-      map(([board, items]) => {
-        return _.filter(items, i=> i.board.id == board.id);
-      }),
-      take(1)
-    )
-  }
-}

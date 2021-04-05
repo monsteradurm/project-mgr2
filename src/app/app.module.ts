@@ -68,6 +68,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { TaskTooltipComponent } from './components/tooltips/task/task.component';
 import { StyleOverrideDirective } from './directives/material/styleoverride.directive';
 import { AddTippyDirective } from './directives/addTippy.directive';
+import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hours-dlg.component';
+import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-task-dlg.component';
+import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -138,7 +141,10 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AddTippyDirective,
     StyleOverrideDirective,
     FocusInputDirective,
-    TaskTooltipComponent
+    TaskTooltipComponent,
+    LogHoursDlgComponent,
+    ViewTaskDlgComponent,
+    ConfirmDlgComponent
 
   ],
 

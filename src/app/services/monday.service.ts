@@ -10,7 +10,7 @@ import { UserService } from './user.service';
 import { UserIdentity } from '../models/UserIdentity';
 import { Column, MondayIdentity, ScheduledItem } from '../models/Monday';
 import { Board } from '../models/BoardItem';
-import { NewHourLog } from '../components/home/home.component';
+import { NewHourLog } from './../components/dialog/log-hours-dlg/log-hours-dlg.component' 
 import { ColumnType } from '../models/Columns';
 
 const monday = mondaySdk();

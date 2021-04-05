@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LazyComponent } from './lazy.component';
+import { ViewTaskDlgComponent } from './view-task-dlg.component';
 
-describe('LazyComponent', () => {
-  let component: LazyComponent;
-  let fixture: ComponentFixture<LazyComponent>;
+describe('ViewTaskDlgComponent', () => {
+  let component: ViewTaskDlgComponent;
+  let fixture: ComponentFixture<ViewTaskDlgComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LazyComponent ]
+      declarations: [ ViewTaskDlgComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LazyComponent);
+    fixture = TestBed.createComponent(ViewTaskDlgComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

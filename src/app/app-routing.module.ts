@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MsalGuard } from '@azure/msal-angular';
-import { FailedComponent } from './components/failed/failed.component';
 import { SchedulingComponent } from './components/scheduling/scheduling.component';
 import { PeopleComponent } from './components/people/people.component';
 import { SystemComponent } from './components/system/system.component';
@@ -38,10 +37,10 @@ const routes: Routes = [
     path: 'System',
     component: SystemComponent
   },
-  {
+/*  {
     path: 'login-failed',
     component: FailedComponent
-  }
+  }  */
 ];
 
 const isIframe = window !== window.parent && !window.opener; // Remove this line to use Angular Universal

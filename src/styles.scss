@@ -258,8 +258,13 @@ p-dialog {
   border: solid 1.5px black !important;
 }
 
-.mat-checkbox-background > svg > path {
-  transform: scale(1.5) translateY(-4px) translateX(-4px)
+mat-checkbox[ng-reflect-model="false"] > label > .mat-checkbox-inner-container > .mat-checkbox-background > svg > path {
+  opacity:0;
+  transform: scale(2) translateY(-6px) translateX(-5px);
+}
+mat-checkbox[ng-reflect-model="true"] > label > .mat-checkbox-inner-container > .mat-checkbox-background > svg > path {
+  opacity:1;
+  transform: scale(2) translateY(-6px) translateX(-5px);
 }
 
 app-home {
