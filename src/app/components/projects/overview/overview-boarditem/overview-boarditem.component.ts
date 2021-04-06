@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { BoardItem, SubItem } from '../../../../models/BoardItem';
 import { ProjectComponent } from '../../project/project.component';
 import { OverviewComponent } from '../overview.component';
@@ -12,6 +12,9 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./overview-boarditem.component.scss']
 })
 export class OverviewBoarditemComponent implements OnInit {
+  @HostListener('dblclick') onSelect() {
+    this.parent.onSelectItem(this.boarditem)
+  }
   @ViewChild('outplug', {static: true}) plug: ElementRef;
   constructor(private parent: OverviewComponent,
               private project: ProjectComponent) { }

@@ -1,19 +1,7 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
 import { ProjectsRoutingModule } from './projects-routing.module';
 import { ProjectComponent } from './project/project.component';
 import { OverviewComponent } from './overview/overview.component';
-
-import { ActionOutletModule } from '@ng-action-outlet/core';
-import { ActionMatModule, ICON_TYPE } from '@ng-action-outlet/material';
-
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatBadgeModule} from '@angular/material/badge';
 
 //directives
 import { TabUnderlineDirective } from './../../directives/material/tab-underline.directive';
@@ -29,42 +17,39 @@ import { OverviewBoarditemComponent } from './overview/overview-boarditem/overvi
 import { FilterItemsByStatusPipe } from 'src/app/directives/elements/filterItemsByStatus.directive';
 import { FilterItemsByArtistPipe } from 'src/app/directives/elements/filterItemsByArtist.directive';
 import { FilterItemsByDirectorPipe } from 'src/app/directives/elements/filterItems.ByDirector.directive';
-import { FocusInputDirective } from 'src/app/directives/material/focusInput.directive';
+
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { DialogModule } from 'primeng/dialog';
+import { SharedModule } from './../../shared.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MondayService } from 'src/app/services/monday.service';
+import { UserService } from 'src/app/services/user.service';
 declare var google:any;
 
 @NgModule({
   declarations: [
     ProjectComponent,
     OverviewComponent,
-    
-    MatBadgeOverrideDirective,
-    FilterItemsByStatusPipe,
-    FilterItemsByDepartmentPipe,
-    FilterItemsByArtistPipe,
-    FilterItemsByDirectorPipe,
-
     OverviewGanttComponent,
     OverviewSubitemComponent,
-    OverviewBoarditemComponent
+    OverviewBoarditemComponent,
+
+    FilterItemsByStatusPipe,
+    FilterItemsByArtistPipe,
+    FilterItemsByDirectorPipe,
+    FilterItemsByDepartmentPipe
   ],
   imports: [
-    ActionOutletModule,
-    ActionMatModule.forRoot(ICON_TYPE.Font),
-
+    SharedModule.forRoot(),
     GoogleChartsModule,
-
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatTabsModule,
-    MatBadgeModule,
-    FlexLayoutModule,
-    
-    ResizeModule, 
-    CommonModule,
-
     ProjectsRoutingModule,
   ],
+  providers: [
+  ]
 })
 export class ProjectsModule { }

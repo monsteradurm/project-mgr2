@@ -47,7 +47,7 @@
     font-family: cursive;
     font-size: 12px;
     font-weight: 500;
-    color:black;
+    //color:black;
   }
   
   .element-title {
@@ -103,9 +103,11 @@
   }
   
 .element-container {
-    border: solid 1px black;
+    border: inset 1px black;
     border-radius:5px;
     width: 100%;
+    box-shadow:none;
+    z-index: 2;
   }
   
   .element-row {
@@ -116,6 +118,10 @@
     //padding: 5px 0px;
   }
 
+.element-container:hover {
+  border: inset 2px #000 !important;
+  box-shadow: 0px 3px 5px 0px #00000055;
+}
 app-overview-subitem {
     width: 100%;
     display: flex;

@@ -86,7 +86,7 @@ export class NavigationService {
     this.PageTitles.next(titles);
   }
 
-  constructor(private celoxis: CeloxisService, 
+  constructor( 
     private location:Location,
     private monday: MondayService, 
     private router: Router) {

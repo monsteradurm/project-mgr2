@@ -43,6 +43,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private sortBy = new BehaviorSubject<string>('Name');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
 
+  private selectedElement = new BehaviorSubject<BoardItem>(null);
+  SelectedElement$ = this.selectedElement.asObservable().pipe(shareReplay(1));
+
   SortByOptions = ['Name', 'Item Code', 'Status', 'Resources', 'Start', 'Finish'];
 
   statusMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Status').setIcon('library_add_check');
@@ -54,6 +57,22 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   SetReverseSorting() {
     this.ReverseSorting$.pipe(take(1)).subscribe(state => this.reverseSorting.next(!state));
+  }
+
+  onSelectItem(item) {
+    this.SelectedElement$.pipe(take(1)).subscribe(el => {
+      if (el && el.id && item && item.id && el.id != item.id) {
+        console.log("Setting selected element");
+        this.selectedElement.next(item);
+      }
+      else if (!el && item && item.id) {
+        console.log("Setting selected element");
+        this.selectedElement.next(item);
+      }
+      else if (el && !item ) {
+        this.selectedElement.next(null);
+      }
+    })
   }
 
   SetNameFilter(n) {

@@ -2,6 +2,8 @@
   <pre class="pm-console-error"> {{ errorMessage }}</pre>
 </div>
 
+<app-view-task-dlg [Item]="SelectedElement$ | async"></app-view-task-dlg>
+
 <ng-template #overviewblock>
     <!-- OVERVIEW -->
     <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
@@ -19,10 +21,10 @@
         </ng-container>
         <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;">
 
-          <div fxLayout="row" fxLayoutAlign="start end" style="margin-right:15px;">
+          <div fxLayout="row" fxLayoutAlign="start end" style="margin-right:15px;height:34px">
             <mat-icon class="search-icon">search</mat-icon>
             <mat-form-field pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
-              style="max-width:200px;" >
+              style="max-width:200px;top:-9px;height:100%" >
               <input matInput class="search-input">
             </mat-form-field> 
           </div>
@@ -65,13 +67,15 @@
         </div>
 
         <div class="element-overview" fxLayout="column" fxLayoutAlign="start stretch">
-          <app-overview-boarditem *ngFor="let item of items;trackby:" [boarditem]="item"></app-overview-boarditem>
+          <app-overview-boarditem *ngFor="let item of items;trackby:" [boarditem]="item"
+          (dblclick)="onSelectItem(item)"
+          ></app-overview-boarditem>
         </div>
 
       <!-- GANTT -->
 
-      <app-overview-gantt [BoardItems]="items"></app-overview-gantt>
-      
+        <app-overview-gantt [BoardItems]="items"></app-overview-gantt>
+
       </div>
     </ng-container>
 </ng-template>

@@ -4,8 +4,6 @@ import { filter, map, switchMap, shareReplay, take, tap, repeat, distinctUntilCh
 import { BehaviorSubject, combineLatest, of, race } from 'rxjs';
 
 import { NavigationService } from 'src/app/services/navigation.service';
-import { CeloxisService } from '../../../services/celoxis.service';
-
 import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
 import { MondayService } from '../../../services/monday.service';

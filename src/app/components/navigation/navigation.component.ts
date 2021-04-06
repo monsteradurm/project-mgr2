@@ -4,7 +4,6 @@ import {BehaviorSubject} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { shareReplay, map } from 'rxjs/operators';
 import * as _ from 'underscore';
-import { CeloxisService } from 'src/app/services/celoxis.service';
 import { AppComponent } from './../../app.component';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { NavigationService } from 'src/app/services/navigation.service';

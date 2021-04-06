@@ -64,3 +64,30 @@ nav {
 }
 
 
+
+.mat-checkbox-background > svg > path {
+    fill: rgb(64, 120, 251) !important;
+}
+
+.mat-focused > .mat-form-field-wrapper > .mat-form-field-underline > .mat-form-field-ripple{
+    background-color:rgb(64, 120, 251) !important;
+}  
+
+    .newlog-select.newlog-select {
+    text-align:center;
+    margin-left:5px;
+    padding-left:5px;
+    text-align:center
+}
+
+    mat-form-field.newlog-select {
+    max-width:50px !important;
+    width:50px !important;
+}
+
+.mat-mini-fab.mat-accent.app-icon-close {
+    background-color: black !important; 
+}
+.mat-mini-fab.mat-accent {
+    background-color: rgb(64, 120, 251) !important; 
+}

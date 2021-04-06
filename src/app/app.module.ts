@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { NavigationComponent } from './components/navigation/navigation.component';
 
 //Services
-import { CeloxisService } from './services/celoxis.service';
+
 import { MondayService } from './services/monday.service';
 import { NavigationService} from './services/navigation.service';
 import { UserService } from './services/user.service';
@@ -71,6 +71,7 @@ import { AddTippyDirective } from './directives/addTippy.directive';
 import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hours-dlg.component';
 import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-task-dlg.component';
 import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
+import { SharedModule } from './shared.module';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -131,62 +132,18 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AppComponent,
     NavigationComponent,
     HomeComponent,
-    UserComponent,
     PersonComponent,
     PeopleComponent,
     SchedulingComponent,
     SystemComponent,
-
-    TabUnderlineDirective,
-    AddTippyDirective,
-    StyleOverrideDirective,
-    FocusInputDirective,
-    TaskTooltipComponent,
-    LogHoursDlgComponent,
-    ViewTaskDlgComponent,
-    ConfirmDlgComponent
-
   ],
 
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
-    FormsModule,
-
-    //material design
-    MatButtonModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatMenuModule,
-    MatBadgeModule,
-    MatTableModule,
-    MatTabsModule,
-    FlexLayoutModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatMomentDateModule,
-    MatSelectModule,
-    MatCheckboxModule,
-     
-    //font-awesome
-    FontAwesomeModule,
-
-    HttpClientModule,
+    AppRoutingModule,
     MsalModule,
-
-    //prime
-    ScrollPanelModule,
-    DialogModule,
-
-    //calendar
-    FullCalendarModule,
-
-    //ng-action-outlet
-    ActionOutletModule,
-    ActionMatModule.forRoot(ICON_TYPE.Font)
+    SharedModule.forRoot(),
   ],
 
   providers: [
@@ -212,12 +169,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MsalService,
     MsalGuard,
     MsalBroadcastService,
-
-    //services
-    CeloxisService,
-    NavigationService,
-    MondayService,
-    UserService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })

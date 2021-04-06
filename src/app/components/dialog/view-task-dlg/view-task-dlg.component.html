@@ -1,14 +1,39 @@
 <p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
-[style]="{width: '50vw', 
+[style]="{width: '75vw', 
           background: 'white',
           padding:'5px',
           'border-radius' : '5px',
           'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
           border: 'solid 1px black'}">
-    <div style="background: white !important;padding:20px" fxLayout="column">
-        <h2 style="margin-bottom:10px;color: #3767d8;">I am loggin hours for...</h2>
+    <ng-container *ngIf="Item">
+        <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
+                
 
-        <div fxLayout="row" fxLayoutAlign="start center">
-        </div>
-    </div>
+                <div style="background: white !important;padding:20px;width:100%" fxLayout="column">
+                    <div fxLayout="row" fxLayoutAlign="space-between center" 
+                    style="border-bottom-style:solid; border-bottom-width:2px;height:35px" [style.border-bottom-color]="Status.color">
+                        <h2 class="dialog-header view-task-header">
+                            {{Item?.name}}
+                            <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
+                        </h2>
+                        <h2 class="dialog-status-header" [style.color]="Status.color">
+                            {{Status.text}}
+                        </h2>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="start start" style="margin-top:20px">
+                        <mat-toolbar fxLayout="column" style="width:unset !important;height:100%">
+                            <ng-container *ngFor="let subitem of (SubItems$ | async)">
+                                <button [active]="subitem?.id == SelectedSubItem" (click)="SelectedSubItem = subitem.id"> {{subitem.name}} </button>
+                            </ng-container>
+                            <button [active]="Item?.id == SelectedSubItem" (click)="Item.id = subitem.id"> {{Item?.name}} </button>  
+                        </mat-toolbar>
+
+                        <div fxLayout="row" fxLayoutAlign="start center" *ngIf="(View$ | async) as View" 
+                        style="width:100%;height:100%">
+                            {{View | json}}
+                        </div>
+                    </div>
+                </div>
+        </ng-container>
+    </ng-container>
 </p-dialog>
