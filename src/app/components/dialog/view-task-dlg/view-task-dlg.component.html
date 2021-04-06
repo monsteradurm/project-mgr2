@@ -1,7 +1,6 @@
-<p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
+<p-dialog #viewTaskDlg [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
 [style]="{width: '75vw', 
           background: 'white',
-          padding:'5px',
           'border-radius' : '5px',
           'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
           border: 'solid 1px black'}">
@@ -9,9 +8,9 @@
         <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
                 
 
-                <div style="background: white !important;padding:20px;width:100%" fxLayout="column">
-                    <div fxLayout="row" fxLayoutAlign="space-between center" 
-                    style="border-bottom-style:solid; border-bottom-width:2px;height:35px" [style.border-bottom-color]="Status.color">
+                <div style="background: white !important;width:100%" fxLayout="column">
+                    <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header"
+                         [style.border-bottom-color]="Status.color">
                         <h2 class="dialog-header view-task-header">
                             {{Item?.name}}
                             <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
@@ -20,16 +19,19 @@
                             {{Status.text}}
                         </h2>
                     </div>
-                    <div fxLayout="row" fxLayoutAlign="start start" style="margin-top:20px">
-                        <mat-toolbar fxLayout="column" style="width:unset !important;height:100%">
+                    <div fxLayout="row" fxLayoutAlign="start stretch">
+                        <mat-toolbar fxLayout="column" fxLayoutAlign="end stretch" class="side-dlg-toolbar">
                             <ng-container *ngFor="let subitem of (SubItems$ | async)">
-                                <button [active]="subitem?.id == SelectedSubItem" (click)="SelectedSubItem = subitem.id"> {{subitem.name}} </button>
+                                <button mat-flat-button [active]="subitem?.id == SelectedSubItem" (click)="SelectedSubItem = subitem.id"> 
+                                    {{subitem.name}}
+                                 </button>
                             </ng-container>
-                            <button [active]="Item?.id == SelectedSubItem" (click)="Item.id = subitem.id"> {{Item?.name}} </button>  
+                            <button mat-flat-button [active]="Item?.id == SelectedSubItem" (click)="Item.id = subitem.id"> Task </button>  
+                            <div style="height:100%"></div>
                         </mat-toolbar>
 
                         <div fxLayout="row" fxLayoutAlign="start center" *ngIf="(View$ | async) as View" 
-                        style="width:100%;height:100%">
+                        style="width:100%;height:100%;padding:20px;">
                             {{View | json}}
                         </div>
                     </div>
