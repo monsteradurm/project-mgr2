@@ -127,6 +127,9 @@ Please request the production data be extended to include this column.`)
       return [];
     }),
   )
+  SyncBoard$ = this.Board$.pipe(
+    switchMap(board => this.syncSketch.Project$(board))
+  ).subscribe(t => console.log("AYNCBOARD", t))
 
   Status$ = this.BoardItems$.pipe(
     map(items => _.map(items, i => i.status)),
