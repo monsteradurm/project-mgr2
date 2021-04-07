@@ -1,0 +1,11 @@
+{
+    "/syncsketch/*": {
+        "target": "https://syncsketch.com/api/v1",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/syncsketch/*": ""
+        }
+    }
+}

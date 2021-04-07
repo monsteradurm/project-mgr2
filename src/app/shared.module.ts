@@ -47,6 +47,7 @@ import { UserComponent } from './components/UI/user/user.component';
 import { NavigationService } from './services/navigation.service';
 import { ArrayToStrDirective } from './directives/arrayToString.directive';
 import { GetTaskStatusDirective } from './directives/elements/getTaskStatus.directive';
+import { SyncSketchService } from './services/sync-sketch.service';
 declare var google:any;
 
 const declarations = [
@@ -103,7 +104,8 @@ const providers = [
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {strict: false}},
     UserService,
     MondayService,
-    NavigationService
+    NavigationService,
+    SyncSketchService
 ];
 
 @NgModule({

@@ -236,7 +236,8 @@ h6 {
 }
 
 p-dialog {
-  font-family:$font
+  font-family:$font;
+  overflow: hidden !important;
 }
 
 .mat-form-field-underline {
@@ -276,6 +277,27 @@ mat-form-field.newlog-select {
 
 .mat-ripple-element {
   background-color: rgba(190, 190, 190, 0.2);
+}
+.p-dialog-content {
+  overflow: hidden !important;
+  display:flex !important;
+}
+
+p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scrollpanel-content {
+  height: calc(85vh - 52px) !important;
+  padding:0px !important;
+}
+.p-dialog {
+  box-shadow: rgb(0 0 0 / 30%) 5px 15px 20px 0px !important;
+  background:white !important;
+}
+.p-dialog-content {
+  border-radius: 5px;
+  /* border-radius: 15px; */
+  background: white;
+  border: solid 1px black;
+  box-shadow: rgb(0 0 0 / 30%) 5px 15px 20px 0px;
+  overflow:hidden;
 }
 @mixin set-component-colors($primary, $component) { 
   #{$component} {
@@ -329,21 +351,49 @@ mat-form-field.newlog-select {
     }
 
     mat-toolbar.side-dlg-toolbar {
-      background:transparent;
-      box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
-      padding:0px;
-      width: unset;
-      min-width:200px;
-      height: 75vh;
+        background: transparent;
+        box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
+        padding: 0px;
+        width: unset;
+        min-width: 180px;
+        height: 100%;
+        height: -moz-available;          /* WebKit-based browsers will ignore this. */
+        height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        height: fill-available;
+        align-self: stretch;
     }
 
     mat-toolbar.side-dlg-toolbar > .mat-flat-button {
-      padding:10px;
-      padding-right:20px;
-      background:transparent;
+      padding:3px 10px;
       font-family: $font;
       position:relative;
       text-align:right !important;
+      color:gray;
+      background:transparent;
+    }
+    
+    mat-toolbar.side-dlg-toolbar > .mat-flat-button.side-btn-active {
+      color:black;
+    }
+
+    mat-toolbar.side-dlg-toolbar > .mat-flat-button > .mat-button-wrapper > .side-btn-active {
+      //background-color: $primary;
+      right:0px;
+      width:3px;
+      top:0px;
+      position:absolute;
+      height:100%;
+      //background-color: $primary;
+    }
+
+    mat-toolbar.side-dlg-toolbar > .mat-flat-button > .mat-button-wrapper > .side-btn-inactive {
+      opacity: 0;
+      background-color:transparent !important;
+      right:0px;
+      width:2px;
+      top:0px;
+      position:absolute;
+      height:100%;
     }
   }
 }

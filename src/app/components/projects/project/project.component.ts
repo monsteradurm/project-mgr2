@@ -9,6 +9,7 @@ import { _getOptionScrollPosition } from '@angular/material/core';
 import { MondayService } from '../../../services/monday.service';
 import { ColumnValues, ColumnType } from '../../../models/Columns';
 import { BoardItem } from 'src/app/models/BoardItem';
+import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 
 const _PAGE_ = '/Projects/Overview';
 
@@ -21,6 +22,7 @@ export class ProjectComponent implements OnInit, OnDestroy
  {
 
   constructor(private navigation: NavigationService,
+              public syncSketch: SyncSketchService,
               public monday: MondayService) {
                 this.subscriptions.push(
                   this.navigation.PrimaryColor$.subscribe(c => this.PrimaryColor = c)

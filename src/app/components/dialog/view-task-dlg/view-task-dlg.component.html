@@ -1,41 +1,53 @@
 <p-dialog #viewTaskDlg [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
-[style]="{width: '75vw', 
-          background: 'white',
-          'border-radius' : '5px',
-          'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
-          border: 'solid 1px black'}">
-    <ng-container *ngIf="Item">
+[style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'5px'}"  *ngIf="Item">
         <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
-                
+            
 
-                <div style="background: white !important;width:100%" fxLayout="column">
+                <div style="background: white !important;overflow:hidden !important" fxLayout="column">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header"
-                         [style.border-bottom-color]="Status.color">
-                        <h2 class="dialog-header view-task-header">
-                            {{Item?.name}}
+                         [style.background-color]="Status.color">
+
+                        <h2 class="dialog-header view-task-header" style="color:white !important;">
+                            {{Item?.element}}
                             <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
                         </h2>
-                        <h2 class="dialog-status-header" [style.color]="Status.color">
+                        <h2 class="dialog-status-header" style="color:white !important">
                             {{Status.text}}
                         </h2>
                     </div>
-                    <div fxLayout="row" fxLayoutAlign="start stretch">
-                        <mat-toolbar fxLayout="column" fxLayoutAlign="end stretch" class="side-dlg-toolbar">
-                            <ng-container *ngFor="let subitem of (SubItems$ | async)">
-                                <button mat-flat-button [active]="subitem?.id == SelectedSubItem" (click)="SelectedSubItem = subitem.id"> 
-                                    {{subitem.name}}
-                                 </button>
-                            </ng-container>
-                            <button mat-flat-button [active]="Item?.id == SelectedSubItem" (click)="Item.id = subitem.id"> Task </button>  
-                            <div style="height:100%"></div>
-                        </mat-toolbar>
 
-                        <div fxLayout="row" fxLayoutAlign="start center" *ngIf="(View$ | async) as View" 
-                        style="width:100%;height:100%;padding:20px;">
-                            {{View | json}}
+                    <p-scrollPanel  fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
+                        [style]="{width: '75vw', height: 'calc(85vh - 52px)', overflow: 'hidden'}"  *ngIf="(SubItems$ | async) as SubItems">  
+                        <div fxLayout="row" fxLayoutAlign="stretch stretch" style="height:100%">
+ 
+                                <mat-toolbar fxLayout="column" fxLayoutAlign="stretch stretch" class="side-dlg-toolbar">
+
+                                    <button mat-flat-button (click)="SelectedSubItem = Item.id"
+                                        [ngClass]="{'side-btn-active' : SelectedSubItem == Item.id}"> {{Item.task}} 
+                                        <div  [style.background]="Status.color"
+                                            [ngClass]="{ 'side-btn-active' : Item.id == SelectedSubItem, 
+                                            'side-btn-inactive' : Item.id != SelectedSubItem }"></div>
+                                    </button>  
+                            
+                                <ng-container *ngFor="let subitem of SubItems">
+                                    <button mat-flat-button (click)="SelectedSubItem = subitem.id" 
+                                    [ngClass]="{'side-btn-active' : SelectedSubItem == subitem.id}"> 
+                                        {{subitem.name}}
+                                        <div [style.background]="Status.color"
+                                            [ngClass]="{ 'side-btn-active' : subitem?.id == SelectedSubItem, 
+                                            'side-btn-inactive' : subitem?.id != SelectedSubItem }" ></div> 
+                                    </button>
+                                </ng-container>
+                                
+                            </mat-toolbar>
+
+                        <div fxLayout="row" fxLayoutAlign="start start" *ngIf="(View$ | async) as View" 
+                        style="width:100%;height:100%;padding:20px 30px;">
+                            <pre>{{View | json}}</pre>
                         </div>
                     </div>
-                </div>
+                </p-scrollPanel>
+            </div>
+            
         </ng-container>
-    </ng-container>
 </p-dialog>

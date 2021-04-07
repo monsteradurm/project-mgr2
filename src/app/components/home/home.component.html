@@ -18,8 +18,8 @@
   <ng-container *ngIf="(Me$ | async) as me">
 
       <div class="home-container">
-        <p-scrollPanel [style]="{width: '100%', height: '100%'}">
-          
+    
+        <p-scrollPanel [style]="{width: '100%', height: '100%'}">      
           <ng-container [ngSwitch]="tab">
             
             <full-calendar #calendar *ngSwitchCase="'Calendar'"

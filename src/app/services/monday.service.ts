@@ -142,7 +142,8 @@ export class MondayService {
     map((data:any) => data && data.boards ? data.boards : []),
     map((boards:any) => _.map(boards, b=> new Board(b))),
     //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
-    map((boards:Board[]) => _.sortBy(boards, b => b.selection))
+    map((boards:Board[]) => _.sortBy(boards, b => b.selection)),
+    tap(console.log)
   ).pipe(take(1), shareReplay(1))
 
   Workspaces$ = this.Boards$.pipe(

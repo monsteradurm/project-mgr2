@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, combineLatest, from, of } from 'rxjs';
-import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { MondayService } from 'src/app/services/monday.service';
@@ -20,14 +20,21 @@ export class ViewTaskDlgComponent implements OnInit {
   constructor(private monday: MondayService) { }
 
   item = new BehaviorSubject<BoardItem | ScheduledItem>(null);
+  private refreshView = new EventEmitter<boolean>(true);
+  RefreshView$ = this.refreshView.asObservable().pipe(shareReplay(1))
   Item$ = this.item.asObservable().pipe(shareReplay(1))
-  SelectedSubItem = null;
+
+  private _selectedSubItem = null;
+  set SelectedSubItem(s) {
+    this._selectedSubItem = s;
+    this.refreshView.next(true);
+  };
   
+  get SelectedSubItem() { return this._selectedSubItem; }
+
   _Item;
   @Input() set Item(s: BoardItem | ScheduledItem) {
     this._Item = s;
-    this.item.next(s);
-
     if (s) {
       this.Show = true;
       if (!this.Item.subitem_ids || this.Item.subitem_ids.length < 1)
@@ -40,6 +47,7 @@ export class ViewTaskDlgComponent implements OnInit {
       this.item.next(null);
       this.SelectedSubItem = null;
     }
+    this.item.next(s);
   }
 
   get Item() { return this._Item; }
@@ -51,13 +59,14 @@ export class ViewTaskDlgComponent implements OnInit {
     shareReplay(1)
   )
   
-  View$ = combineLatest([this.Item$, this.SubItems$]).pipe(
+  View$ = combineLatest([this.Item$, this.SubItems$, this.RefreshView$]).pipe(
     map(([item, subitems]) => {
       if (!subitems || subitems.length < 1 || this.SelectedSubItem == item.id)
         return item;
 
       return _.find(subitems, s => s.id == this.SelectedSubItem);
     }),
+    tap(console.log),
     shareReplay(1)
   )
   ngOnInit(): void {
