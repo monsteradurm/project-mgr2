@@ -22,6 +22,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   constructor(public parent: ProjectComponent, private actionOutlet: ActionOutletFactory) {
   }
   
+
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('group_work');
   private updatedBoardItems = new BehaviorSubject<BoardItem[]>(null);
 
@@ -54,6 +55,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
   sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By').setIcon('sort_by_alpha');
 
   UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1))
+  SyncReviews$ = this.parent.SyncReviews$;
+  
+  onViewTaskClosed() {
+    this.selectedElement.next(null);
+  }
 
   SetReverseSorting() {
     this.ReverseSorting$.pipe(take(1)).subscribe(state => this.reverseSorting.next(!state));
@@ -62,11 +68,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
   onSelectItem(item) {
     this.SelectedElement$.pipe(take(1)).subscribe(el => {
       if (el && el.id && item && item.id && el.id != item.id) {
-        console.log("Setting selected element");
         this.selectedElement.next(item);
       }
       else if (!el && item && item.id) {
-        console.log("Setting selected element");
         this.selectedElement.next(item);
       }
       else if (el && !item ) {

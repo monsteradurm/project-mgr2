@@ -22,19 +22,28 @@ const httpOptions = {
 export class SyncSketchService {
 
   constructor(private http: HttpClient) { 
-    this.Projects$.subscribe(r => console.log(r))
   }
 
-  Projects$ = this.QueryArray$('/syncsketch/project/?fields=id,name').pipe(
+  Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name').pipe(
     shareReplay(1)
   )
 
   Project$(board: Board) {
     return this.Projects$.pipe(
       map(projects => _.find(projects ? projects : [], p => p.name == board.selection)),
-      switchMap(project => project ? this.Query$(`/syncsketch/project/${project.id}/`) : null),
+      switchMap((project:any) => project ? this.Query$(`/syncsketch/project/${project.id}/`) : null),
     )
   }
+
+  Reviews$(project_id:string) {
+    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`)
+  }
+
+  Items$(review_id: string) {
+    return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1&fields=id,name,active
+    `)
+  }
+
   /*[hamster.dance.gif] birds are drones/facebook.com
   when does mk ultra become actual mind ControlContainer.
   since when do we not get couch cuddles 

@@ -12,7 +12,7 @@
       </div>
     </ng-container>
 
-    <div class="element-container" fxLayout="row" fxLayoutAlign="start stretch">
+    <div class="element-container no-select" fxLayout="row" fxLayoutAlign="start stretch">
       <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
         <div class="element-code">{{ boarditem.itemcode?.text }}</div>
         <div class="element-title">{{ boarditem.element }}</div>
@@ -20,21 +20,21 @@
 
       <ng-template [ngIf]="boarditem.status && boarditem.status.additional_info" [ngIfThen]="HasStatus" [ngIfElse]="NoStatus"></ng-template>
       <ng-template #HasStatus>
-        <div class="status-container" [style.background]="boarditem.status.additional_info.color">
+        <div class="status-container no-select" [style.background]="boarditem.status.additional_info.color">
           <div class="task-status">
             {{boarditem.status.additional_info.label}}
           </div>
         </div>  
       </ng-template>
       <ng-template #NoStatus>
-        <div class="status-container" style.background="black">
+        <div class="status-container no-select" style.background="black">
           <div class="task-status">
             Not Started
           </div>
         </div>
       </ng-template>
 
-      <div class="task-container">
+      <div class="task-container no-select">
         <div class="task-description">
           {{ boarditem.task }}
         </div>

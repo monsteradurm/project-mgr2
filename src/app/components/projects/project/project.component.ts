@@ -100,12 +100,13 @@ export class ProjectComponent implements OnInit, OnDestroy
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     switchMap(([board, group]) =>
     board && board.id && group && group.id ?
-    this.monday.BoardItems$(board.id, group.id) : of([])),
+    this.monday.BoardItems$(board.id, group.id).pipe(
+      map((items) => _.map(items, i => new BoardItem(i, group)))
+    ) : of([])),
     catchError(msg => {
       this.errorMessage.next(msg)
       return of([])
     }),
-    map((items) => _.map(items, i => new BoardItem(i))),
     shareReplay(1)
   )
   
@@ -129,7 +130,12 @@ Please request the production data be extended to include this column.`)
   )
   SyncBoard$ = this.Board$.pipe(
     switchMap(board => this.syncSketch.Project$(board))
-  ).subscribe(t => console.log("AYNCBOARD", t))
+  );
+
+  SyncReviews$ = this.SyncBoard$.pipe(
+    switchMap((project:any) => project && project.id ? this.syncSketch.Reviews$(project.id) : []),
+    shareReplay(1)
+  )
 
   Status$ = this.BoardItems$.pipe(
     map(items => _.map(items, i => i.status)),

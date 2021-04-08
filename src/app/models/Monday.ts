@@ -61,6 +61,7 @@ export class ScheduledItem {
     status: ColumnValues;
     timeline: ColumnValues;
     department: ColumnValues;
+    department_text: string[];
     itemcode: ColumnValues;
     subitems: SubItem[];
     subitem_ids: string[];
@@ -79,7 +80,7 @@ export class ScheduledItem {
 
         this.column_ids[ColumnType.Department] = ColumnValues.FindColumnId(i.column_values, ColumnType.Department)
         this.department = ColumnValues.ParseDistinct(i.column_values, ColumnType.Department);
-        
+        this.department_text = _.map(this.department, d=> d.text);
         this.column_ids[ColumnType.Artist] = ColumnValues.FindColumnId(i.column_values, ColumnType.Artist)
         this.artist = ColumnValues.ParseDistinct(i.column_values, ColumnType.Artist);
 

@@ -284,21 +284,55 @@ mat-form-field.newlog-select {
 }
 
 p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scrollpanel-content {
-  height: calc(85vh - 52px) !important;
+  height: 100% !important;
   padding:0px !important;
 }
 .p-dialog {
   box-shadow: rgb(0 0 0 / 30%) 5px 15px 20px 0px !important;
   background:white !important;
 }
+
+.no-select, div.no-select, span.no-select {
+  user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
+}
+
 .p-dialog-content {
   border-radius: 5px;
   /* border-radius: 15px; */
-  background: white;
+  background: black;
   border: solid 1px black;
   box-shadow: rgb(0 0 0 / 30%) 5px 15px 20px 0px;
   overflow:hidden;
+  height:100%;
 }
+
+.p-dialog-content > div > div > action-mat-group > button > span.mat-button-wrapper > mat-icon {
+  color: white !important;
+  position: absolute;
+  left: 4px;
+  top: 9px;
+  /* width: 60px; */
+  min-width: 50px;
+  /* max-width: 50px; */
+  padding: 0px;
+  opacity: 1;
+  font-size: 35px;
+}
+
+.p-dialog-content > div > div > action-mat-group > button  {
+  padding: 0px;
+  margin: 0px;
+  top: 0px;
+  left: 0px;
+  position: absolute;
+  border-radius: 0px;
+  min-width:50px
+}
+
 @mixin set-component-colors($primary, $component) { 
   #{$component} {
     .mat-checkbox-background > svg > path {
@@ -334,10 +368,15 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       margin-bottom:10px;
       color: $primary;
       font-family: $font;
+      font-size:18px;
+      font-weight:bold;
     }
     .dialog-status-header {
       margin-top: 5px;
+      font-size:18px;
       font-family: $font;
+      font-weight:bold;
+      margin-right:7px;
     }
     .dialog-header.view-task-header {
       color: black !important;
@@ -350,24 +389,26 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       background-color: $primary;
     }
 
+  
+
     mat-toolbar.side-dlg-toolbar {
         background: transparent;
         box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
         padding: 0px;
         width: unset;
         min-width: 180px;
-        height: 100%;
-        height: -moz-available;          /* WebKit-based browsers will ignore this. */
-        height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-        height: fill-available;
+        min-height: 100%;
+        height: fit-content;         /* WebKit-based browsers will ignore this. */
         align-self: stretch;
+        padding-bottom: 90px;
     }
 
     mat-toolbar.side-dlg-toolbar > .mat-flat-button {
-      padding:3px 10px;
+      padding:3px 8px;
       font-family: $font;
       position:relative;
       text-align:right !important;
+      font-size:12px;
       color:gray;
       background:transparent;
     }

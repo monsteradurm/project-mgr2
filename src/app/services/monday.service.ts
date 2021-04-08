@@ -52,7 +52,6 @@ export class MondayService {
 
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data:any) => data.items),
-      tap(t => console.log("SUBITEMS", t))
     )
   }
 
@@ -143,7 +142,6 @@ export class MondayService {
     map((boards:any) => _.map(boards, b=> new Board(b))),
     //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
     map((boards:Board[]) => _.sortBy(boards, b => b.selection)),
-    tap(console.log)
   ).pipe(take(1), shareReplay(1))
 
   Workspaces$ = this.Boards$.pipe(

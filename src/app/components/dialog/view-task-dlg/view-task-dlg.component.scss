@@ -1,9 +1,48 @@
 .task-dlg-header {
-    border-bottom-style:solid; 
-    border-bottom-width:2px;
-    height:35px;padding:20px;
-    padding-top:30px;
-    margin-bottom:0px;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    height: 40px;
+    padding: 10px;
+    padding-top: 20px;
+    margin-bottom: 0px;
     background: white;
     z-index: 1;
+}
+
+.task-toolbar {
+    background-color:black;
+    color:white;
+    width:60px;
+}
+
+.task-toolbar > button {
+    height:55px;
+}
+
+.p-dialog-content > div {
+    width: -webkit-fill-available;
+}
+
+.side-btn-header {
+    padding: 8px;
+    font-size:15px;
+    font-weight:bolder;
+    text-align:right;
+    padding-bottom:0px;
+    padding-top:20px;
+    //color: $primary;
+}
+body > app-root > div > app-project > app-overview > app-view-task-dlg > p-dialog > div > div > div.ng-tns-c41-8.p-dialog-content > div > div > action-mat-group > button > span.mat-button-wrapper > mat-icon {
+    color:white !important;
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:40px;
+    min-width:40px;
+    max-width:40px;
+    padding:0px;
+}
+
+button.task-dlg-menu > span.mat-button-wrapper > mat-icon {
+    font-size:35px !important;
 }

@@ -48,6 +48,7 @@ import { NavigationService } from './services/navigation.service';
 import { ArrayToStrDirective } from './directives/arrayToString.directive';
 import { GetTaskStatusDirective } from './directives/elements/getTaskStatus.directive';
 import { SyncSketchService } from './services/sync-sketch.service';
+import { FilterSyncReviewsByItemPipe } from './directives/elements/FilterSyncReviewsByItem.drective';
 declare var google:any;
 
 const declarations = [
@@ -61,7 +62,8 @@ const declarations = [
     UserComponent,
     FocusInputDirective,
     ArrayToStrDirective,
-    GetTaskStatusDirective
+    GetTaskStatusDirective,
+    FilterSyncReviewsByItemPipe,
   ]
   
 const imports = [

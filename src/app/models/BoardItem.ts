@@ -6,7 +6,9 @@ export class BoardItem {
     name: string;
     task: string;
     element: string;
+    group: { id: string, title: string }
     department: ColumnValues[];
+    department_text: string[];
     artist: ColumnValues[];
     director: ColumnValues[];
     timeline: ColumnValues[];
@@ -54,9 +56,11 @@ export class BoardItem {
         }
     }
 
-    constructor(i: any) {
+    constructor(i: any, g:any) {
         this.id = i.id;
         this.name = i.name;
+        this.group = { id: g.id, title: g.title};
+
         let arr = i.name.split('/');
         this.task = arr[arr.length - 1];
         this.element = arr[arr.length - 2];
@@ -64,6 +68,7 @@ export class BoardItem {
         this.validate(i.column_values);
 
         this.department = ColumnValues.ParseDistinct(i.column_values, ColumnType.Department);
+        this.department_text = _.map(this.department, d => d.text);
         this.artist = ColumnValues.ParseDistinct(i.column_values, ColumnType.Artist);
         this.director = ColumnValues.ParseDistinct(i.column_values, ColumnType.Director);
         this.timeline = ColumnValues.ParseFirst(i.column_values, ColumnType.Timeline);

@@ -2,10 +2,14 @@
   <pre class="pm-console-error"> {{ errorMessage }}</pre>
 </div>
 
-<app-view-task-dlg [Item]="SelectedElement$ | async"></app-view-task-dlg>
-
 <ng-template #overviewblock>
     <!-- OVERVIEW -->
+
+      <ng-container *ngIf="(SelectedElement$ | async) as selected">
+        <app-view-task-dlg [Item]="SelectedElement$ | async" [SyncReview$]="SyncReviews$ | FilterSyncReviewsByItem$ : selected"
+          (onClose)="onViewTaskClosed()"></app-view-task-dlg>
+      </ng-container>
+
     <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
       <nav mat-tab-nav-bar
             pmTabUnderline [primaryColor]="primaryColor">
