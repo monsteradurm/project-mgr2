@@ -23,6 +23,11 @@ export class SyncSketchService {
 
   constructor(private http: HttpClient) { 
   }
+  AllUsers$ = this.Query$('/syncsketch/account/116681/').pipe(
+    map((account:any) => account.connections),
+    map((connections: any[]) => _.map(connections, c=> c.user)),
+    shareReplay(1)
+  )
 
   Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name').pipe(
     shareReplay(1)
@@ -36,11 +41,14 @@ export class SyncSketchService {
   }
 
   Reviews$(project_id:string) {
-    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`)
+    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`).pipe(tap(console.log))
   }
 
+  Updates$(item_id:string) {
+    return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`).pipe(tap(console.log))
+  }
   Items$(review_id: string) {
-    return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1&fields=id,name,active
+    return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1
     `)
   }
 

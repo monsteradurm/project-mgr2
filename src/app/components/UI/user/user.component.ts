@@ -20,7 +20,7 @@ export class UserComponent implements OnInit {
   @Input() IsNav: boolean = false;
   @Input() FlipText: boolean = false;
   @Input() Photo$ : Observable<any>;
-  
+  @Input() CircleWidth: string = '27px';
   constructor() { }
 
   ngOnInit(): void {

@@ -101,7 +101,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     switchMap(([board, group]) =>
     board && board.id && group && group.id ?
     this.monday.BoardItems$(board.id, group.id).pipe(
-      map((items) => _.map(items, i => new BoardItem(i, group)))
+      map((items) => _.map(items, i => new BoardItem(i, board.workspace, group)))
     ) : of([])),
     catchError(msg => {
       this.errorMessage.next(msg)
@@ -223,11 +223,14 @@ Please request the production data be extended to include this column.`)
         [this.Workspace$, this.Board$]).subscribe(
           ([wspace, board]) => {
               let titles = []
-              if (wspace)
-                titles.push(wspace.name);
-              if (board)
-                board.name.split('/').forEach(n => titles.push(n));
-              this.navigation.SetPageTitles(titles);
+              if (wspace && wspace.name)
+                titles.push(wspace.name.replace('_', ' '));
+              if (board && board.name)
+                board.name.split('/').forEach(n => titles.push(n.replace('_', ' ')));
+              
+              console.log(titles);
+              if (titles.length > 0)
+                this.navigation.SetPageTitles(titles);
           }
       )
     )

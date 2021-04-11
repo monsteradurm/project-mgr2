@@ -32,17 +32,70 @@
     padding-top:20px;
     //color: $primary;
 }
-body > app-root > div > app-project > app-overview > app-view-task-dlg > p-dialog > div > div > div.ng-tns-c41-8.p-dialog-content > div > div > action-mat-group > button > span.mat-button-wrapper > mat-icon {
-    color:white !important;
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:40px;
-    min-width:40px;
-    max-width:40px;
-    padding:0px;
-}
+
 
 button.task-dlg-menu > span.mat-button-wrapper > mat-icon {
     font-size:35px !important;
 }
+
+iframe {
+    width: -webkit-fill-available;
+    height: 270px;
+    border-radius: 10px;
+    margin-left: 40px;
+    border: solid 1px black;
+}
+
+.view-syncitem-header {
+    padding-top:20px;
+    padding-bottom: 10px;
+    font-size: 23px;
+    color: black;
+    border-bottom: solid 2px #0086c0;
+    width: 100%;
+}
+
+img {
+    width: auto;
+    max-width:370px;
+    height: 270px;
+    border-radius: 10px;
+    border: solid 1px black;
+    cursor: pointer;
+}
+
+.img-caption {
+    text-align: right;
+    color: #aaa;
+    font-size: 15px;
+    cursor: pointer;
+    font-style:italic;
+}
+
+.img-update {
+    width: auto;
+    max-width:185px;
+    height:135px;
+}
+
+.post-description {
+    color: gray;
+    transform: translateY(5px);
+    margin-bottom: 0px;
+}
+
+.post-date {
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.poster {
+    font-weight:bold;
+    margin-right:2px;
+}
+
+.post-text {
+    font-style: italic;
+    color: black;
+}
+

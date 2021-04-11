@@ -1,0 +1,17 @@
+
+
+
+
+<img [lazyLoad]="image" (onStateChange)="StateChanged($event)" [style.height]="height" [style.width]="width" 
+    [ngStyle]="{'visibility' : HasLoaded? 'visible' : 'collapsed'}" [style.border-width]="borderWidth" [style.border-color]="borderColor"
+    [style.border-style]="borderStyle" [style.border-radius]="borderRadius" />
+
+<div *ngIf="!HasLoaded" [style.border-width]="borderWidth" [style.border-color]="borderColor"
+    [style.border-style]="borderStyle" [style.border-radius]="borderRadius"  [style.height]="height" [style.width]="width"
+    [style.min-height]="minHeight" fxLayout="column" fxLayoutAlign="center center">
+    <div style="opacity:0.1;">
+        <app-scaling-squares-spinner [color]="color" [size]="lazySize" [animationDuration]="1250">
+        </app-scaling-squares-spinner>
+    </div>  
+    <h3 [style.color]="color">Loading</h3>
+</div>

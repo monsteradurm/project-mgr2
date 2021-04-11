@@ -8,6 +8,7 @@ import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-
 import * as _ from 'underscore';
 import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { Tag } from 'src/app/models/Columns';
+import { BoxService } from 'src/app/services/box.service';
 
 @Component({
   selector: 'app-overview',
@@ -19,7 +20,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
   initializing = true;
   subscriptions = [];
 
-  constructor(public parent: ProjectComponent, private actionOutlet: ActionOutletFactory) {
+  constructor(public parent: ProjectComponent,
+    private box: BoxService,
+     private actionOutlet: ActionOutletFactory) {
   }
   
 

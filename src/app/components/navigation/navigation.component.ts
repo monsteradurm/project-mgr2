@@ -1,13 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList } from '@angular/core';
 import { NavigationMap } from './navigation-map';
 import {BehaviorSubject} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { shareReplay, map } from 'rxjs/operators';
+import { shareReplay, map, take } from 'rxjs/operators';
 import * as _ from 'underscore';
 import { AppComponent } from './../../app.component';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { NavigationService } from 'src/app/services/navigation.service';
-import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
+import { ActionOutletFactory, ActionButtonEvent, ActionGroup, ActionButton, ActionOutletDirective } from '@ng-action-outlet/core';
+import 'tippy.js';
+import tippy from 'tippy.js';
+import { ConfluenceService } from 'src/app/services/confluence.service';
 
 @Component({
   selector: 'app-navigation',
@@ -16,6 +19,7 @@ import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-
 })
 export class NavigationComponent implements OnInit, OnDestroy {
 
+  @ViewChildren(ActionOutletDirective) Groups : QueryList<ActionOutletDirective>
   @Input() IsCeloxisReachable: boolean = true;
   @Input() IsAuthorized: boolean = false;
   @Input() User: any;
@@ -26,26 +30,25 @@ export class NavigationComponent implements OnInit, OnDestroy {
   
   constructor(
     private actionOutlet: ActionOutletFactory,
+    private confluence: ConfluenceService,
     private navigation: NavigationService) { 
       const buttons = Object.keys(this.NavigationMap);
 
       buttons.forEach((k) => {
         if (NavigationMap[k].use_menu) {
-          this.NavigationMap[k].menu = this.actionOutlet.createGroup()
+          this.NavigationMap[k].menu = this.actionOutlet.createGroup().setTitle(k)
             .enableDropdown()
             .setIcon(NavigationMap[k].icon);       
             this.NavigationMap[k].menu.createButton().setTitle('Loading...');
         }
         else {
-          this.NavigationMap[k].menu = this.actionOutlet.createButton()
+          this.NavigationMap[k].menu = this.actionOutlet.createButton().setTitle(k)
           .setIcon(NavigationMap[k].icon);
           this.subscriptions.push(
             this.NavigationMap[k].menu.fire$.subscribe(
               a => this.OnButtonAction(k))
           )
         }
-
-        //this.NavigationMap[k].menu.createButton().setTitle("NYI");
       });
     }
 
@@ -59,6 +62,19 @@ export class NavigationComponent implements OnInit, OnDestroy {
     this.navigation.Navigate('/Projects/Overview', { board: b.id });
   }
 
+  OnConfluence(p: string) {
+    let key = p;
+    if (p.indexOf('_') > 0)
+      key = p.split('_')[0];
+
+    this.confluence.SpaceOverview$(key).pipe(take(1)).subscribe(space => {
+      if (!space)
+        this.navigation.Navigate('/Projects/NoConfluence', {project: p});
+      else 
+        window.open('https://liquidanimation.atlassian.net/wiki/spaces/' + key + '/overview', "_blank");
+    })
+  }
+
   Selected$ = this.navigation.Selected$;
   subscriptions = [];
   
@@ -69,28 +85,51 @@ export class NavigationComponent implements OnInit, OnDestroy {
     children.forEach(child => {
       if (child['children']) {
         let option = dropdown.createGroup()
-          .enableDropdown().setTitle(child.name);
+          .enableDropdown().setTitle(child.name.replace('_', ' '));
         this.BuildOverviewDropDown(option, child['children'], project);
       } else {
-        dropdown.createButton().setTitle(child.name)
+        dropdown.createButton().setTitle(child.name.replace('_', ' '))
           .fire$.subscribe(a => {
             this.OnProjectOverview(project, child);
           });
       }
     })
   }
+
+  NavSelected(s) {
+    if (!this.Groups)
+      return;
+
+    for(let g = 0; g < this.Groups.length; g++) {
+      let group = this.Groups.get(g);
+      if (group.actionOutlet.getTitle() == s.title) {
+        group.actionOutlet.setAriaLabel(s.title + "Active");
+      } else {
+        group.actionOutlet.setAriaLabel(null)
+      }
+    }
+
+  }
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.Selected$.subscribe((s) => this.NavSelected(s))
+    )
+
     this.subscriptions.push(
       this.navigation.Projects$.subscribe((projects: any[]) => 
       {
-        let menu = this.NavigationMap.Projects.menu
+        let menu = this.NavigationMap.Projects.menu;
         menu.removeChildren();
         if (projects.length < 1) {
           menu.createButton({ title: "No Projects to Show" });
         }
         projects.forEach(p => {
           let group = menu.createGroup()
-            .enableDropdown().setTitle(p.name);
+            .enableDropdown().setTitle(p.name.replace('_', ' '));
+          group.createButton().setTitle('Confluence').fire$.subscribe(a => {
+            this.OnConfluence(p.name)
+          });
+
           group = group.createGroup()
             .enableDropdown().setTitle('Overview');
           if (p.children)
@@ -99,23 +138,11 @@ export class NavigationComponent implements OnInit, OnDestroy {
             group.createButton({title: 'No Boards to Show'});
         })
         
-        /*
-        projects.forEach(p => {
-
-          let g = menu.createGroup().enableDropdown().setTitle(p.name);
-
-          p.categories.forEach(c => { 
-            let btn = g.createButton({title: c})
-            this.subscriptions.push(
-              btn.fire$.subscribe(a => 
-                this.OnProjectCategory(p.name, c))
-            )
-          });
-        })
-        */
+       
     }));
       
   }
+
 
   ngOnDestroy() {
     this.subscriptions.forEach((s) => s.unsubscribe());

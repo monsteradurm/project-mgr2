@@ -49,6 +49,20 @@ import { ArrayToStrDirective } from './directives/arrayToString.directive';
 import { GetTaskStatusDirective } from './directives/elements/getTaskStatus.directive';
 import { SyncSketchService } from './services/sync-sketch.service';
 import { FilterSyncReviewsByItemPipe } from './directives/elements/FilterSyncReviewsByItem.drective';
+import { FilterSyncItemsByTaskPipe } from './directives/elements/filterSyncItemsByTask.directive';
+import { FindBoardItemByIdPipe } from './directives/elements/FindBoardItemById.directive';
+import {SkeletonModule} from 'primeng/skeleton';
+import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
+import { FindUserFromNamePipe } from './directives/elements/FindUserFromName.drective';
+import { FindUserPhotoFromIdentityPipe } from './directives/elements/FindUserPhotoFromEmail.directive';
+import { FetchUpdatesToSyncItemPipe } from './directives/elements/FetchUpdatesToSyncItem.directive';
+import { TrustResourceURLPipe } from './directives/elements/TrustResourceURL.directive';
+import {MatDividerModule} from '@angular/material/divider';
+import { BoxService } from './services/box.service';
+import { ConfluenceService } from './services/confluence.service';
+import {SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule} from 'angular-epic-spinners'
+import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { LazyImageComponent } from './components/UI/lazy-image/lazy-image.component';
 declare var google:any;
 
 const declarations = [
@@ -64,6 +78,14 @@ const declarations = [
     ArrayToStrDirective,
     GetTaskStatusDirective,
     FilterSyncReviewsByItemPipe,
+    FilterSyncItemsByTaskPipe,
+    FindBoardItemByIdPipe,
+    FetchSubItemsFromBoardItemPipe,
+    FindUserFromNamePipe,
+    FindUserPhotoFromIdentityPipe,
+    FetchUpdatesToSyncItemPipe,
+    TrustResourceURLPipe,
+    LazyImageComponent
   ]
   
 const imports = [
@@ -87,14 +109,21 @@ const imports = [
     MatCheckboxModule,
     MatToolbarModule,
     FormsModule,
+    MatDividerModule,
 
     //prime
     ScrollPanelModule,
     DialogModule,
-    
+    SkeletonModule,
+
     ResizeModule, 
     FullCalendarModule,
 
+    SwappingSquaresSpinnerModule,
+    ScalingSquaresSpinnerModule,
+    
+    LazyLoadImageModule,
+    
     //ng-action-outlet
     ActionOutletModule,
     ActionMatModule.forRoot(ICON_TYPE.Font)
@@ -107,7 +136,9 @@ const providers = [
     UserService,
     MondayService,
     NavigationService,
-    SyncSketchService
+    SyncSketchService,
+    BoxService,
+    ConfluenceService
 ];
 
 @NgModule({

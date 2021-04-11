@@ -139,6 +139,7 @@ export class MondayService {
     groups { id, title }}`)
   .pipe(
     map((data:any) => data && data.boards ? data.boards : []),
+    map((boards:any) => _.filter(boards, b => b.workspace)),
     map((boards:any) => _.map(boards, b=> new Board(b))),
     //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
     map((boards:Board[]) => _.sortBy(boards, b => b.selection)),

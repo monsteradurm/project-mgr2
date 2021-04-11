@@ -301,9 +301,9 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
 }
 
 .p-dialog-content {
-  border-radius: 5px;
+  border-radius: 10px;
   /* border-radius: 15px; */
-  background: black;
+  //background: black;
   border: solid 1px black;
   box-shadow: rgb(0 0 0 / 30%) 5px 15px 20px 0px;
   overflow:hidden;
@@ -396,7 +396,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
         box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
         padding: 0px;
         width: unset;
-        min-width: 180px;
+        min-width: 220px;
         min-height: 100%;
         height: fit-content;         /* WebKit-based browsers will ignore this. */
         align-self: stretch;
@@ -449,3 +449,63 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   $primary: rgb(0, 152, 118) !important,
   $component: "app-overview",
 );
+
+p-scrollpanel {
+  flex-grow: 10000;
+}
+
+mat-divider {
+  width: 100%;
+  height: 0.1px;
+  background: gray;
+  margin-top: 20px;
+}
+
+app-navigation {
+  button:not([aria-label]) > .mat-button-wrapper > mat-icon {
+    color: #bbb;
+  }
+  button > .mat-button-wrapper > mat-icon:hover {
+    color: white !important;
+  }
+  button > .mat-button-wrapper > span {
+    display:none;
+  }
+
+  button {
+    padding: 0px 30px !important;
+  }
+  button[aria-label] {
+    
+    height:70px;
+    border-radius:0px;
+    color:white !important;
+  }
+  button[aria-label] > .mat-button-wrapper > mat-icon {
+    margin-top: -30px;
+  }
+  button[aria-label=ProjectsActive] {
+    background:white !important;
+  }
+
+  button[aria-label=ProjectsActive] {
+    background:rgb(0, 152, 118) !important;
+  }
+
+  button[aria-label=HomeActive] {
+    background:rgb(64, 120, 251) !important;
+  }
+
+  button[aria-label=SchedulingActive] {
+    background:rgb(53, 179, 255) !important;
+  }
+
+  button[aria-label=PeopleActive] {
+    background:rgb(153, 87, 255) !important;
+  }
+
+  button[aria-label=SystemActive] {
+    background:rgb(200, 0, 81) !important;
+  }
+
+}

@@ -7,5 +7,23 @@
         "pathRewrite": {
             "^/syncsketch/*": ""
         }
+    },
+    "/confluence/*": {
+        "target": "https://liquidanimation.atlassian.net/wiki/rest/api/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/confluence/*": ""
+        }
+    },
+    "/admin-atlassian/*": {
+        "target": "https://api.atlassian.com/admin/v1/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/admin-atlassian/*": ""
+        }
     }
 }

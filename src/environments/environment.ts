@@ -17,4 +17,20 @@ export const environment = {
     token: 'EmzOuD4qnaOpBJLXnstwmx3zKI0wPQQ03OHlVgB8',
     url: 'https://la-bne-clx.la.lan:8843/psa/api/v2/'
   },
+  confluence: {
+    token: 'eLMhONup5waKKjutXAEbE67B',
+    user: 'acranch@liquidanimation.com',
+    admin: {
+      org: '087d96b9-279j-1d72-6c95-1kj15c3k0d69',
+      key: 'n2YlZ4N0s9QBkapyVGB8'
+    }
+  },
+  box: {
+    "boxAppSettings": {
+      "clientID": "ny94w4up4i8h5el4xb2cmq2w7kqgijsq",
+      "clientSecret": "4XegVS6iaGeM5T7zCbXYiXeioRs2PHfm",
+    },
+    "enterpriseID": "203146362"
+  }
+  
 };

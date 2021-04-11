@@ -17,9 +17,21 @@ export class BoardItem {
     itemcode: ColumnValues;
     subitems: SubItem[];
     subitem_ids: string[];
-    isExpanded: boolean = false;
- 
     dependencies: ColumnValues[];
+
+    board: {
+        id:string,
+        name: string
+    };
+    workspace: {
+        id: string,
+        name: string
+    }
+
+    selection: string;
+    column_values: any;
+    column_ids: any = {};
+
     get description() {
         return this.updates && this.updates.length > 0 ?
             this.updates[0] : null;      
@@ -56,7 +68,7 @@ export class BoardItem {
         }
     }
 
-    constructor(i: any, g:any) {
+    constructor(i: any, w:any, g:any) {
         this.id = i.id;
         this.name = i.name;
         this.group = { id: g.id, title: g.title};
@@ -76,6 +88,10 @@ export class BoardItem {
         
         this.status = ColumnValues.ParseFirst(i.column_values, ColumnType.Status);
         this.itemcode = ColumnValues.ParseFirst(i.column_values, ColumnType.ItemCode);
+
+        this.selection = this.group.title + ', ' + this.name;
+        this.workspace = { id: w.id, name: w.name};
+
         this.updates = i.updates;
         this.subitems = null;
 

@@ -6,7 +6,11 @@
         <ng-template [ngIf]="Photo || Photo$" [ngIfThen]="thenBlock" [ngIfElse]="elseBlock"></ng-template>
         <ng-template #thenBlock>
             <img class="user-photo" *ngIf="Photo" [src]="Photo" />
-            <img class="user-photo" *ngIf="(Photo$ | async) as photo" [src]="photo" />
+            <img class="user-photo" 
+            [style.height]="CircleWidth"
+            [style.width]="CircleWidth"
+            *ngIf="(Photo$ | async) as photo" 
+            [src]="photo" />
         </ng-template>
         <ng-template #elseBlock>
             <div class="avatar-circle" 
@@ -15,7 +19,7 @@
                 [style.border-width]="borderWidth"
                 [style.border-style]="borderStyle">
                 <div class="initials-circle" [style.color]="textColor">
-                    AC
+                    {{User.givenName[0]}}{{User.surname[0]}}
                 </div>
             </div>
         </ng-template>

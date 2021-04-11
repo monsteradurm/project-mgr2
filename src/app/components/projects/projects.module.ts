@@ -29,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MondayService } from 'src/app/services/monday.service';
 import { UserService } from 'src/app/services/user.service';
+import { NoConfluenceComponent } from './no-confluence/no-confluence.component';
 declare var google:any;
 
 @NgModule({
@@ -42,7 +43,8 @@ declare var google:any;
     FilterItemsByStatusPipe,
     FilterItemsByArtistPipe,
     FilterItemsByDirectorPipe,
-    FilterItemsByDepartmentPipe
+    FilterItemsByDepartmentPipe,
+    NoConfluenceComponent
   ],
   imports: [
     SharedModule.forRoot(),
