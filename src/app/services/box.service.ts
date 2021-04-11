@@ -6,9 +6,11 @@ declare var BoxSdk: any;
 })
 export class BoxService {
 
-  constructor() { 
-    var box = new BoxSdk();
-    console.log(box);
-    var client = new box.BasicBoxClient({accessToken: "1234554321"});
+  constructor(HttpR) { 
+  
   }
+  /*
+  intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(httpRequest);
+  }*.
 }

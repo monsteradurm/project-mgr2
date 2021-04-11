@@ -228,7 +228,6 @@ Please request the production data be extended to include this column.`)
               if (board && board.name)
                 board.name.split('/').forEach(n => titles.push(n.replace('_', ' ')));
               
-              console.log(titles);
               if (titles.length > 0)
                 this.navigation.SetPageTitles(titles);
           }
