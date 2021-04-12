@@ -25,5 +25,23 @@
         "pathRewrite": {
             "^/admin-atlassian/*": ""
         }
+    },
+    "/box/*": {
+        "target": "https://api.box.com/2.0/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/box/*": ""
+        }
+    },
+    "/box-account/*": {
+        "target": "https://account.box.com/api/oauth2/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/box-account/*": ""
+        }
     }
 }

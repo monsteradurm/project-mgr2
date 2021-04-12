@@ -27,10 +27,12 @@ export const environment = {
   },
   box: {
     "boxAppSettings": {
-      "clientID": "ny94w4up4i8h5el4xb2cmq2w7kqgijsq",
-      "clientSecret": "4XegVS6iaGeM5T7zCbXYiXeioRs2PHfm",
+      "clientID": "716jyn35oyj0h2uewomtbvd07fipmkjt",
+      "clientSecret": "uooxY4e7knargOnhU2018IYC3KvK21OC",
     },
-    "enterpriseID": "203146362"
+    "enterpriseID": "203146362",
+    "authorizeUrl": "https://account.box.com/api/oauth2/authorize/",
+    "ApiUrl" : "https://api.box.com/2.0/"
   }
   
 };

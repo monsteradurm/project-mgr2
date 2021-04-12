@@ -10,6 +10,7 @@ import { MondayService } from '../../../services/monday.service';
 import { ColumnValues, ColumnType } from '../../../models/Columns';
 import { BoardItem } from 'src/app/models/BoardItem';
 import { SyncSketchService } from 'src/app/services/sync-sketch.service';
+import { BoxService } from 'src/app/services/box.service';
 
 const _PAGE_ = '/Projects/Overview';
 
@@ -22,8 +23,11 @@ export class ProjectComponent implements OnInit, OnDestroy
  {
 
   constructor(private navigation: NavigationService,
+
               public syncSketch: SyncSketchService,
+              private box: BoxService,
               public monday: MondayService) {
+                this.ProjectReference$.subscribe(t => console.log("BOX",t )) 
                 this.subscriptions.push(
                   this.navigation.PrimaryColor$.subscribe(c => this.PrimaryColor = c)
                 )
@@ -66,6 +70,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
   
+
   Group$ = combineLatest([this.Board$, this.NavigationParameters$]).pipe(
     map(([board, params]) => {
       if (!board || !board.groups) return null;
@@ -108,6 +113,10 @@ export class ProjectComponent implements OnInit, OnDestroy
       return of([])
     }),
     shareReplay(1)
+  )
+
+  ProjectReference$ = this.Workspace$.pipe(
+    switchMap(workspace => workspace && workspace.name ? this.box.Project$(workspace.name) : of([])),
   )
   
   Departments$ = this.BoardItems$.pipe(

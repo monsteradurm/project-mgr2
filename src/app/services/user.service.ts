@@ -100,7 +100,9 @@ export class UserService {
     this.checkAndSetActiveAccount();
     return this.auth.acquireTokenSilent(
       { scopes: OAuthSettings.consentScopes }
-      )
+      ).pipe(
+        tap(t => console.log(t))
+        )
   }
 
 

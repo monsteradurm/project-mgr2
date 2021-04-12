@@ -23,6 +23,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   constructor(public parent: ProjectComponent,
     private box: BoxService,
      private actionOutlet: ActionOutletFactory) {
+       console.log(box);
   }
   
 
