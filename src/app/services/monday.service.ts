@@ -22,7 +22,8 @@ const _TENMINUTES_ = 1000 * 60 * 10;
 })
 export class MondayService {
 
-  constructor(private UserService: UserService) {
+  constructor(
+    private UserService: UserService) {
     monday.setToken(_ENV_.token);
     this.Columns$.subscribe(console.log)
   }
@@ -53,6 +54,25 @@ export class MondayService {
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data:any) => data.items),
     )
+  }
+
+  ProjectSettings$(boardId: string) {
+    let query = `boards(limit:1 ids:${boardId}) {
+      items { 
+        id name 
+        column_values { title text type id additional_info value }
+        group { title }
+      }
+  }`
+  return this.Query$(query.split('\n').join('').trim()).pipe(
+    map((data:any) => data.boards[0]),
+    map(board => board.items),
+    map((items:any[]) => _.groupBy(items, i => i.group.title)),
+    catchError(err => {
+      console.log(err);
+      return err
+    })
+  )
   }
 
   BoardItems$(boardId: string, groupId: string) {
@@ -132,6 +152,9 @@ export class MondayService {
       map((items: any[]) => _.filter(items, i => i.column_values && i.column_values.length > 0))
     )
   }
+  MinBoards$ = this.Query$(`boards(state:active) {
+    id, name, workspace_id
+  }`).pipe(take(1))
 
   Boards$ = this.Query$(`boards(state:active) 
   { id, name, 
@@ -141,7 +164,6 @@ export class MondayService {
     map((data:any) => data && data.boards ? data.boards : []),
     map((boards:any) => _.filter(boards, b => b.workspace)),
     map((boards:any) => _.map(boards, b=> new Board(b))),
-    //map((boards:any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0)),
     map((boards:Board[]) => _.sortBy(boards, b => b.selection)),
   ).pipe(take(1), shareReplay(1))
 
@@ -202,6 +224,7 @@ export class MondayService {
   IsComplexityError(errors) {
     if (!errors || errors.length < 1)
       return;
+      console.log(errors);
       let error = _.find(errors, e=> e.message && e.message.indexOf('Complexity') > -1)
 
       let messageArr = error.message.split(' ')
@@ -270,6 +293,24 @@ id
       })
     )
   }
+
+  Pages$ = this.Query$(
+    `boards (ids:1212736046){
+      items {
+        id
+        name
+        column_values{
+          title
+          value
+          text
+        }
+      }
+    }`
+  ).pipe(
+    map(arr => arr['boards']),
+    map(boards => boards[0]),
+    map(board => board['items']),
+    shareReplay(1))
 
   Query$(cmd) {
     return this.API_CMD$(cmd, 'query')

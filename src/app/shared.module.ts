@@ -31,6 +31,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatSidenavModule} from '@angular/material/sidenav';
+
 import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
 import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hours-dlg.component';
 import { TaskTooltipComponent } from './components/tooltips/task/task.component';
@@ -60,12 +62,19 @@ import { TrustResourceURLPipe } from './directives/elements/TrustResourceURL.dir
 import {MatDividerModule} from '@angular/material/divider';
 import { BoxService } from './services/box.service';
 import { ConfluenceService } from './services/confluence.service';
-import {SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule} from 'angular-epic-spinners'
+import {SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule, FlowerSpinnerModule} from 'angular-epic-spinners'
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { LazyImageComponent } from './components/UI/lazy-image/lazy-image.component';
+import { ReferenceComponent } from './components/dialog/reference/reference.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { NavBtnDirective } from './directives/material/navbtn.directive';
+import {ColorPickerModule} from 'primeng/colorpicker';
+import { MondayBoolIsCheckedPipe } from './directives/monday/mondayBool-isChecked.directive';
+
 declare var google:any;
 
 const declarations = [
+    NavigationComponent,
     TaskTooltipComponent,
     LogHoursDlgComponent,
     ViewTaskDlgComponent,
@@ -76,6 +85,7 @@ const declarations = [
     UserComponent,
     FocusInputDirective,
     ArrayToStrDirective,
+    NavBtnDirective,
     GetTaskStatusDirective,
     FilterSyncReviewsByItemPipe,
     FilterSyncItemsByTaskPipe,
@@ -85,7 +95,9 @@ const declarations = [
     FindUserPhotoFromIdentityPipe,
     FetchUpdatesToSyncItemPipe,
     TrustResourceURLPipe,
-    LazyImageComponent
+    LazyImageComponent,
+    ReferenceComponent,
+    MondayBoolIsCheckedPipe
   ]
   
 const imports = [
@@ -110,17 +122,20 @@ const imports = [
     MatToolbarModule,
     FormsModule,
     MatDividerModule,
+    MatSidenavModule,
 
     //prime
     ScrollPanelModule,
     DialogModule,
     SkeletonModule,
+    ColorPickerModule,
 
     ResizeModule, 
     FullCalendarModule,
 
     SwappingSquaresSpinnerModule,
     ScalingSquaresSpinnerModule,
+    FlowerSpinnerModule,
     
     LazyLoadImageModule,
     

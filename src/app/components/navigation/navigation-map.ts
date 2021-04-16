@@ -1,29 +1,43 @@
 import { faCogs, faUsers, faThList, faCalendar, IconDefinition} from '@fortawesome/free-solid-svg-icons';
 import { faWikipediaW} from '@fortawesome/free-brands-svg-icons'
-import { ActionGroup } from '@ng-action-outlet/core';
+import { ActionButton, ActionGroup } from '@ng-action-outlet/core';
 import { LocalizedString } from '@angular/compiler';
+import * as _ from 'underscore';
 
 export class DropDownMenuGroup {
     icon: string;
     background: string;
-    menu: ActionGroup;
+    menu: any;
     title:string;
     use_menu: boolean = true;
-    constructor(t:string, i: string, b:string, um:boolean = true) {
+    route: string;
+
+    id: string;
+    constructor(id: string, t:string, i: string, b:string, route:string, um:boolean = true) {
+        this.id = id;
         this.icon = i;
         this.background = b;
         this.title = t;
-
+        this.route = route;
         if (!um)
             this.use_menu = false;
     }
 }
+export class NavigationMapping {
+    Pages: {[title: string]: DropDownMenuGroup} = {}
 
-export const NavigationMap = {
-    Home: new DropDownMenuGroup("Home", 'home', "rgb(64, 120, 251)", false),
-    Projects: new DropDownMenuGroup("Projects", 'view_list', "rgb(0, 152, 118)"),
-    People: new DropDownMenuGroup("People", 'groups', "rgb(153, 87, 255)", false),
-    Scheduling: new DropDownMenuGroup("Scheduling", 'schedule', "rgb(53, 179, 255)", false),
-    System: new DropDownMenuGroup("System", 'settings', "#c80051", false)
+    Titles: string[] = []
+    constructor(pages: any[]) {
+        pages.forEach(page => {
+            let icon = _.find(page.column_values, c=> c.title == 'Icon').text;
+            let color = _.find(page.column_values, c=> c.title == 'Color').text;
+            let use_menu = _.find(page.column_values, c=> c.title == 'Menu').text == 'v';
+            let route = _.find(page.column_values, c=> c.title == 'Route').text;
+
+            this.Pages[page.name] =
+                new DropDownMenuGroup(page.id, page.name, icon, color, route, use_menu);
+            
+            this.Titles.push(page.name);
+        })
+    }
 }
-

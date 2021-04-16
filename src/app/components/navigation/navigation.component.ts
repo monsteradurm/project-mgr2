@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList } from '@angular/core';
-import { NavigationMap } from './navigation-map';
-import {BehaviorSubject} from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList, Output, Inject, AfterViewInit } from '@angular/core';
+import { NavigationMapping } from './navigation-map';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { shareReplay, map, take } from 'rxjs/operators';
+import { shareReplay, map, take, tap } from 'rxjs/operators';
 import * as _ from 'underscore';
 import { AppComponent } from './../../app.component';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
@@ -11,6 +11,7 @@ import { ActionOutletFactory, ActionButtonEvent, ActionGroup, ActionButton, Acti
 import 'tippy.js';
 import tippy from 'tippy.js';
 import { ConfluenceService } from 'src/app/services/confluence.service';
+import { MondayService } from 'src/app/services/monday.service';
 
 @Component({
   selector: 'app-navigation',
@@ -24,78 +25,18 @@ export class NavigationComponent implements OnInit, OnDestroy {
   @Input() IsAuthorized: boolean = false;
   @Input() User: any;
   @Input() MyPhoto: any;
+  @Input() NavigationMenu: NavigationMapping;
 
-  NavigationMap = NavigationMap;
-  PageTitles$ = this.navigation.PageTitles$;
-  
+  ShowReference:boolean = false;
+  ReferenceFolder$ = this.navigation.ReferenceFolder$;
   constructor(
-    private actionOutlet: ActionOutletFactory,
-    private confluence: ConfluenceService,
     private navigation: NavigationService) { 
-      const buttons = Object.keys(this.NavigationMap);
-
-      buttons.forEach((k) => {
-        if (NavigationMap[k].use_menu) {
-          this.NavigationMap[k].menu = this.actionOutlet.createGroup().setTitle(k)
-            .enableDropdown()
-            .setIcon(NavigationMap[k].icon);       
-            this.NavigationMap[k].menu.createButton().setTitle('Loading...');
-        }
-        else {
-          this.NavigationMap[k].menu = this.actionOutlet.createButton().setTitle(k)
-          .setIcon(NavigationMap[k].icon);
-          this.subscriptions.push(
-            this.NavigationMap[k].menu.fire$.subscribe(
-              a => this.OnButtonAction(k))
-          )
-        }
-      });
-    }
-
-
-  OnButtonAction(ev) {
-    this.navigation.Navigate('/' + ev, {})
-    this.navigation.SetPageTitles([]);
   }
 
-  OnProjectOverview(p, b) {
-    this.navigation.Navigate('/Projects/Overview', { board: b.id });
-  }
-
-  OnConfluence(p: string) {
-    let key = p;
-    if (p.indexOf('_') > 0)
-      key = p.split('_')[0];
-
-    this.confluence.SpaceOverview$(key).pipe(take(1)).subscribe(space => {
-      if (!space)
-        this.navigation.Navigate('/Projects/NoConfluence', {project: p});
-      else 
-        window.open('https://liquidanimation.atlassian.net/wiki/spaces/' + key + '/overview', "_blank");
-    })
-  }
-
+  PageTitles$ = this.navigation.PageTitles$;
   Selected$ = this.navigation.Selected$;
   subscriptions = [];
   
-  BuildOverviewDropDown(dropdown:ActionGroup, children: any[], project:any) {
-    if (!children || !children.length) {
-      console.log("No Children to Expand Dropdown", dropdown)
-    }
-    children.forEach(child => {
-      if (child['children']) {
-        let option = dropdown.createGroup()
-          .enableDropdown().setTitle(child.name.replace('_', ' '));
-        this.BuildOverviewDropDown(option, child['children'], project);
-      } else {
-        dropdown.createButton().setTitle(child.name.replace('_', ' '))
-          .fire$.subscribe(a => {
-            this.OnProjectOverview(project, child);
-          });
-      }
-    })
-  }
-
   NavSelected(s) {
     if (!this.Groups)
       return;
@@ -108,41 +49,21 @@ export class NavigationComponent implements OnInit, OnDestroy {
         group.actionOutlet.setAriaLabel(null)
       }
     }
-
   }
+
   ngOnInit(): void {
     this.subscriptions.push(
-      this.Selected$.subscribe((s) => this.NavSelected(s))
+      this.navigation.ShowReferenceDlg$.subscribe(state => {
+        this.ReferenceFolder$ = this.navigation.ReferenceFolder$;
+        this.ShowReference = state;
+      })
     )
-
     this.subscriptions.push(
-      this.navigation.Projects$.subscribe((projects: any[]) => 
-      {
-        let menu = this.NavigationMap.Projects.menu;
-        menu.removeChildren();
-        if (projects.length < 1) {
-          menu.createButton({ title: "No Projects to Show" });
-        }
-        projects.forEach(p => {
-          let group = menu.createGroup()
-            .enableDropdown().setTitle(p.name.replace('_', ' '));
-          group.createButton().setTitle('Confluence').fire$.subscribe(a => {
-            this.OnConfluence(p.name)
-          });
-
-          group = group.createGroup()
-            .enableDropdown().setTitle('Overview');
-          if (p.children)
-            this.BuildOverviewDropDown(group, p['children'], p);
-          else 
-            group.createButton({title: 'No Boards to Show'});
-        })
-        
-       
-    }));
-      
+      this.Selected$.subscribe((s) => {
+        this.NavSelected(s);
+      })
+    )
   }
-
 
   ngOnDestroy() {
     this.subscriptions.forEach((s) => s.unsubscribe());

@@ -120,13 +120,29 @@ export class HomeComponent implements OnInit, AfterViewInit {
     shareReplay(1)
   )
 
+  MyItems$ = combineLatest([this.Me$, this.Items$]).pipe(
+    map(([me, items]) => {
+      let name = me.name;
+      let filtered = _.filter(items, i => i.timeline)
+      filtered =  _.filter(filtered, i => 
+        (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0)
+      );
+
+      filtered = _.filter(filtered, i=>
+       _.find(i.artist, a => a.text.indexOf(name) > -1) || 
+       _.find(i.director, d => d.text.indexOf(name) > -1)
+      )  
+    return filtered;
+    }),
+    shareReplay(1)
+  )
+
   LoggedHours$ = this.Items$.pipe(
     map(items => _.filter(items, i => i.timetracking)),
     shareReplay(1)
   )
 
-  Events$ = this.Items$.pipe(
-    map((items:any[]) => _.filter(items, i => i.timeline && i.artist && i.artist.length > 0)),
+  Events$ = this.MyItems$.pipe(
     tap((items:any) => {
       this.entry.clear();
       _.forEach(items, i => this.CreateToolTipComponent(i))
@@ -305,7 +321,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    
+    this.navigation.SetPageTitles([])
     this.subscriptions.push(
       this.navigation.PrimaryColor$.subscribe(c => this.primaryColor = c)
     )

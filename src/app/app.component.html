@@ -1,36 +1,35 @@
+<ng-container *ngIf="(NavigationMenu$ | async) as NavigationMenu">
 
-<app-navigation
-  [IsCeloxisReachable]="IsMondayReachable"
-  [IsAuthorized]="IsAuthorized"
-  [MyPhoto]="MyPhoto"
-  [User]="User"></app-navigation>
+  <app-navigation [NavigationMenu]="NavigationMenu" [IsCeloxisReachable]="IsMondayReachable"
+    [IsAuthorized]="IsAuthorized" [MyPhoto]="MyPhoto" [User]="User"></app-navigation>
 
-<div class="container">
-
-  <ng-template [ngIf]="IsMondayReachable && IsAuthorized">
-      <p-dialog [(visible)]="MondayExhausted" [modal]="true" [dismissableMask]="true" [showHeader]="false"
-        [style]="{width: '50vw', 
-                  background: 'white',
-                  padding:'5px',
-                  'border-radius' : '5px',
-                  'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
-                  border: 'solid 1px black'}">
+  <div class="container">
+    <ng-template [ngIf]="IsMondayReachable && IsAuthorized">
+      <p-dialog [(visible)]="MondayExhausted" [modal]="true" [dismissableMask]="true" [showHeader]="false" [style]="{width: '50vw', 
+                    background: 'white',
+                    padding:'5px',
+                    'border-radius' : '5px',
+                    'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
+                    border: 'solid 1px black'}">
 
         <div fxLayout="column" fxLayoutAlign="center center">
-          <h3 style="margin-bottom:0px;padding-bottom:0px;font-weight:bold;font-size:15;">Monday complexity exceeded</h3> 
+          <h3 style="margin-bottom:0px;padding-bottom:0px;font-weight:bold;font-size:15;">Monday complexity exceeded
+          </h3>
           <h3 style="margin-top:5px">Automatically Resuming in {{ MondayExhausted }}...</h3>
         </div>
       </p-dialog>
 
       <router-outlet></router-outlet>
 
-  </ng-template>
+    </ng-template>
 
-  <ng-template [ngIf]="!IsMondayReachable">
-    <h3>"Monday" is Unreachable.</h3>
-  </ng-template>
+    <ng-template [ngIf]="!IsMondayReachable">
+      <h3>"Monday" is Unreachable.</h3>
+    </ng-template>
 
-  <ng-template [ngIf]="!IsAuthorized">
-    <h3>You are not logged in.</h3>
-  </ng-template>
-</div>
+    <ng-template [ngIf]="!IsAuthorized">
+      <h3>You are not logged in.</h3>
+    </ng-template>
+
+  </div>
+</ng-container>

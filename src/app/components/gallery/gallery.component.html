@@ -1,0 +1,55 @@
+<p-scrollPanel  fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
+                        [style]="{width:'75vw', 'flex-grow' : 1, height: 'calc(100vh - 70px)'}">
+    <ng-container *ngIf="(Contents$ | async) as Gallery; else fetchingGallery">   
+        <div *ngIf="Gallery.length < 1; else viewGallery">
+            <h3 style="text-align:center;margin-top:40px"> Folder is empty...</h3>
+        </div>
+        <ng-template #viewGallery>
+
+            <div  *ngIf="ShowPreview != null; else showContent" style="position:relative">
+                <div fxLayout="row" fxLayoutAlign="center center" style="width:100%; height:100%;margin-top:50px;margin-bottom:50px">
+                    <div class="preview-container" style="height:calc(100vh - 200px)"></div>
+                </div>
+                <div class="reference-back-container" fxLayout="column">
+
+                    <button mat-fab tippyText="Back" (click)="Download()">
+                        <mat-icon class="app-fab-icon-btn app-center-fab-icon">file_download</mat-icon>
+                      </button>
+
+                    <button mat-fab tippyText="Back" (click)="ClearPreview()" style="margin-top:20px">
+                        <mat-icon class="app-fab-icon-btn app-center-fab-icon">arrow_back</mat-icon>
+                      </button>
+                </div>
+            </div>
+
+            <ng-template #showContent>
+                <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:70px;margin-bottom:320px">
+                    <div  fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center center">
+                        <div *ngFor="let file of Gallery">
+                            <ng-container *ngIf="(file.Thumbnail$ | async) as thumbnail">
+                                <img class="reference-thumbnail" addTippy [tippyText]="file.name.split('.')[0]"
+                                (click)="onSelect(file.id, file.name)"
+                                [src]="thumbnail | TrustResourceURL">
+                            </ng-container>
+                            
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-template>
+    </ng-container>
+
+    <ng-template #fetchingGallery>
+        <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+            <div style="opacity:0.15;">
+                <app-swapping-squares-spinner [animationDuration]="1000"
+                    [color]="primaryColor"
+                    [size]="120" style="opacity:0.15;">
+                </app-swapping-squares-spinner>
+            </div>
+            <h3 [style.color]="primaryColor" style="margin-top:30px">
+                Fetching Resources from Box...
+            </h3>
+        </div>
+    </ng-template>
+</p-scrollPanel>     

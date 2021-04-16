@@ -6,6 +6,7 @@ import { SchedulingComponent } from './components/scheduling/scheduling.componen
 import { PeopleComponent } from './components/people/people.component';
 import { SystemComponent } from './components/system/system.component';
 import { ProjectComponent } from './components/projects/project/project.component';
+import { GalleryComponent } from './components/gallery/gallery.component';
 
 const routes: Routes = [
   {
@@ -36,6 +37,10 @@ const routes: Routes = [
   {
     path: 'System',
     component: SystemComponent
+  },
+  {
+    path: 'Gallery',
+    component: GalleryComponent
   },
 /*  {
     path: 'login-failed',

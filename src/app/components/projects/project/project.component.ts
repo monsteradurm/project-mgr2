@@ -8,7 +8,7 @@ import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
 import { MondayService } from '../../../services/monday.service';
 import { ColumnValues, ColumnType } from '../../../models/Columns';
-import { BoardItem } from 'src/app/models/BoardItem';
+import { Board, BoardItem } from 'src/app/models/BoardItem';
 import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 import { BoxService } from 'src/app/services/box.service';
 
@@ -22,12 +22,10 @@ const _PAGE_ = '/Projects/Overview';
 export class ProjectComponent implements OnInit, OnDestroy
  {
 
-  constructor(private navigation: NavigationService,
-
+  constructor(public navigation: NavigationService,
               public syncSketch: SyncSketchService,
-              private box: BoxService,
+              public box: BoxService,
               public monday: MondayService) {
-                this.ProjectReference$.subscribe(t => console.log("BOX",t )) 
                 this.subscriptions.push(
                   this.navigation.PrimaryColor$.subscribe(c => this.PrimaryColor = c)
                 )
@@ -69,7 +67,36 @@ export class ProjectComponent implements OnInit, OnDestroy
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     shareReplay(1)
   )
+
+  MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
+
+  ProjectSettings$ = combineLatest([this.MinBoards$, this.Board$]).pipe(
+    tap(t => console.log("START PROJECT SETTINGS")),
+    switchMap(([boards, current]) => {
+
+      console.log("PROJECT SETTINGS", boards, current);
+      if (!current) return of(null);
+      let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id == current.workspace.id);
+      if (!board) return of(null)
+      return this.monday.ProjectSettings$(board.id)
+    }),
+    shareReplay(1)
+  )
   
+  ProjectReference$ = this.ProjectSettings$.pipe(
+    map(
+      settings => {
+        console.log("JERE", settings)
+        if (!settings || !settings['Box Folders'])
+          return null;
+
+        let ref =  _.find(settings['Box Folders'], s => s.name == 'Reference');
+
+        if (!ref || !ref.column_values || ref.column_values.length < 1) return null;
+        return ref.column_values[0].text;
+      }
+    )
+  )
 
   Group$ = combineLatest([this.Board$, this.NavigationParameters$]).pipe(
     map(([board, params]) => {
@@ -106,7 +133,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     switchMap(([board, group]) =>
     board && board.id && group && group.id ?
     this.monday.BoardItems$(board.id, group.id).pipe(
-      map((items) => _.map(items, i => new BoardItem(i, board.workspace, group)))
+      map((items) => _.map(items, i => new BoardItem(i, board.workspace, group, board)))
     ) : of([])),
     catchError(msg => {
       this.errorMessage.next(msg)
@@ -115,10 +142,6 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
 
-  ProjectReference$ = this.Workspace$.pipe(
-    switchMap(workspace => workspace && workspace.name ? this.box.Project$(workspace.name) : of([])),
-  )
-  
   Departments$ = this.BoardItems$.pipe(
     map(items => _.map(items, i=> i.department)),
     map(values => values && values.length > 0 ? values : 

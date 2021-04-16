@@ -4,6 +4,7 @@ import { NoConfluenceComponent } from './no-confluence/no-confluence.component';
 
 import { OverviewComponent } from './overview/overview.component';
 import { ProjectComponent } from './project/project.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,9 @@ const routes: Routes = [
   },
   {
     path: 'NoConfluence', component: NoConfluenceComponent
+  },
+  {
+    path: 'Settings', component: SettingsComponent
   }
 
 ];

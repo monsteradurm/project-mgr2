@@ -1,1 +1,69 @@
-<p>system works!</p>
+<p-scrollPanel  fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
+                        [style]="{width:'75vw', 'flex-grow' : 1, height: 'calc(100vh - 70px)'}">
+    <ng-container *ngIf="(Settings$ | async) as Settings; else fetchingSettings">   
+        <div *ngIf="Settings.length < 1; else viewSettings">
+            <h3 style="text-align:center;margin-top:40px"> Board is empty...</h3>
+        </div>
+        <ng-template #viewSettings>
+            <div style="margin:0px 100px;height:100%">
+                <ng-container *ngFor="let grp of Settings">
+                    <h2 [style.color]="primaryColor" style="margin-top:40px;width:100%">{{grp.title}}</h2>
+                    <div style="margin:0px 50px">
+                        <ng-container *ngFor="let item of grp.items">
+                            <div fxLayout="row wrap" fxLayoutGap="75px" fxLayoutAlign="start center">
+
+                                <!-- name -->
+                                <mat-form-field pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
+                                    style="max-width:400px;height:100%;width:200px;margin-top:20px !important" >
+                                    <mat-label>{{item.name}}</mat-label>
+                                    <input matInput [(ngModel)]="item.name">
+                                </mat-form-field>
+
+                                <!-- columns -->
+                                <ng-container *ngFor="let col of item.column_values">
+                                    <ng-container [ngSwitch]="col.type">
+                                        <!-- Checkbox -->
+                                        <mat-checkbox *ngSwitchCase="'boolean'" [checked]="col.value | MondayBoolIsChecked">{{col.title}}</mat-checkbox>
+
+                                        <!-- color picker -->
+                                        <div fxLayout="row" *ngSwitchCase="'color-picker'">
+                                            
+                                            <mat-form-field [primaryColor]="primaryColor" style="margin-right:20px;width:70px">
+                                                <mat-label>{{col.title}}</mat-label>
+                                                <input matInput [(ngModel)]="col.text">
+                                            </mat-form-field>
+
+                                            <p-colorPicker [(ngModel)]="col.text"></p-colorPicker>
+                                        </div>
+
+                                        <!-- textbox (default) -->
+                                        <mat-form-field *ngSwitchDefault pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
+                                        style="max-width:400px;height:100%;width:200px;margin-top:20px !important" >
+                                            <mat-label>{{col.title}}</mat-label>
+                                            <input matInput [(ngModel)]="col.text">
+                                        </mat-form-field>
+                                    </ng-container>
+                                </ng-container>
+
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-template>
+    </ng-container>
+
+    <ng-template #fetchingSettings>
+        <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+            <div style="opacity:0.15;">
+                <app-swapping-squares-spinner [animationDuration]="1000"
+                    [color]="primaryColor"
+                    [size]="120" style="opacity:0.15;">
+                </app-swapping-squares-spinner>
+            </div>
+            <h3 [style.color]="primaryColor" style="margin-top:30px">
+                Fetching Settings Board from Monday...
+            </h3>
+        </div>
+    </ng-template>
+</p-scrollPanel>

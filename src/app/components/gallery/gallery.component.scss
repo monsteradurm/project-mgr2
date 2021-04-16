@@ -7,32 +7,9 @@
 
 .reference-title {
     height: 40px;
-    padding-top: 2px;
+    padding-top: 8px;
     margin-bottom: 0px;
     font-family: cursive;
-}
-.error-container {
-    opacity: 0;
-    -webkit-transition: opacity 3s ease-in;
-       -moz-transition: opacity 3s ease-in;
-        -ms-transition: opacity 3s ease-in;
-         -o-transition: opacity 3s ease-in;
-            transition: opacity 3s ease-in;
-            transition-delay: 3s;
-}
-
-.error-container.load {
-    opacity:1 !important;
-    transition-delay: 3s;
-}
-
-.reference-error-icon {
-    opacity: 0.3;
-    font-size: 200px;
-    height: 200px;
-    width: 200px;
-    color: rgb(0, 152, 118);
-    text-align: center;
 }
 
 .path-header {
@@ -44,10 +21,9 @@
 }
 
 .reference-back-container {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 20;
+    position:absolute;
+    top: 20px;
+    right: 50px;
 }
 
 .reference-back-container > button {
@@ -105,13 +81,8 @@ div.reference-back-container > button > span.mat-button-wrapper > mat-iconm, .ap
     text-align:center;
 }
 
-.mat-drawer-content {
-    overflow:hidden !important;
-    height: calc(85vh - 68px) !important
-}
-
-.upload-container {
-    width:300px;
-    height: 100%;
+.preview-container {
+    height: calc(100vh - 70px);
+    width: calc(100vw - 200px);
 }
 

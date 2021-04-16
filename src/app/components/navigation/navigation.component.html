@@ -5,13 +5,13 @@
             <span style="z-index:12">Project Manager</span>
         </h2>
 
-        <ng-template [ngIf]="IsCeloxisReachable">
-            <ng-container *actionOutlet="NavigationMap.Home.menu" style="margin-top:30px"></ng-container>
-            <ng-container *actionOutlet="NavigationMap.Projects.menu" style="margin-top:30px"></ng-container>
-            <ng-container *actionOutlet="NavigationMap.People.menu" style="margin-top:30px"></ng-container>
-            <ng-container *actionOutlet="NavigationMap.Scheduling.menu" style="margin-top:30px"></ng-container>
-            <ng-container *actionOutlet="NavigationMap.System.menu" style="margin-top:30px"></ng-container>
-        </ng-template>
+
+        <ng-container *ngFor="let title of NavigationMenu.Titles">
+            <div [ngStyle]="{'background' : title == selected.title? selected.background : 'transparent'}"
+                [ngClass]="{'pm-active-nav' : title == selected.title, 'pm-inactive-nav' : title != selected.title}">
+                <ng-container *actionOutlet="NavigationMenu.Pages[title].menu" style="margin-top:30px"></ng-container>
+            </div>
+        </ng-container>
 
         <div *ngIf="IsAuthorized" class="nav-user">
             <app-user [User]="User" [Photo]="MyPhoto" [IsNav]="true"></app-user>
@@ -23,9 +23,7 @@
             <h2 class="page-title nav-title">
                 {{selected.title}}
             </h2>
-            <ng-container *ngIf="(PageTitles$ | async) as subtitles">
-
-                <ng-container *ngFor="let subtitle of subtitles">
+                <ng-container *ngFor="let subtitle of (PageTitles$ | async)">
                     <h2 class="page-title nav-title">
                         | 
                     </h2>
@@ -33,7 +31,10 @@
                         {{subtitle}}
                     </h2>
                 </ng-container>
-            </ng-container>
         </div>
     </div>
+
+    <app-reference [Show]="ShowReference" [primaryColor]="selected.background" [Title]="ReferenceTitle"
+    [Root]="ReferenceFolder$ | async" (onClose)="ShowReference=false"></app-reference>
+
 </div>

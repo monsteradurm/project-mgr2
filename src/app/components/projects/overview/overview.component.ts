@@ -21,11 +21,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
   subscriptions = [];
 
   constructor(public parent: ProjectComponent,
-    private box: BoxService,
      private actionOutlet: ActionOutletFactory) {
-       console.log(box);
   }
   
+
 
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('group_work');
   private updatedBoardItems = new BehaviorSubject<BoardItem[]>(null);
@@ -61,6 +60,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1))
   SyncReviews$ = this.parent.SyncReviews$;
   
+  private get box() { return this.parent.box; }
   onViewTaskClosed() {
     this.selectedElement.next(null);
   }
@@ -119,7 +119,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
           return parent.value;          
     })
   )
-
+  ProjectReference$ = this.parent.ProjectReference$;
   Board$ = this.parent.Board$;
   Group$ = this.parent.Group$;
   Departments$ = this.parent.Departments$;

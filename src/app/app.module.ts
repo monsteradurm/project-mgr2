@@ -72,6 +72,7 @@ import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hour
 import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-task-dlg.component';
 import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
 import { SharedModule } from './shared.module';
+import { GalleryComponent } from './components/gallery/gallery.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -130,12 +131,12 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 @NgModule({
   declarations: [
     AppComponent,
-    NavigationComponent,
     HomeComponent,
     PersonComponent,
     PeopleComponent,
     SchedulingComponent,
     SystemComponent,
+    GalleryComponent,
   ],
 
   imports: [

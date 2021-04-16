@@ -68,11 +68,11 @@ export class BoardItem {
         }
     }
 
-    constructor(i: any, w:any, g:any) {
+    constructor(i: any, w:any, g:any, b:any) {
         this.id = i.id;
         this.name = i.name;
         this.group = { id: g.id, title: g.title};
-
+        this.board = { id: b.id, name: b.name };
         let arr = i.name.split('/');
         this.task = arr[arr.length - 1];
         this.element = arr[arr.length - 2];

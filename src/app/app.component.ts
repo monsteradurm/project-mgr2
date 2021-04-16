@@ -9,7 +9,6 @@ import { NavigationService } from './services/navigation.service';
 import { UserService } from './services/user.service';
 
 import '@fullcalendar/core';
-import { ThrowStmt } from '@angular/compiler';
 import { MondayService } from './services/monday.service';
 
 @Component({
@@ -47,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {}
 
+  NavigationMenu$ = this.navigation.NavigationMenu$;
   IsMondayReachable: boolean = true;
   IsAuthorized: boolean = true;
   IsAdmin: boolean = false;

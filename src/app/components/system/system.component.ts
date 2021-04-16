@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, of } from 'rxjs';
+import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { BoxService } from 'src/app/services/box.service';
+import { MondayService } from 'src/app/services/monday.service';
+import { NavigationService } from 'src/app/services/navigation.service';
+
+import * as _ from 'underscore';
 
 @Component({
   selector: 'app-system',
@@ -7,9 +14,48 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SystemComponent implements OnInit {
 
-  constructor() { }
+  constructor(private navigation:NavigationService, 
+    private monday: MondayService) { }
 
+  private boardId = new BehaviorSubject<string>(null);
+  BoardId$ = this.boardId.asObservable().pipe(shareReplay(1));
+
+  Settings$ = this.BoardId$.pipe(
+    switchMap(id => id ? this.monday.ProjectSettings$(id) : of(null)),
+    map(page => {
+      let groups = Object.keys(page);
+      return _.map(groups, g=> ({
+        title: g,
+        items: page[g]
+      }))
+    }),
+    tap(console.log)
+  )
+
+  @Output() primaryColor;
+  subscriptions = []
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.navigation.PrimaryColor$.subscribe(c => this.primaryColor = c)
+     )
+
+     this.subscriptions.push(
+      this.navigation.NavigationParameters$.subscribe(
+        (params:any) => {
+          if (params && params.board) {
+            this.boardId.next(params.board);
+          }
+
+          if (params && params.name) {
+            this.navigation.SetPageTitles([params.name]);
+          }
+        }
+      )
+    )
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
   }
 
 }

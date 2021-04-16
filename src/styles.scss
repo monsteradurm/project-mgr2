@@ -2,6 +2,7 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
+@import './../node_modules/primeng/resources/primeng.min.css';
 @include mat-core();
 $project-mgr2-primary: mat-palette($mat-indigo);
 $project-mgr2-accent: mat-palette($mat-pink, A200, A100, A400);
@@ -104,6 +105,8 @@ mat-form-field > input {
   outline: none;
   border-bottom: solid 1px lightgray;
 }
+
+/*
 action-mat-group > button > span > span {
   //font-weight:bold;
   opacity: 0.87;
@@ -111,7 +114,8 @@ action-mat-group > button > span > span {
 action-mat-group > button > span > mat-icon {
   opacity: 0.5;
   color: black;
-}
+}*/
+
 .fc, .fc-toolbar-title {
   font-family: cursive !important;
 }
@@ -338,6 +342,9 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
     .mat-checkbox-background > svg > path {
       fill: $primary;
     }
+    .mat-checkbox-checked .mat-checkbox-checkmark-path {
+      fill: transparent !important;
+  }
 
     .mat-focused > .mat-form-field-wrapper > .mat-form-field-underline > .mat-form-field-ripple{
       background-color:$primary
@@ -389,7 +396,13 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       background-color: $primary;
     }
 
-  
+    .mat-input-element {
+      caret-color: $primary;
+    }
+
+    .mat-form-field.mat-focused .mat-form-field-label {
+      color: $primary;
+    }
 
     mat-toolbar.side-dlg-toolbar {
         background: transparent;
@@ -427,6 +440,8 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       //background-color: $primary;
     }
 
+    
+
     mat-toolbar.side-dlg-toolbar > .mat-flat-button > .mat-button-wrapper > .side-btn-inactive {
       opacity: 0;
       background-color:transparent !important;
@@ -450,6 +465,35 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   $component: "app-overview",
 );
 
+@include set-component-colors(
+  $primary: rgb(0, 152, 118) !important,
+  $component: "app-settings",
+);
+
+@include set-component-colors( 
+  $primary: rgb(200, 0, 81) !important,
+  $component: "app-system",
+);
+
+.reference-thumbnail {
+  border-radius: 10px;
+  border: inset 2px;
+  border-color: black;
+  height:260px !important;
+  width:260px !important;
+  max-width:260px !important;
+  min-width:260px !important;
+  min-height:260px !important;
+  max-height:260px !important;
+  overflow:hidden !important;
+  opacity: 1
+  //margin: 25px;
+}
+.reference-thumbnail:hover {
+  box-shadow: 10px 10px 10px 0px rgb(0 0 0 / 50%) !important;
+  opacity:0.5 !important;
+}
+
 p-scrollpanel {
   flex-grow: 10000;
 }
@@ -462,50 +506,87 @@ mat-divider {
 }
 
 app-navigation {
+
+  action-mat-group > button {
+    margin: 0px 20px !important;
+  } 
+
+  .nav-toolbar > div > action-mat-button > button {
+    padding: 0px 30px !important;
+  }
+
+  .pm-active-nav > action-mat-group > button > .mat-button-wrapper > mat-icon {
+    color: inherit !important;
+  }
   button:not([aria-label]) > .mat-button-wrapper > mat-icon {
-    color: #bbb;
+    color: inherit;
   }
+
   button > .mat-button-wrapper > mat-icon:hover {
-    color: white !important;
+    color: inherit;
   }
+
   button > .mat-button-wrapper > span {
     display:none;
   }
+
 
   button {
     padding: 0px 0px !important;
   }
   button[aria-label] {
-    
     height:70px;
     border-radius:0px;
     color:white !important;
+
   }
   button[aria-label] > .mat-button-wrapper > mat-icon {
     margin-top: -30px;
   }
-  button[aria-label=ProjectsActive] {
-    background:white !important;
-  }
 
-  button[aria-label=ProjectsActive] {
-    background:rgb(0, 152, 118) !important;
-  }
+}
 
-  button[aria-label=HomeActive] {
-    background:rgb(64, 120, 251) !important;
-  }
+nav {
+  z-index:100 !important;
+}
 
-  button[aria-label=SchedulingActive] {
-    background:rgb(53, 179, 255) !important;
-  }
+.bp-btn-print {
+  display:none !important;
+}
 
-  button[aria-label=PeopleActive] {
-    background:rgb(153, 87, 255) !important;
-  }
+.bp-default-logo {
+  display:none !important;
+}
+.bp-header-container {
+  display:none !important;
+}
 
-  button[aria-label=SystemActive] {
-    background:rgb(200, 0, 81) !important;
-  }
+div.bp-header-container > div > .bp-default-logo {
+  display:none !important;
+}
+.bp-header-container:not(.bp-is-hidden)+.bp:not(.bp-is-fullscreen) {
+   top: 0px !important;
+}
 
+.bp.bp-dark {
+  background-color: white !important;
+}
+
+.p-colorpicker > input {
+  width: 30px;
+  height: 30px;
+  margin-top:10px;
+}
+
+.bcu-footer-left {
+  display:none !important;
+}
+
+.bcu-footer-right > button > .btn-content {
+  font-size:20px; 
+}
+
+.bcu-footer-right > button {
+  height: 40px;
+  width: 80px;
 }

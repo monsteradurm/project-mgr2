@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
-import { tap, shareReplay, take, switchMap, catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, empty, from, Observable, of } from 'rxjs';
+import { tap, shareReplay, take, switchMap, catchError, map, expand, reduce, retryWhen, delay, retry } from 'rxjs/operators';
 import { UserIdentity } from '../models/UserIdentity';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MsalService } from '@azure/msal-angular';
@@ -82,7 +82,12 @@ export class UserService {
   GetUser() {
     this.http.get(
     'https://graph.microsoft.com/v1.0/me'
-    ).pipe(
+    )
+      .pipe(
+        retryWhen(errors => {
+          console.log("Caught MS Graph error --> Retrying")
+          return errors.pipe(delay(1000), take(2))
+        }),
       take(1)
     ).subscribe((user) => this.SetUser(user))
   }
@@ -100,26 +105,36 @@ export class UserService {
     this.checkAndSetActiveAccount();
     return this.auth.acquireTokenSilent(
       { scopes: OAuthSettings.consentScopes }
-      ).pipe(
-        tap(t => console.log(t))
-        )
+      )
   }
 
 
   AllUsers$ = this.Token$.pipe(
-      switchMap(auth => 
-        this.http.get(
-        'https://graph.microsoft.com/v1.0/users',
-          { 
-            headers: new HttpHeaders({
-            'Content-Type':  'application/json',
-            'Authorization': `${auth.tokenType} ${auth.accessToken}`
+      switchMap(auth => {
+        let headers = { 
+          headers: new HttpHeaders({
+          'Content-Type':  'application/json',
+          'Authorization': `${auth.tokenType} ${auth.accessToken}`
           })
-        }).pipe(map((result:any) => result.value))
-      ),
-      map(users => _.filter(users, 
-        u => u.givenName && u.surname && u.mail && u.mail.indexOf('liquidanimation.com') > 0)),
-    ).pipe(shareReplay(1))
+        }
+        return this.http.get('https://graph.microsoft.com/v1.0/users?', headers)
+          .pipe(
+          expand((data, i) => data['@odata.nextLink'] ? this.http.get(data['@odata.nextLink'], headers) : empty()),      
+          reduce((acc, data) => {
+                return acc.concat(data['value']);
+              }, []),
+          map(users => _.filter(users, u => u.givenName && u.surname && u.mail )),
+          map(users => _.filter(users, 
+              u => u.mail.indexOf('liquidanimation.com') > 0)),
+        )
+      })
+  ).pipe(
+    retryWhen(errors => {
+      console.log("Caught MS Graph error --> Retrying")
+      return errors.pipe(delay(1000), take(2))
+    }),
+    shareReplay(1)
+  )
   
   SetUser(user) {
     this.User.next(user);

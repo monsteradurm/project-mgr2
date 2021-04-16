@@ -30,6 +30,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MondayService } from 'src/app/services/monday.service';
 import { UserService } from 'src/app/services/user.service';
 import { NoConfluenceComponent } from './no-confluence/no-confluence.component';
+import { SettingsComponent } from './settings/settings.component';
 declare var google:any;
 
 @NgModule({
@@ -39,12 +40,14 @@ declare var google:any;
     OverviewGanttComponent,
     OverviewSubitemComponent,
     OverviewBoarditemComponent,
-
+    SettingsComponent,
+    
     FilterItemsByStatusPipe,
     FilterItemsByArtistPipe,
     FilterItemsByDirectorPipe,
     FilterItemsByDepartmentPipe,
-    NoConfluenceComponent
+    NoConfluenceComponent,
+    SettingsComponent
   ],
   imports: [
     SharedModule.forRoot(),

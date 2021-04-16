@@ -4,7 +4,14 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { catchError, map, retry, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import * as _ from 'underscore';
+import { BoardItem } from '../models/BoardItem';
 
+const _GALLERY_: string = '135589920910';
+const _LETTERS_: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+                            'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                            't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+const _SEARCH_ANY_ : string = _LETTERS_.join(' OR ');
 const httpOptions = {
   headers: new HttpHeaders(
     { 'Content-Type': 'application/json'}
@@ -29,16 +36,108 @@ const authData =
 })
 export class BoxService {
 
+  Gallery_ID = _GALLERY_;
 
   private refreshToken = new BehaviorSubject<boolean>(true);
   RefreshToken$ = this.refreshToken.asObservable();
 
   constructor(private http: HttpClient) { 
-    this.Projects$.subscribe(t => console.log("Token", t))
   }
 
   GetFolder$(id: string) {
     return this.Query$('/box/folders/' + id);
+  }
+
+  createImageFromBlob(image: Blob): Observable<any> {
+    return new Observable( (subscriber) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', (
+      ) => {
+        subscriber.next(reader.result);
+     }, false);
+
+      if (image) {
+        reader.readAsDataURL(image);
+     }
+    });
+  }
+
+  FindReference(item:BoardItem, anscestor:string, create_if_missing: boolean) {
+    //dsearch metatag
+
+    //if no result create
+    let path = item.board.name.indexOf('/') > -1 ? 
+      item.board.name.split('/') : [item.board.name];
+
+    path.push(item.group.title);
+    path.push(item.element);
+    
+    console.log("HERE", path);
+    return of(null);
+  }
+
+  QueryFolderExists_AnscestorId(anscestor, subfolder_name) {
+    if (!anscestor || !subfolder_name) return null; 
+    return this.GetFolder$(anscestor).pipe(
+      map((folder:any) => this.QueryFolderExists_Anscestor(anscestor, subfolder_name))
+    )
+  }
+
+  QueryFolderExists_Anscestor(anscestor, subfolder_name) {
+
+    if (!anscestor || !anscestor.item_collection)
+      return null;
+
+    let entries = anscestor.item_collection.entries;
+    return _.find(entries, e=> e.type == 'folder' && e.name == subfolder_name);
+  }
+
+  Create_SharedLink$(id) {
+    return this.Headers$.pipe(
+        switchMap(headers => this.http.put(
+        '/box/files/' + id +'?fields=shared_link', {
+          "shared_link": {
+            "access": 'open',      
+            "permissions": {
+              "can_download": false
+            }
+          }
+        },
+        headers).pipe(take(1))
+      )
+    )
+  }
+
+  SharedLink$(id) {
+    return this.Query$('/box/files/' + id).pipe(
+      switchMap((item:any) => item && item.shared_link ? of(item) 
+      : this.Create_SharedLink$(id))
+      )
+  }
+
+  Thumbnail$(box_file) {
+    let arr = box_file.name.split('.');
+    if (arr.length < 1)
+      return null;
+    
+    let extension = arr[arr.length - 1];
+
+    return this.Token$.pipe(
+      switchMap(token => 
+        this.http.get(
+          `/box/files/${box_file.id}/thumbnail.png?max_height=320&max_width=320`, 
+          { responseType: 'blob',
+            headers: new HttpHeaders(
+            { 
+              'Content-Type' : 'blob',
+              'Authorization' : 'Bearer ' + token 
+            })
+          }
+        )
+      ),
+      switchMap((b: Blob) => this.createImageFromBlob(b)),
+      take(1)
+    )
   }
 
   Token$ = this.RefreshToken$.pipe(
@@ -54,6 +153,25 @@ export class BoxService {
     
   )
 
+  Download$(id:string) { 
+    return this.Token$.pipe(
+      switchMap(token => 
+        this.http.get(
+          `/box/files/${id}/content`, 
+          { responseType: 'blob',
+            headers: new HttpHeaders(
+            { 
+              'Content-Type' : 'blob',
+              'Authorization' : 'Bearer ' + token 
+            })
+          }
+        )
+      ),
+      switchMap((b: Blob) => this.createImageFromBlob(b)),
+      take(1)
+    )
+  }
+  
   Headers$ = this.Token$.pipe(
     map(token =>  ({
         headers: new HttpHeaders(
@@ -71,21 +189,40 @@ export class BoxService {
     )
   }
 
+  GroupFolders(parents, remaining) {
+
+    _.forEach(parents, p=> {
+        let children = _.filter(remaining, c => c.parent.id == p.id);
+        let orphans = _.filter(remaining, c => c.parent.id != p.id);
+        p.children = this.GroupFolders(children, orphans);
+    });
+
+    return parents;
+  }
+
+  Gallery$ = this.Query$('/box/search?query=' + _SEARCH_ANY_ + 
+        '&type=folder&limit=200&ancestor_folder_ids=' + _GALLERY_).pipe(
+          map((result:any) => result.entries),
+          map(entries => {
+
+            let parents = _.filter(entries, e=> e.parent.id == _GALLERY_);
+            let orphans = _.filter(entries, e=> e.parent.id != _GALLERY_);
+
+            return this.GroupFolders(parents, orphans);
+          }),
+          shareReplay(1)
+          )
+  
   Root$ = this.GetFolder$('0');
-
-  Reference$ = this.GetFolder$('135358271773');
-
-  Projects$ = this.Reference$.pipe(
-    map(folder => folder['item_collection'].entries),
-    catchError(err => {
-      console.log(err);
-      return of([]) 
-    })
-  )
+  
+  Search$(search, type: string) { 
+    return this.Query$('/box/search?query=' + search + '&type=' + type +'&fields=id,type,name&content_types=name') 
+  }
 
   Project$(project:string) { //project name aka workspace name
-    return this.Projects$.pipe(
-      map((projects:any) => _.find(projects, p => p.name == project))
+    return this.Search$(project, 'folder').pipe(
+      map((result:any) => result.total_count > 0 ? result.entries[0] : null),
+      switchMap((folder:any) => folder && folder.id ? this.GetFolder$(folder.id) : of(null))
     )
   }
 }
