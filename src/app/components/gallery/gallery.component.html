@@ -26,12 +26,20 @@
                 <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:70px;margin-bottom:320px">
                     <div  fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center center">
                         <div *ngFor="let file of Gallery">
-                            <ng-container *ngIf="(file.Thumbnail$ | async) as thumbnail">
+                            <ng-container *ngIf="(file.Thumbnail$ | async) as thumbnail; else thumbnailError">
                                 <img class="reference-thumbnail" addTippy [tippyText]="file.name.split('.')[0]"
                                 (click)="onSelect(file.id, file.name)"
                                 [src]="thumbnail | TrustResourceURL">
                             </ng-container>
-                            
+                            <ng-template #thumbnailError>
+                                <div class="reference-thumbnail" fxLayout="column" fxLayoutAlign="center center">
+                                    <div style="opacity:0.1;">
+                                        <app-swapping-squares-spinner [color]="primaryColor" [size]="100" [animationDuration]="1000">
+                                        </app-swapping-squares-spinner>
+                                    </div>  
+                                    <h3 [style.color]="primaryColor">Loading</h3>
+                                </div>
+                            </ng-template>
                         </div>
                     </div>
                 </div>

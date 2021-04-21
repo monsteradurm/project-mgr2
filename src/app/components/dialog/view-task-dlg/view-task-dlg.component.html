@@ -1,11 +1,13 @@
 <p-dialog #viewTaskDlg [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
-    (onHide)="Closing()" [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px',
+    (onResizeEnd)="onResize($event)" (onResizeInit)="onResize($event)" (onShow)="onResize($event)" (onHide)="Closing()"
+    [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px',
                   background: Item ? 'transparent' : 'white !important'}" *ngIf="Item">
 
     <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
         <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
-            <ng-container *ngIf="(Item | FindBoardItemById : SubItems : SelectedSubItem) as View">
+            <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">
                 <div style="background: white !important;overflow:hidden !important" fxLayout="column">
+
                     <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header"
                         [style.background-color]="Status.color">
                         <ng-container *actionOutlet="ViewMenu$ | async"></ng-container>
@@ -17,11 +19,16 @@
                             {{Status.text}}
                         </h2>
                     </div>
+
                     <p-scrollPanel fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
                         [style]="{width:'75vw', 'flex-grow' : 1, height: '100%', overflow:'hidden'}">
-                        <table style="height:100%;width:100%">
+                        <table #taskTable style="height:100%;width:100%">
                             <tr>
-                                <td>
+                                <td #tableColumn style="position:relative">
+                                    <div style="box-shadow:0px 0px 15px 0px rgb(0 0 0 / 25%);position:fixed;height:100%;top:0px;
+                                    z-index:-1"
+                                        [style.width.px]="tableColumn.clientWidth"></div>
+
                                     <mat-toolbar fxLayout="column" fxLayoutAlign="stretch stretch"
                                         class="side-dlg-toolbar">
 
@@ -35,163 +42,311 @@
 
                                         <div class="side-btn-header no-select" [style.color]="Status.color">Reference
                                         </div>
-                                        <button mat-flat-button (click)="SelectedSubItem = 'ExampleA'"
-                                            [ngClass]="{'side-btn-active' : View.Id == 'ExampleA'}"> Example A
-                                            <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : View.id == 'ExampleA', 
-                                    'side-btn-inactive' : 'ExampleA' != View.id }"></div>
-                                        </button>
 
-                                        <button mat-flat-button (click)="SelectedSubItem = 'ExampleB'"
-                                            [ngClass]="{'side-btn-active' : View.id == 'ExampleB'}"> Example B
-                                            <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : View.id == 'ExampleB', 
-                                    'side-btn-inactive' : 'ExampleB' != View.id }"></div>
-                                        </button>
+                                        <ng-container *ngFor="let d of Departments">
+                                            <button mat-flat-button (click)="onReferenceSelected(d)"
+                                                [ngClass]="{'side-btn-active' : View.Id == d.id}"> {{d.text}}
+                                                <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : View.id == d.id, 
+                                                    'side-btn-inactive' : d.id != View.id }"></div>
+                                            </button>
+                                        </ng-container>
 
-                                        <div class="side-btn-header no-select" [style.color]="Status.color">Revisions
+                                        <div class="side-btn-header no-select" [style.color]="Status.color">Reviews
                                         </div>
                                         <ng-container *ngFor="let subitem of SubItems">
                                             <button mat-flat-button (click)="SelectedSubItem = subitem.id"
                                                 [ngClass]="{'side-btn-active' : View.id == subitem.id}">
                                                 {{subitem.name}}
                                                 <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : subitem?.id == View.id, 
-                                            'side-btn-inactive' : subitem?.id != View.id }"></div>
+                                                'side-btn-inactive' : subitem?.id != View.id }"></div>
                                             </button>
                                         </ng-container>
 
                                     </mat-toolbar>
                                 </td>
-                                <td style="width:100%">
-                                    <div fxLayout="column" fxLayoutAlign="start start"
-                                        style="width:100%;height:100%;padding:20px 30px;margin-bottom:50px">
-                                        <h3 class="view-syncitem-header" [style.border-color]="Status.color">
-                                            {{View.task}}</h3>
-                                        <ng-container
-                                            *ngIf="(SyncReview$ | FilterSyncItemsByTask$ : View : (Item.department | ArrayToStr : 'text' ) | async) as Items; else fetchingItems">
-                                            <ng-container *ngFor="let item of Items">
-                                                <div fxLayout="row">
-                                                    <div style="min-width: 370px;max-width: 370px;width: 370px;">
-                                                        <app-lazy-image [image]="item.thumbnail_url"
-                                                            style="cursor:pointer"
-                                                            (click)="NewTab(item.review)" [color]="Status.color" width="370px" 
-                                                            minHeight="270px" height="auto" [lazySize]="100">
-                                                        </app-lazy-image>
-                                                        <div class="img-caption" (click)="NewTab(item.review)">Click to
-                                                            view in a new tab...</div>
-                                                        <!--<iframe width="640" height="480" [src]="item.review" allowfullscreen=""></iframe>-->
-                                                    </div>
-                                                    <div style="width:100%;margin-left: 30px;" fxLayout="row">
-                                                        <ng-container
-                                                            *ngIf="(item.creator.full_name | FindUserFromName$ | async) as User">
-                                                            <app-user [User]="User"
-                                                                [Photo$]="User | FindUserPhotoFromIdentity$"
-                                                                [CircleOnly]="true" CircleWidth="60px"></app-user>
-                                                            <div style='margin-left:20px'>
-                                                                <h3 [style.color]="Status.color" style="margin: 0px;
-                                                    transform: translateY(5px);">{{User.displayName}}</h3>
-                                                                <h4 style="color:gray">Uploaded at {{item.created |
-                                                                    date: 'medium'}}</h4>
-                                                            </div>
-                                                        </ng-container>
-                                                    </div>
+                                <td style="width:100%;position:relative;">
+                                    <div fxLayout="row" fxLayoutAlign="space-between start"
+                                        style="position: absolute;top: 0px;width:100%">
+                                        <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%;padding:20px 30px;margin-bottom:50px;margin-right:20px;
+                                            position:relative" >
+                                            <ng-container
+                                                *ngIf="View.type == 'task' || View.type == 'revision'; else boxFolder">
+                                                <!-- TASK -->
+                                                <h3 class="view-syncitem-header" [style.border-color]="Status.color">
+                                                    {{View.task}}</h3>
+                                                <div style="position:relative;width:100%;" [style.height.px]="FetchHeight"
+                                                fxLayout="column" fxLayoutAlign="start start">
+                                                    <ng-container *ngIf="View.type == 'task'">
+                                                        <h4 style="margin-bottom:5px" [style.color]="Status.color">
+                                                            Description</h4>
+                                                        <div style="margin-left:30px;margin-bottom:20px">
+                                                            <div style="font-style:italic; color:gray"
+                                                                *ngIf="View.description?.text; else noDescription">
+                                                                {{View.description?.text}}</div>
+                                                            <ng-template #noDescription>
+                                                                <div style="font-style:italic; color:gray">No
+                                                                    Description.
+                                                                </div>
+                                                            </ng-template>
+                                                        </div>
+                                                    </ng-container>
 
-                                                </div>
+                                                    <!-- Revision Item -->
+                                                    <ng-container *ngIf="View.type == 'revision'">
+                                                        <ng-container *ngIf="(SyncReview$ | FilterSyncItemsByTask$ : View : (Item.department | ArrayToStr : 'text' ) | async) as Items; else fetchingItems">
+                                                            <ng-container *ngFor="let item of Items">
+                                                                <div class="review-item"
+                                                                    [style.border-color]="Status.color"
+                                                                    fxLayout="column" fxLayoutAlign="end start"
+                                                                    style="margin-top:20px">
 
-                                                <ng-container
-                                                    *ngIf="(item.id | FetchUpdatesToSyncItem$ | async) as Updates; else fetchingUpdates">
-                                                    <div *ngFor="let u of Updates">
-                                                        <ng-container *ngIf="u.type == 'sketch'; else comment">
-                                                            <div fxLayout="row" style="margin-top:20px;"
-                                                                fxLayoutAlign="center center">
-                                                                <img class="img-update"
-                                                                    [src]="u.data.imageData | TrustResourceURL"
-                                                                    (click)="NewTab(item.review + '/' + u.id)">
-                                                                <div fxLayout="column" fxLayoutAlign="center start"
-                                                                    style="margin-left:20px">
-                                                                    <h3 class="post-description"><span
-                                                                            [style.color]="Status.color" class="poster">
-                                                                            {{u.publicUserInfo.full_name}}</span> posted
-                                                                        a
-                                                                        <span style="font-style:bold;color:black">
-                                                                            sketch
-                                                                        </span>
-                                                                    </h3>
-                                                                    <h4 class="post-date">Updated at {{u.created | date:
-                                                                        'medium'}}</h4>
-                                                                    <div class="post-text">
-                                                                        {{u.text}}
+                                                                    <div style="width:100%;margin-right: 30px;"
+                                                                        fxLayout="row">
+                                                                        <ng-container
+                                                                            *ngIf="(item.creator.full_name | FindUserFromName$ | async) as User">
+
+                                                                            <div style='margin-right:20px'
+                                                                                fxLayout="row">
+                                                                                <h3 [style.color]="Status.color">
+                                                                                    {{User.displayName}}
+                                                                                    <span style="color:gray">Uploaded at
+                                                                                        {{item.created |
+                                                                                        date: 'medium'}}</span>
+                                                                                </h3>
+                                                                            </div>
+
+                                                                            <!--<app-user [User]="User"
+                                                                        [Photo$]="User | FindUserPhotoFromIdentity$"
+                                                                        [CircleOnly]="true" CircleWidth="60px">
+                                                                    </app-user> -->
+                                                                        </ng-container>
+                                                                    </div>
+                                                                    <div
+                                                                        style="min-width: 370px;max-width: 370px;width: 370px;">
+                                                                        <app-lazy-image [image]="item.thumbnail_url"
+                                                                            style="cursor:pointer"
+                                                                            (click)="NewTab(item.review)"
+                                                                            [color]="Status.color" width="370px"
+                                                                            minHeight="270px" height="auto"
+                                                                            [lazySize]="100">
+                                                                        </app-lazy-image>
+                                                                        <div class="img-caption"
+                                                                            (click)="NewTab(item.review)">
+                                                                            Click
+                                                                            to
+                                                                            view in a new tab...</div>
+                                                                        <!--<iframe width="640" height="480" [src]="item.review" allowfullscreen=""></iframe>-->
                                                                     </div>
                                                                 </div>
+
+                                                                <ng-container
+                                                                    *ngIf="(item.id | FetchUpdatesToSyncItem$ | async) as Updates; else fetchingUpdates">
+                                                                    <div *ngFor="let u of Updates" class="review-item"
+                                                                        [style.border-color]="Status.color">
+                                                                        <ng-container
+                                                                            *ngIf="u.type == 'sketch'; else comment">
+                                                                            <div fxLayout="row" style="margin-top:20px;"
+                                                                                fxLayoutAlign="center center">
+                                                                                <img class="img-update"
+                                                                                    [src]="u.data.imageData | TrustResourceURL"
+                                                                                    (click)="NewTab(item.review + '/' + u.id)">
+                                                                                <div fxLayout="column"
+                                                                                    fxLayoutAlign="center start"
+                                                                                    style="margin-left:20px">
+                                                                                    <h3 class="post-description"><span
+                                                                                            [style.color]="Status.color"
+                                                                                            class="poster">
+                                                                                            {{u.publicUserInfo.full_name}}</span>
+                                                                                        posted
+                                                                                        a
+                                                                                        <span
+                                                                                            style="font-style:bold;color:black">
+                                                                                            sketch
+                                                                                        </span>
+                                                                                    </h3>
+                                                                                    <h4 class="post-date">Updated at
+                                                                                        {{u.created
+                                                                                        |
+                                                                                        date:
+                                                                                        'medium'}}</h4>
+                                                                                    <div class="post-text">
+                                                                                        {{u.text}}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ng-container>
+                                                                        <ng-template #comment>
+                                                                            <div fxLayout="row" style="margin-top:20px"
+                                                                                fxLayoutAlign="start center">
+                                                                                <ng-container
+                                                                                    *ngIf="u.attachments.length > 0">
+                                                                                    <img class="img-update"
+                                                                                        *ngIf="u.attachments.length > 0"
+                                                                                        [src]="u.attachments[0].thumb_url | TrustResourceURL">
+                                                                                    <div fxLayout="column"
+                                                                                        fxLayoutAlign="center start"
+                                                                                        style="margin-left:20px">
+                                                                                        <h3 class="post-description">
+                                                                                            <span
+                                                                                                [style.color]="Status.color"
+                                                                                                class="poster">
+                                                                                                {{u.publicUserInfo.full_name}}</span>
+                                                                                            posted an
+                                                                                            <span
+                                                                                                style="font-style:bold;color:black">
+                                                                                                attachment
+                                                                                            </span>
+                                                                                        </h3>
+                                                                                        <h4 class="post-date">Updated at
+                                                                                            {{u.created
+                                                                                            |
+                                                                                            date: 'medium'}}</h4>
+                                                                                        <div class="post-text">
+                                                                                            {{u.text}}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ng-container>
+                                                                                <ng-container
+                                                                                    *ngIf="u.attachments.length < 1">
+                                                                                    <div fxLayout="column"
+                                                                                        fxLayoutAlign="center start"
+                                                                                        style="margin-left:20px;">
+                                                                                        <h3 class="post-description">
+                                                                                            <span
+                                                                                                [style.color]="Status.color"
+                                                                                                class="poster">
+                                                                                                {{u.publicUserInfo.full_name}}</span>
+                                                                                            posted an
+                                                                                            <span
+                                                                                                style="font-style:bold;color:black">
+                                                                                                comment
+                                                                                            </span>
+                                                                                        </h3>
+                                                                                        <h4 class="post-date">Updated at
+                                                                                            {{u.created
+                                                                                            |
+                                                                                            date: 'medium'}}</h4>
+                                                                                        <div class="post-text">
+                                                                                            {{u.text}}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ng-container>
+                                                                            </div>
+                                                                        </ng-template>
+                                                                    </div>
+                                                                </ng-container>
+                                                                <ng-template>
+                                                                    <h3 style="color:#aaa">Fetching Comments/Updates
+                                                                        from
+                                                                        SyncSketch...
+                                                                    </h3>
+                                                                </ng-template>
+                                                            </ng-container>
+
+
+                                                            <div *ngIf="Items.length < 1">
+                                                                <h3 style="color:#aaa">No Items have been uploaded to
+                                                                    syncSketch.
+                                                                </h3>
                                                             </div>
+
                                                         </ng-container>
-                                                        <ng-template #comment>
-                                                            <div fxLayout="row" style="margin-top:20px"
-                                                                fxLayoutAlign="start center">
-                                                                <ng-container *ngIf="u.attachments.length > 0">
-                                                                    <img class="img-update"
-                                                                        *ngIf="u.attachments.length > 0"
-                                                                        [src]="u.attachments[0].thumb_url | TrustResourceURL">
-                                                                    <div fxLayout="column" fxLayoutAlign="center start"
-                                                                        style="margin-left:20px">
-                                                                        <h3 class="post-description"><span
-                                                                                [style.color]="Status.color"
-                                                                                class="poster">
-                                                                                {{u.publicUserInfo.full_name}}</span>
-                                                                            posted an
-                                                                            <span style="font-style:bold;color:black">
-                                                                                attachment
-                                                                            </span>
-                                                                        </h3>
-                                                                        <h4 class="post-date">Updated at {{u.created |
-                                                                            date: 'medium'}}</h4>
-                                                                        <div class="post-text">
-                                                                            {{u.text}}
-                                                                        </div>
-                                                                    </div>
-                                                                </ng-container>
-                                                                <ng-container *ngIf="u.attachments.length < 1">
-                                                                    <div fxLayout="column" fxLayoutAlign="center start"
-                                                                        style="margin-left:20px;">
-                                                                        <h3 class="post-description"><span
-                                                                                [style.color]="Status.color"
-                                                                                class="poster">
-                                                                                {{u.publicUserInfo.full_name}}</span>
-                                                                            posted an
-                                                                            <span style="font-style:bold;color:black">
-                                                                                comment
-                                                                            </span>
-                                                                        </h3>
-                                                                        <h4 class="post-date">Updated at {{u.created |
-                                                                            date: 'medium'}}</h4>
-                                                                        <div class="post-text">
-                                                                            {{u.text}}
-                                                                        </div>
-                                                                    </div>
-                                                                </ng-container>
+                                                    </ng-container>
+                                                </div>
+                                                <div style="height:100px"></div>
+                                            </ng-container>
+
+                                            <ng-template #boxFolder>
+                                                <h3 class="view-syncitem-header" [style.border-color]="Status.color">
+                                                    {{View.text}} Reference</h3>
+
+                                                <ng-container
+                                                    *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
+                                                    <app-reference style="position:relative;width:100%"
+                                                        [Height]="Height" [Root]="ReferenceFolder"
+                                                        [primaryColor]="Status.color">
+                                                    </app-reference>
+                                                </ng-container>
+                                                <ng-template #fetchingBox>
+                                                    <div fxLayout="column" fxLayoutAlign="center center"
+                                                        style="width:100%;height:100%">
+                                                        <app-swapping-squares-spinner [animationDuration]="1000"
+                                                            [size]="120" [color]="Status.color" style="opacity:0.15;">
+                                                        </app-swapping-squares-spinner>
+                                                        <h3 [style.color]="Status.color" style="margin-top:30px">
+                                                            Fetching
+                                                            {{View.text}} Reference from Box...</h3>
+                                                    </div>
+                                                </ng-template>
+                                            </ng-template>
+
+                                            <ng-template #fetchingItems>
+                                                <div fxLayout="column" fxLayoutAlign="center center"
+                                                    style="width:100%;height:100%;position:absolute;top:0px">
+
+                                                    <app-swapping-squares-spinner [animationDuration]="1000"
+                                                        [size]="120" [color]="Status.color" style="opacity:0.15;">
+                                                    </app-swapping-squares-spinner>
+                                                    <h3 [style.color]="Status.color" style="margin-top:30px">Fetching
+                                                        Items
+                                                        from SyncSketch...</h3>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                        <div fxLayout="column" fxLayoutAlign="start start" style="margin-top:30px;min-width:250px;
+                                            max-width:250px;width:250px;" *ngIf="View.type == 'revision' || View.type == 'task'">
+
+                                            <div>
+                                                <h4 style="margin-bottom:5px;margin-top:10px"
+                                                    [style.color]="Status.color">
+                                                    Scheduled</h4>
+                                                <div style="margin-left:30px">
+                                                    <div style="font-style:italic; color:gray"
+                                                        *ngIf="View.timeline; else noTimeline">
+                                                        {{View.timeline?.text}}</div>
+                                                    <ng-template #noTimeline>
+                                                        <div style="font-style:italic; color:gray">No Schedule.
+                                                        </div>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+
+                                            <div *ngIf="View.type == 'task'">
+                                                <h4 style="margin-bottom:5px;margin-top:10px"
+                                                    [style.color]="Status.color">Director</h4>
+                                                <ng-container *ngIf="(View.director | ArrayToStr : 'text') as Director">
+                                                    <div style="margin-left:30px">
+                                                        <div style="font-style:italic; color:gray"
+                                                            *ngIf="Director; else noDirector">
+                                                            {{Director}}</div>
+                                                        <ng-template #noDirector>
+                                                            <div style="font-style:italic; color:gray">No
+                                                                Director Assigned.</div>
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+
+                                            <div>
+                                                <h4 style="margin-bottom:5px; margin-top:10px"
+                                                    [style.color]="Status.color">Artist</h4>
+                                                <ng-container *ngIf="(View.artist | ArrayToStr : 'text') as Artist">
+                                                    <div style="margin-left:30px">
+                                                        <div style="font-style:italic; color:gray"
+                                                            *ngIf="Artist; else noArtist">
+                                                            {{Artist}}</div>
+                                                        <ng-template #noArtist>
+                                                            <div style="font-style:italic; color:gray">No Artist
+                                                                Assigned.
                                                             </div>
                                                         </ng-template>
                                                     </div>
                                                 </ng-container>
-                                                <ng-template>
-                                                    <h3 style="color:#aaa">Fetching Comments/Updates from SyncSketch...
-                                                    </h3>
-                                                </ng-template>
-                                            </ng-container>
-
-
-                                            <div *ngIf="Items.length < 1">
-                                                <h3 style="color:#aaa">No Items have been uploaded to syncSketch.</h3>
                                             </div>
-                                        </ng-container>
-                                        <ng-template #fetchingItems>
-                                            <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:80px">
-                                               
-                                                <app-swapping-squares-spinner [animationDuration]="1000"
-                                                    [size]="120" [color]="Status.color" style="opacity:0.15;">
-                                                </app-swapping-squares-spinner>
-                                                <h3 [style.color]="Status.color" style="margin-top:30px">Fetching Items from SyncSketch...</h3>
-                                            </div>
-                                        </ng-template>
+
+                                        </div>
                                     </div>
+                                    
                                 </td>
                             </tr>
                         </table>

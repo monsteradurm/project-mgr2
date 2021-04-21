@@ -154,7 +154,9 @@ export class MondayService {
   }
   MinBoards$ = this.Query$(`boards(state:active) {
     id, name, workspace_id
-  }`).pipe(take(1))
+  }`).pipe(
+    map(result => result['boards']),
+    take(1))
 
   Boards$ = this.Query$(`boards(state:active) 
   { id, name, 
@@ -218,7 +220,7 @@ export class MondayService {
       return workspaces;
     }),
     take(1),
-    shareReplay(1)
+    shareReplay()
   )
 
   IsComplexityError(errors) {

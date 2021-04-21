@@ -18,6 +18,8 @@ export enum ColumnType {
   TimeTracking = 'Time Tracking',
   SubItems = 'SubItems',
   Department = 'Department', 
+  Description = 'Description',
+  Caption = 'Caption',
   ItemCode = 'ItemCode',
   Status = 'Status'
 } 

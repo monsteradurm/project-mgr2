@@ -350,10 +350,6 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       background-color:$primary
     }  
 
-    .mat-fab.mat-accent, .mat-mini-fab.mat-accent {
-      background-color: $primary
-    }
-
     .log-hours-container {
       background: transparent !important;
       border: none !important;
@@ -406,7 +402,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
 
     mat-toolbar.side-dlg-toolbar {
         background: transparent;
-        box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
+        //box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
         padding: 0px;
         width: unset;
         min-width: 220px;
@@ -505,6 +501,15 @@ mat-divider {
   margin-top: 20px;
 }
 
+.mat-fab.mat-accent, .mat-mini-fab.mat-accent {
+  background-color: gray;
+  color: white;
+}
+
+.mat-fab.mat-accent, .mat-mini-fab.mat-accent:hover {
+  background-color: black;
+}
+
 app-navigation {
 
   action-mat-group > button {
@@ -584,9 +589,15 @@ div.bp-header-container > div > .bp-default-logo {
 
 .bcu-footer-right > button > .btn-content {
   font-size:20px; 
+
 }
 
+.bcu-footer-right {
+  justify-content: center;
+    width: 100%;
+    display: flex;
+}
 .bcu-footer-right > button {
   height: 40px;
-  width: 80px;
+  width: 100px;
 }

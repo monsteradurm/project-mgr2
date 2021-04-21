@@ -62,24 +62,39 @@ export class BoxService {
     });
   }
 
-  FindReference(item:BoardItem, anscestor:string, create_if_missing: boolean) {
-    //dsearch metatag
+  FindNestedFolder(path: string[], anscestor:string, create_if_missing: boolean) {    
+    let chain = this.QueryFolderExists_AnscestorId(anscestor, path[0], create_if_missing)
 
-    //if no result create
-    let path = item.board.name.indexOf('/') > -1 ? 
-      item.board.name.split('/') : [item.board.name];
-
-    path.push(item.group.title);
-    path.push(item.element);
-    
-    console.log("HERE", path);
-    return of(null);
+    for(let p = 1; p < path.length; p++) {
+      
+      chain = chain.pipe(
+        switchMap(parent => parent && parent.id ? 
+          this.QueryFolderExists_AnscestorId(parent.id, path[p], create_if_missing) : of(null)
+        ),
+        tap(t=> console.log(t, path[p]))
+      )
+    }
+    return chain;
   }
 
-  QueryFolderExists_AnscestorId(anscestor, subfolder_name) {
+
+  CreateFolder(anscestor, name) {
+
+    return this.Post$('/box/folders', {
+      name: name,
+      parent: {
+        id: anscestor
+      }
+    })
+  }
+
+  QueryFolderExists_AnscestorId(anscestor, subfolder_name, create: boolean) {
     if (!anscestor || !subfolder_name) return null; 
     return this.GetFolder$(anscestor).pipe(
-      map((folder:any) => this.QueryFolderExists_Anscestor(anscestor, subfolder_name))
+      map((folder:any) => this.QueryFolderExists_Anscestor(folder, subfolder_name)),
+      switchMap(parent => parent && parent.id? of(parent) : 
+        create ? this.CreateFolder(anscestor, subfolder_name) : of(null)
+      ),
     )
   }
 
@@ -181,6 +196,14 @@ export class BoxService {
       }), 
     ),
   )
+
+  Post$(addr:string, body:any) {
+    console.log("POSTING", addr, body)
+    return this.Headers$.pipe(
+      switchMap(headers => this.http.post(addr, body, headers)),
+      take(1)
+    )
+  }
 
   Query$(addr: string) {
     return this.Headers$.pipe(

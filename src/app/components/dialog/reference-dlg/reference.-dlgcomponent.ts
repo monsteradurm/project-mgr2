@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, ViewChildren } from '@angular/core';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, ViewChild, ViewChildren } from '@angular/core';
+import { BehaviorSubject, combineLatest, of, timer } from 'rxjs';
 import { delay, map, retryWhen, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
 import { NavigationService } from 'src/app/services/navigation.service';
@@ -8,12 +8,12 @@ import * as _ from 'underscore';
 declare var Box:any;
 
 @Component({
-  selector: 'app-reference',
-  templateUrl: './reference.component.html',
-  styleUrls: ['./reference.component.scss']
+  selector: 'app-reference-dlg',
+  templateUrl: './reference-dlg.component.html',
+  styleUrls: ['./reference-dlg.component.scss']
 })
-export class ReferenceComponent implements OnInit, OnDestroy {
-  @ViewChildren('errorContainer', {}) errorContainer: ElementRef;
+export class ReferenceDlgComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('errorContainer', {read: ElementRef, static: false }) errorContainer: ElementRef;
   constructor(
     private renderer: Renderer2,
     private navigation: NavigationService,
@@ -21,24 +21,14 @@ export class ReferenceComponent implements OnInit, OnDestroy {
   }
 
   @Output() Fetching: boolean = true;
-  @Output() onClose = new EventEmitter<boolean>(false);
   @Input() primaryColor; 
-
-  _Show;
-  @Input() set Show(s: boolean) {
-    this._Show = s;
-  }
-
-  get Show() { 
-    return this._Show;
-  }
+  
   get Root() { return this._Root; }
   _Root:string;
 
   @Input() set Root(r:string) {
     this.rootId.next(r);
     this._Root = r;
-  
   }
 
   private rootId = new BehaviorSubject<string>(null);
@@ -50,14 +40,27 @@ export class ReferenceComponent implements OnInit, OnDestroy {
   private Root$ = combineLatest([this.Refresh$, this.RootId$]).pipe(
     switchMap(([refresh, root]) => root ? 
       this.box.GetFolder$(root) : of(null)),
-      tap(t => {
-        if (!t && this.errorContainer) {
-          console.log("HERE");
-          this.renderer.addClass(this.errorContainer.nativeElement, 'load');
-        }
-      }),
       shareReplay(1)
   )
+
+
+
+  @Output() onClose = new EventEmitter<boolean>(false);
+  _Show;
+  @Input() set Show(s: boolean) {
+    this._Show = s;
+
+    if (s)
+      timer(2000, 0).pipe(take(1)).subscribe(
+        () => 
+          this.renderer.setStyle(this.errorContainer.nativeElement, 'opacity', 1)
+      )
+  }
+
+  get Show() { 
+    return this._Show;
+  }
+
 
 
   Title$ = this.Root$.pipe(
@@ -65,6 +68,7 @@ export class ReferenceComponent implements OnInit, OnDestroy {
     map(entries => entries ? entries[entries.length - 1] : null),
     map(parent => parent ? parent.name : null)
   )
+  
   private current = new BehaviorSubject<string>(null);
 
   refresh() {
@@ -150,10 +154,15 @@ export class ReferenceComponent implements OnInit, OnDestroy {
     this.rootId.next(null);
     this.current.next(null);
     this.onClose.next(true);
+    this.renderer.setStyle(this.errorContainer.nativeElement, 'opacity', 0);
   }
 
   subscriptions = [];
+  ngAfterViewInit() {
+  }
   ngOnInit(): void {
+    
+
     this.subscriptions.push(
       this.Folders$.subscribe(contents => this.Folders = contents)
     );

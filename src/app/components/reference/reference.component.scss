@@ -12,18 +12,7 @@
     font-family: cursive;
 }
 .error-container {
-    opacity: 0;
-    -webkit-transition: opacity 3s ease-in;
-       -moz-transition: opacity 3s ease-in;
-        -ms-transition: opacity 3s ease-in;
-         -o-transition: opacity 3s ease-in;
-            transition: opacity 3s ease-in;
-            transition-delay: 3s;
-}
-
-.error-container.load {
-    opacity:1 !important;
-    transition-delay: 3s;
+    transition-duration: 1s;
 }
 
 .reference-error-icon {
@@ -44,7 +33,7 @@
 }
 
 .reference-back-container {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 20;
@@ -107,7 +96,7 @@ div.reference-back-container > button > span.mat-button-wrapper > mat-iconm, .ap
 
 .mat-drawer-content {
     overflow:hidden !important;
-    height: calc(85vh - 68px) !important
+    //height: calc(85vh - 68px) !important
 }
 
 .upload-container {
@@ -115,3 +104,10 @@ div.reference-back-container > button > span.mat-button-wrapper > mat-iconm, .ap
     height: 100%;
 }
 
+mat-drawer-container {
+    position: fixed;
+    width: 100%;
+    top: 40px;
+    left: 0px;
+    z-index: 5;
+}

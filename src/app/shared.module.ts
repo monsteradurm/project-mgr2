@@ -65,11 +65,13 @@ import { ConfluenceService } from './services/confluence.service';
 import {SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule, FlowerSpinnerModule} from 'angular-epic-spinners'
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { LazyImageComponent } from './components/UI/lazy-image/lazy-image.component';
-import { ReferenceComponent } from './components/dialog/reference/reference.component';
+import { ReferenceDlgComponent } from './components/dialog/reference-dlg/reference.-dlgcomponent';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { NavBtnDirective } from './directives/material/navbtn.directive';
 import {ColorPickerModule} from 'primeng/colorpicker';
 import { MondayBoolIsCheckedPipe } from './directives/monday/mondayBool-isChecked.directive';
+import { ReferenceComponent } from './components/reference/reference.component';
+import { MouseWheelDirective } from './directives/mousewheel.directive';
 
 declare var google:any;
 
@@ -96,8 +98,10 @@ const declarations = [
     FetchUpdatesToSyncItemPipe,
     TrustResourceURLPipe,
     LazyImageComponent,
+    ReferenceDlgComponent,
     ReferenceComponent,
-    MondayBoolIsCheckedPipe
+    MondayBoolIsCheckedPipe,
+    MouseWheelDirective
   ]
   
 const imports = [

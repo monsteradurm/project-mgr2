@@ -1,0 +1,106 @@
+.reference-header {
+    color: white;
+    z-index:5;
+    background: black;
+    border-bottom:solid 1px black;
+}
+
+.reference-title {
+    height: 40px;
+    padding-top: 2px;
+    margin-bottom: 0px;
+    font-family: cursive;
+}
+.error-container {
+    transition-duration: 1s;
+}
+
+.reference-error-icon {
+    opacity: 0.3;
+    font-size: 200px;
+    height: 200px;
+    width: 200px;
+    color: rgb(0, 152, 118);
+    text-align: center;
+}
+
+.path-header {
+    height:30px;
+    border-bottom: solid 1px gray;
+    width:100%;
+    z-index:5;
+    padding-left:20px;
+}
+
+.reference-back-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+.reference-back-container > button {
+
+    background:gray !important;
+}
+.reference-back-container > button > .mat-button-wrapper > .mat-icon {
+    color: white !important;
+}
+
+.reference-back-container > button:hover {
+    background:black !important;
+}
+
+div.reference-back-container > button > span.mat-button-wrapper > mat-iconm, .app-fab-icon-btn {
+    color: white !important;
+}
+
+.folder-icon {
+    width: unset;
+    font-size: 50px;
+    background: transparent;
+    line-height: unset;
+    height: unset;
+    margin: 30px;
+}
+
+.box-folder:not(.box-folder-active) {
+    opacity:0.5;
+    cursor:pointer;
+}
+.box-child-of {
+    margin-left:10px;
+    margin-right:10px;
+    color:gray;
+    opacity: 0.5;
+    font-size:15px;
+}
+.box-folder:hover{
+    opacity: 1;
+}
+
+.folder-container {
+    opacity:0.5;
+}
+
+.folder-container:hover {
+    opacity:1;
+    cursor: pointer;
+}
+.folder-name {
+    color: gray;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align:center;
+}
+
+.mat-drawer-content {
+    overflow:hidden !important;
+    height: calc(85vh - 68px) !important
+}
+
+.upload-container {
+    width:300px;
+    height: 100%;
+}
+

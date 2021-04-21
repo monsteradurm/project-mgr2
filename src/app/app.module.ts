@@ -73,6 +73,7 @@ import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-tas
 import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
 import { SharedModule } from './shared.module';
 import { GalleryComponent } from './components/gallery/gallery.component';
+import { ReferenceComponent } from './components/reference/reference.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -136,7 +137,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     PeopleComponent,
     SchedulingComponent,
     SystemComponent,
-    GalleryComponent,
+    GalleryComponent
   ],
 
   imports: [

@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <app-reference [Show]="ShowReference" [primaryColor]="selected.background" [Title]="ReferenceTitle"
-    [Root]="ReferenceFolder$ | async" (onClose)="ShowReference=false"></app-reference>
+    <app-reference-dlg [Show]="ShowReference" [primaryColor]="selected.background" [Title]="ReferenceTitle"
+    [Root]="ReferenceFolder$ | async" (onClose)="ShowReference=false"></app-reference-dlg>
 
 </div>

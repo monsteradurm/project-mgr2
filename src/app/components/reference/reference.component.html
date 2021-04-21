@@ -1,0 +1,95 @@
+<mat-drawer-container [hasBackdrop]="true" style="background:transparent;width:100%;height:calc(100% - 40px)"
+    [ngStyle]="{'display' : DrawerVisible ? 'block' : 'none'}">
+    <mat-drawer #drawer mode="Push" (openedStart)="ShowUploadContainer()" (closedStart)="DrawerVisible = false">
+        <div class="upload-container"></div>
+    </mat-drawer>
+    <mat-drawer-content style="width:100%;height:100%;z-index:0">
+
+    </mat-drawer-content>
+</mat-drawer-container>
+
+<ng-container *ngIf="Root; else noRoot">
+    <div *ngIf="Fetching; else showReference" fxLayout="column" fxLayoutAlign="center center"
+        style="width:100%;margin-top:40px">
+
+        <div style="opacity:0.15">
+            <app-swapping-squares-spinner [animationDuration]="1000" [color]="primaryColor" [size]="120"
+                style="opacity:0.15;">
+            </app-swapping-squares-spinner>
+        </div>
+        <h3 [style.color]="primaryColor" style="margin-top:30px">Fetching Box Folder Contents...</h3>
+    </div>
+</ng-container>
+<ng-template #noRoot>
+    <div #errorContainer style="width:100%;height:100%;opacity:0" fxLayout="column" fxLayoutAlign="center center"
+        class="error-container">
+        <mat-icon [style.color]="primaryColor" class="reference-error-icon">sentiment_dissatisfied</mat-icon>
+        <h3 [style.color]="primaryColor">The Reference folder has not been configured for this project</h3>
+    </div>
+</ng-template>
+<ng-template #showReference>
+
+    <ng-container *ngIf="ShowPreview != null; else showContent">
+        <div class="reference-back-container" fxLayout="column">
+
+            <button mat-fab tippyText="Back" (click)="Download()">
+                <mat-icon class="app-fab-icon-btn app-center-fab-icon">file_download</mat-icon>
+            </button>
+
+            <button mat-fab tippyText="Back" (click)="ClearPreview()" style="margin-top:20px">
+                <mat-icon class="app-fab-icon-btn app-center-fab-icon">arrow_back</mat-icon>
+            </button>
+        </div>
+
+        <div class="preview-container" style="height:calc(100vh - 180px)"></div>
+    </ng-container>
+
+    <ng-template #showContent>
+        <div style="position:absolute;width:100%;height:100%">
+            <div class="reference-back-container" fxLayout="column">
+                <button mat-fab tippyText="Back" (click)="drawer.toggle()">
+                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">file_upload</mat-icon>
+                </button>
+
+                <button mat-fab tippyText="Back" (click)="refresh()" style="margin-top:20px;">
+                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">refresh</mat-icon>
+                </button>
+            </div>
+        </div>
+        <div *ngIf="Files.length < 1 && Folders.length < 1; else filesFolders">
+            <h3 style="text-align:center;margin-top:40px">{{(CurrentPath$ | async)}}/{{(Current$ |
+                async).name}} folder is empty...</h3>
+        </div>
+        <ng-template #filesFolders>
+            <div fxLayout="column" fxLayoutAlign="start start" style="width:100%;margin:0px 100px;margin-top:40px;">
+                <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center center">
+                    <div *ngFor="let folder of Folders" fxLayout="column" fxLayoutAlign="flex-start"
+                        class="folder-container" (click)="SetCurrent(folder.id)">
+                        <mat-icon class="folder-icon" [style.color]="primaryColor">folder</mat-icon>
+                        <div class="folder-name">{{folder.name}}</div>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:40px;margin-bottom:320px">
+                <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center center">
+                    <div *ngFor="let file of Files">
+                        <ng-container *ngIf="(file.Thumbnail$ | async) as thumbnail; else thumbnailError">
+                            <img class="reference-thumbnail" (click)="onSelect(file.id, file.name)"
+                                [src]="thumbnail | TrustResourceURL">
+                        </ng-container>
+                        <ng-template #thumbnailError>
+                            <div class="reference-thumbnail" fxLayout="column" fxLayoutAlign="center center">
+                                <div style="opacity:0.1;">
+                                    <app-swapping-squares-spinner [color]="primaryColor" [size]="100"
+                                        [animationDuration]="1000">
+                                    </app-swapping-squares-spinner>
+                                </div>
+                                <h3 [style.color]="primaryColor">Loading</h3>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </ng-template>
+</ng-template>

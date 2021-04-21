@@ -71,12 +71,9 @@ export class ProjectComponent implements OnInit, OnDestroy
   MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
 
   ProjectSettings$ = combineLatest([this.MinBoards$, this.Board$]).pipe(
-    tap(t => console.log("START PROJECT SETTINGS")),
     switchMap(([boards, current]) => {
-
-      console.log("PROJECT SETTINGS", boards, current);
       if (!current) return of(null);
-      let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id == current.workspace.id);
+      let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id.toString() == current.workspace.id.toString());
       if (!board) return of(null)
       return this.monday.ProjectSettings$(board.id)
     }),
@@ -86,7 +83,6 @@ export class ProjectComponent implements OnInit, OnDestroy
   ProjectReference$ = this.ProjectSettings$.pipe(
     map(
       settings => {
-        console.log("JERE", settings)
         if (!settings || !settings['Box Folders'])
           return null;
 

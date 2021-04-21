@@ -9,10 +9,24 @@ import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 })
 
 export class FindBoardItemByIdPipe  {
-  transform(Item: BoardItem, SubItems: SubItem[], selected: string) {
-    console.log(Item, SubItems, selected)
+  transform(Item: BoardItem, SubItems: SubItem[], Departments: any[], selected: string) {
     if (!selected || Item.id.toString() == selected) return Item;
       
-      return _.find(SubItems, i => selected == i.id);
+      console.log(Departments, selected)
+      let item =  _.find(SubItems, i => selected == i.id);
+      if (item) {
+        if (item.task)
+          item.type == 'task'
+        else {
+          item.type = 'revision'
+        }
+        return item;
+      }
+      
+      item = _.find(Departments, i => selected == i.id);
+      if (item)
+        item.type == 'department';
+      
+      return item;
   }
 }

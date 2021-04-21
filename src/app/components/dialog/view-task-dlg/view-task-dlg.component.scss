@@ -6,7 +6,7 @@
     padding-top: 20px;
     margin-bottom: 0px;
     background: white;
-    z-index: 1;
+    z-index: 5;
 }
 
 .task-toolbar {
@@ -99,3 +99,24 @@ img {
     color: black;
 }
 
+
+.mat-flat-button.mat-primary.mat-button-disabled, .mat-flat-button.mat-accent.mat-button-disabled, .mat-flat-button.mat-warn.mat-button-disabled, .mat-flat-button.mat-button-disabled.mat-button-disabled, .mat-raised-button.mat-primary.mat-button-disabled, .mat-raised-button.mat-accent.mat-button-disabled, .mat-raised-button.mat-warn.mat-button-disabled, .mat-raised-button.mat-button-disabled.mat-button-disabled, .mat-fab.mat-primary.mat-button-disabled, .mat-fab.mat-accent.mat-button-disabled, .mat-fab.mat-warn.mat-button-disabled, .mat-fab.mat-button-disabled.mat-button-disabled, .mat-mini-fab.mat-primary.mat-button-disabled, .mat-mini-fab.mat-accent.mat-button-disabled, .mat-mini-fab.mat-warn.mat-button-disabled, .mat-mini-fab.mat-button-disabled.mat-button-disabled {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.review-item {
+    place-content: flex-start flex-end;
+    align-items: flex-start;
+    flex-direction: column;
+    box-sizing: border-box;
+    /* border-radius: 10px; */
+    /* padding: 20px 40px; */
+    margin-right: 100px;
+    display: flex;
+    box-shadow: 10px 10px 20px 0px rgb(0 0 0 / 10%);
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: black;
+    padding-bottom: 30px;
+    width: 100%;
+}

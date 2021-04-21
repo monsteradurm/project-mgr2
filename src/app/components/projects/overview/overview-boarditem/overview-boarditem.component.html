@@ -1,53 +1,55 @@
 <div #container class="element-row">
-    <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
-      <div #outplug></div> 
-    </div>
-    <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
-      <div class="subitem-control">
-        <button mat-icon-button class="v-mini-fab" [matBadge]="boarditem.subitem_ids.length" matBadgeSize="small" 
-        (click)="OnExpandButton(boarditem)"
-        [pmBadgeOverride] [primaryColor]="boarditem.status?.additional_info?.color" top="7.5px" fontSize="10px">
-          <mat-icon class="v-mini-fab-icon">more_vert</mat-icon>
-        </button>             
-      </div>
-    </ng-container>
-
-    <div class="element-container no-select" fxLayout="row" fxLayoutAlign="start stretch">
-      <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
-        <div class="element-code">{{ boarditem.itemcode?.text }}</div>
-        <div class="element-title">{{ boarditem.element }}</div>
-      </div>
-
-      <ng-template [ngIf]="boarditem.status && boarditem.status.additional_info" [ngIfThen]="HasStatus" [ngIfElse]="NoStatus"></ng-template>
-      <ng-template #HasStatus>
-        <div class="status-container no-select" [style.background]="boarditem.status.additional_info.color">
-          <div class="task-status">
-            {{boarditem.status.additional_info.label}}
-          </div>
-        </div>  
-      </ng-template>
-      <ng-template #NoStatus>
-        <div class="status-container no-select" style.background="black">
-          <div class="task-status">
-            Not Started
-          </div>
-        </div>
-      </ng-template>
-
-      <div class="task-container no-select">
-        <div class="task-description">
-          {{ boarditem.task }}
-        </div>
-      </div>
-  
-    </div>
+  <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
+    <div #outplug></div>
   </div>
-
-  <ng-container *ngIf="isExpanded && subitems && subitems.length > 0">
-        <ng-container *ngFor="let subitem of subitems; let s = index;">
-            <app-overview-subitem [subitem]="subitem" 
-            [last]="subitems.length - 1"
-            [color]="boarditem?.status?.additional_info?.color"
-            [index]="s" [boarditemContainer]="boardItemContainer"></app-overview-subitem>
-        </ng-container>
+  <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
+    <div class="subitem-control">
+      <button mat-icon-button class="v-mini-fab" [matBadge]="boarditem.subitem_ids.length" matBadgeSize="small"
+        (click)="OnExpandButton(boarditem)" [pmBadgeOverride] [primaryColor]="boarditem.status?.additional_info?.color"
+        top="7.5px" fontSize="10px">
+        <mat-icon class="v-mini-fab-icon">more_vert</mat-icon>
+      </button>
+    </div>
   </ng-container>
+
+  <div class="element-container no-select" fxLayout="row" fxLayoutAlign="start stretch">
+    <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
+      <div class="element-code">{{ boarditem.itemcode?.text }}</div>
+      <div class="element-title">{{ boarditem.element }}</div>
+    </div>
+
+    <ng-template [ngIf]="boarditem.status && boarditem.status.additional_info" [ngIfThen]="HasStatus"
+      [ngIfElse]="NoStatus"></ng-template>
+    <ng-template #HasStatus>
+      <div class="status-container no-select" [style.background]="boarditem.status.additional_info.color">
+        <div class="task-status">
+          {{boarditem.status.additional_info.label}}
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #NoStatus>
+      <div class="status-container no-select" style.background="black">
+        <div class="task-status">
+          Not Started
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="task-container no-select" fxLayout="row" fxLayoutAlign="center space-between">
+
+      <div class="task-description">
+        {{ boarditem.task }}
+      </div>
+      <div class="task-caption" >{{ boarditem.caption?.text }}</div>
+    </div>
+
+  </div>
+</div>
+
+<ng-container *ngIf="isExpanded && subitems && subitems.length > 0">
+  <ng-container *ngFor="let subitem of subitems; let s = index;">
+    <app-overview-subitem [subitem]="subitem" [last]="subitems.length - 1"
+      [color]="boarditem?.status?.additional_info?.color" [index]="s" [boarditemContainer]="boardItemContainer">
+    </app-overview-subitem>
+  </ng-container>
+</ng-container>

@@ -5,6 +5,7 @@ export class BoardItem {
     id: number;
     name: string;
     task: string;
+    type: string = 'task';
     element: string;
     group: { id: string, title: string }
     department: ColumnValues[];
@@ -31,11 +32,9 @@ export class BoardItem {
     selection: string;
     column_values: any;
     column_ids: any = {};
-
-    get description() {
-        return this.updates && this.updates.length > 0 ?
-            this.updates[0] : null;      
-    }
+    description: ColumnValues;
+    caption: ColumnValues;
+    
     updates: {
         id: string;
         body: string //html
@@ -85,7 +84,8 @@ export class BoardItem {
         this.director = ColumnValues.ParseDistinct(i.column_values, ColumnType.Director);
         this.timeline = ColumnValues.ParseFirst(i.column_values, ColumnType.Timeline);
         this.timetracking = ColumnValues.ParseFirst(i.column_values, ColumnType.TimeTracking);
-        
+        this.caption = ColumnValues.ParseFirst(i.column_values, ColumnType.Caption);
+        this.description = ColumnValues.ParseFirst(i.column_values, ColumnType.Description);
         this.status = ColumnValues.ParseFirst(i.column_values, ColumnType.Status);
         this.itemcode = ColumnValues.ParseFirst(i.column_values, ColumnType.ItemCode);
 
@@ -131,6 +131,7 @@ export class SubItem {
     artist: ColumnValues[];
     timetracking: ColumnValues[];
     timeline: ColumnValues[];
+    type: string = 'revision';
     updates: {
         id: string;
         body: string //html

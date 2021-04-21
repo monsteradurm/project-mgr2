@@ -12,6 +12,10 @@ export class ArrayToStrDirective  {
     if (!items || items.length < 1)
         return null;
 
-    return _.map(items, i => i[attr]).join(", ")
+    let result = _.map(items, i => i[attr]).join(", ");
+
+    if (result.trim().length > 0)
+      return result;
+    return null;
   }
 }

@@ -7,6 +7,8 @@
 
       <ng-container *ngIf="(SelectedElement$ | async) as selected">
         <app-view-task-dlg 
+            [Departments] = "Departments$ | async"
+            [ProjectReference]="ProjectReference$ | async"
             [Item]="SelectedElement$ | async" 
             [SyncReview$]="SyncReviews$ | FilterSyncReviewsByItem$ : selected"
           (onClose)="onViewTaskClosed()"></app-view-task-dlg>
