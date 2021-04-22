@@ -3,8 +3,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import * as moment from 'moment';
-import { BehaviorSubject, combineLatest, fromEvent, Observable, of } from 'rxjs';
-import { catchError, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, fromEvent, Observable, of, timer } from 'rxjs';
+import { catchError, delay, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { UserIdentity } from 'src/app/models/UserIdentity';
@@ -51,7 +51,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   endDate = new BehaviorSubject<moment.Moment>(moment().endOf('week'));
   EndDate$ = this.endDate.asObservable().pipe(shareReplay(1));
-
   Dates$ = combineLatest([this.StartDate$, this.EndDate$]).pipe(
     map(([start, end]) => {
       let result = [];
@@ -110,8 +109,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
 
   Boards$ = this.monday.Boards$;
-  
-  Items$ = combineLatest([this.Boards$, this.Columns$]).pipe(
+  User$ = this.UserService.User$;
+
+  Items$ = combineLatest([this.Boards$, this.Columns$, this.User$]).pipe(
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
       return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
@@ -258,6 +258,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     let id = r.reference.getAttribute('data-id');
     r.setContent(document.getElementById(id).innerHTML);
   }
+
   eventDidMount(info) {
     let props = info.event.extendedProps;
     if (props.type != 'logbtn') {
@@ -296,8 +297,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
   AddTippy(evt, text) {
-    console.log(evt);
+    //console.log(evt);
   }
+
   ViewModeChange(v) {
     this.ViewMode$.pipe(take(1)).subscribe(current => {
       if (current != v && v) {
@@ -310,11 +312,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   primaryColor:string;
   subscriptions = [];
 
-  ngAfterViewInit() {
+  ngAfterViewInit() {;
   }
   
   OnVisibilityChange(state) {
-    console.log(state);
+    //console.log(state);
     this.showHoursDlg = state;
   }
   onCloseHoursDlg() {

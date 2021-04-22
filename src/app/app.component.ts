@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy, Output } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, Output, ApplicationRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
@@ -41,6 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private navigation: NavigationService,
+    private application: ApplicationRef,
     private monday: MondayService,
     private msalBroadcastService: MsalBroadcastService,
     private userService: UserService

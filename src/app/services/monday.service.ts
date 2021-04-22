@@ -25,7 +25,6 @@ export class MondayService {
   constructor(
     private UserService: UserService) {
     monday.setToken(_ENV_.token);
-    this.Columns$.subscribe(console.log)
   }
 
   private IsReachable = new BehaviorSubject<boolean>(true);
