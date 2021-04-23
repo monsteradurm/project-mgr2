@@ -61,14 +61,12 @@ export class ReferenceDlgComponent implements OnInit, OnDestroy, AfterViewInit {
     return this._Show;
   }
 
-
-
   Title$ = this.Root$.pipe(
     map(root => root ? root.path_collection.entries : null),
     map(entries => entries ? entries[entries.length - 1] : null),
     map(parent => parent ? parent.name : null)
   )
-  
+
   private current = new BehaviorSubject<string>(null);
 
   refresh() {
@@ -157,9 +155,11 @@ export class ReferenceDlgComponent implements OnInit, OnDestroy, AfterViewInit {
     this.renderer.setStyle(this.errorContainer.nativeElement, 'opacity', 0);
   }
 
-  subscriptions = [];
+  
   ngAfterViewInit() {
   }
+
+  subscriptions = [];
   ngOnInit(): void {
     
 
