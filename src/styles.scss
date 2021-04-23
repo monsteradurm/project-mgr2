@@ -16,7 +16,7 @@ $project-mgr2-theme: mat-light-theme((
 ));
 
 $custom-typography: mat-typography-config(
-  $font-family: cursive,
+  $font-family: 'Delius',
   $headline: mat-typography-level(32px, 48px, 700),
   $body-1: mat-typography-level(16px, 24px, 500)
 );
@@ -26,10 +26,10 @@ $custom-typography: mat-typography-config(
 @import '~@fullcalendar/timegrid/main.css';
 /* You can add global styles to this file, and also import other style files */
 
-$font: cursive !important;
+$font: 'Delius' !important;
 
 .mat-body, .mat-body-1, .mat-typography, a, div, input, span {
-  font-family: $font;
+  font-family: Delius;
   letter-spacing: 0.25px !important;
 }
 html, body { height: 100%; }
@@ -117,7 +117,7 @@ action-mat-group > button > span > mat-icon {
 }*/
 
 .fc, .fc-toolbar-title {
-  font-family: cursive !important;
+  font-family: 'Delius' !important;
 }
 
 .nav-toolbar > action-mat-group > button > span > mat-icon {
@@ -131,7 +131,7 @@ action-mat-group > button > span > mat-icon {
   height:40px;
   padding-left:10px;
   border: solid 1px black;
-  font-family: cursive !important;
+  font-family: 'Delius' !important;
   font-size:12px;
   font-weight:lighter;
   letter-spacing:0.25px;
