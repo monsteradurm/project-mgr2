@@ -1,4 +1,4 @@
-import { ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { ChartType, getPackageForChart, GoogleChartComponent, ScriptLoaderService } from 'angular-google-charts';
 import * as moment from 'moment';
 import * as _ from 'underscore';
@@ -6,6 +6,7 @@ import { OverviewComponent } from '../overview.component';
 import { shareReplay, tap, map, timestamp } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { BoardItem } from 'src/app/models/BoardItem';
+import {gantt } from "dhtmlx-gantt";
 
 const _TASKNAME_ = 0;
 const _ARTIST_ = 1;
@@ -18,18 +19,112 @@ const NULL_MOMENT = moment(0).toDate();
   templateUrl: './overview-gantt.component.html',
   styleUrls: ['./overview-gantt.component.scss'], 
 })
-export class OverviewGanttComponent implements OnInit {
-  @ViewChild('overviewGantt', { read: ElementRef}) container;
-  @ViewChild('chart', {static: false}) chart;
+export class OverviewGanttComponent implements OnInit, AfterViewInit {
+  
+  scroll_state;
+  clicked = false;
+  original_mouse_position;
+
+  @HostListener('mousedown', ['$event']) onMouseDown(event) {
+    event.preventDefault(); 
+    this.scroll_state = gantt.getScrollState().x;
+	  this.original_mouse_position = event.clientX;
+    this.clicked = true;
+  }
+
+  @HostListener('mousemove', ['$event']) onMouseMove(e) {
+    if (!this.clicked)
+    return;
+
+    var scroll_value = this.scroll_state + this.original_mouse_position - e.clientX
+    gantt.scrollTo(scroll_value, null);
+  }
+  @HostListener('touchmove', ['$event'])
+  @HostListener('window:mouseup', ['$event']) onMouseUp(event) {
+    event.preventDefault(); 
+    this.clicked = false;
+  }
+
+  @ViewChild('chart', {static: false, read: ElementRef}) chart: ElementRef;
 
   DoNotRender: boolean = false;
 
   private boarditems = new BehaviorSubject<BoardItem[]>(null);
   BoardItems$ = this.boarditems.asObservable().pipe(shareReplay(1));
 
-  @Input() set BoardItems(items) { 
-    this.boarditems.next(items); }
 
+  _Width;
+  @Input() set Width(w) {
+    gantt.config.grid_width = w;
+    this._Width = w;
+  }
+
+  get Width() {
+    return this._Width;
+  }
+
+  @Input() set BoardItems(items) { 
+    this.boarditems.next(items); 
+
+    this.SetViewRange(items);
+    let data = _.map(items, i => this.ProcessItem(i));
+    gantt.templates.task_class = (start, end, task) => {
+      if (task.text == 'Unassigned, No Timeline')
+        return 'gantt_empty_task'
+      return '';
+    };
+    gantt.config.smart_scales = false;
+    gantt.config.sort = false;
+    gantt.config.scroll_on_click = true;
+    gantt.config.date_format = "%Y-%m-%d";
+    gantt.config.scale_height = 50;
+    gantt.config.columns = [];
+    gantt.config.readonly = true;
+    gantt.config.show_unscheduled = true;
+    gantt.config.scales = [
+      {unit: "month", step: 1, format: "%F, %Y"},
+      {unit: "day", step: 1, format: "%j, %D"}
+    ];
+
+			gantt.config.show_tasks_outside_timescale = true;
+      gantt.templates.timeline_cell_class = function(task,date){
+        if(date.getDay()==0||date.getDay()==6){ 
+            return "gantt-weekend" ;
+        }
+      };
+			gantt.config.start_date = moment(this.MinViewValue).toDate();
+			gantt.config.end_date = moment(this.MaxViewValue).toDate();
+
+    gantt.parse({
+      data: data
+    });
+    
+  }
+
+  ProcessItem(i) {
+    let itemRange = this.GetItemRange(i);
+
+    let start = itemRange[0];
+    let end = itemRange[1];
+  
+    let hasArtist = i.artist && i.artist.length > 0;
+    let hasTimeline = start && end;
+    let color;
+    let artist;
+
+    artist = (hasArtist ?
+        _.map(i.artist, a => a.text).join(". ") : 'Unassigned') + (hasTimeline ? '' : ', No Timeline')
+
+    color = i.status && i.status.additional_info ? i.status.additional_info.color : 'black';
+    if (!hasArtist)
+      color = 'transparent';
+
+    let result = { id: i.id, text: artist, start_date: hasTimeline ? start.toDate() : moment(this.MinViewValue).toDate(), 
+      duration: hasTimeline ? end.diff(start, 'days') : 5, 
+      row_height: 40, bar_height: 33, progress: 0, color: color, textColor: hasArtist && hasTimeline? 'white' : 'black'} ;
+    return  result;
+  }
+    /*
   Data$ = this.BoardItems$.pipe(
     map(items => {
       if (items.length < 1) {
@@ -63,8 +158,8 @@ export class OverviewGanttComponent implements OnInit {
       return result;
     }),
     shareReplay(1)
-  )
-  
+  )*/
+  /*
   ProcessItem(i, index) {
     let itemRange = this.GetItemRange(i);
 
@@ -112,6 +207,7 @@ export class OverviewGanttComponent implements OnInit {
         </div>`
     return html;
   }
+  
   GetItemColors(items) {
     let colors = [];
     _.forEach(items, i => {
@@ -127,6 +223,7 @@ export class OverviewGanttComponent implements OnInit {
 
     return colors;
   }
+  */
   GetItemRange(i) {
     let timelineArr = i.timeline && i.timeline.text ? i.timeline.text.split(' - ') : null;
     let start = timelineArr ? moment(timelineArr[0]).startOf('day') : null;
@@ -175,13 +272,13 @@ export class OverviewGanttComponent implements OnInit {
       range = [moment(today).startOf('week'), moment(end).endOf('week')];
     }
 
-    this.MinViewValue = moment(range[0]);
-    this.MaxViewValue = moment(range[1]);
+    this.MinViewValue = moment(range[0]).subtract(1, 'week');
+    this.MaxViewValue = moment(range[1]).add(1, 'week');
   }
   colors = [];
 
   Options;
-  
+  /*
   SetOptions(minValue, maxValue, colors) {
     this.Options = {
 
@@ -209,7 +306,7 @@ export class OverviewGanttComponent implements OnInit {
           },
         },  
     }
-  }
+  }*/
 
   constructor(private parent: OverviewComponent, private app: ApplicationRef) { }
 
@@ -225,26 +322,26 @@ export class OverviewGanttComponent implements OnInit {
             { label: 'End', type: 'date' },
             ]
 
-  onResized(data:any[]) {
-    this.width = window.screen.width - 600 - 100 - 20;
-    this.height = ( data.length * 40 ) + 520
-  }
 
   subscriptions = [];
   ngOnInit(): void {
     this.subscriptions.push(
       this.parent.UpdatedBoardItems$.subscribe(items => {
         if (items) {
-          this.boarditems.next(items)
+          this.boarditems.next(items);
         }
       })
     )
   }
 
+  ngAfterViewInit() {
+    gantt.init(this.chart.nativeElement);
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
-
+  /*
   NoBars: boolean = false;
   OnLeave(evt) {
     this.GetRows().forEach(r => this.SetRowAttributes(r, this.NoBars ? '50' : '150'));
@@ -252,6 +349,7 @@ export class OverviewGanttComponent implements OnInit {
   OnOver(evt) {
     this.GetRows().forEach(r => this.SetRowAttributes(r, this.NoBars ? '50' : '150'));
   }
+  */
   onError(evt) {
 
     let error = 'There was an error with the production data.\n'
@@ -310,7 +408,7 @@ export class OverviewGanttComponent implements OnInit {
   
   }
   
-
+  /*
   GetRows() {
     return _.zip(
       _.filter(this.FindElement('rect'), t=> t && parseFloat(t.getAttribute('x')) != 0), 
@@ -321,11 +419,12 @@ export class OverviewGanttComponent implements OnInit {
   OnReady(evt) {
     this.GetRows().forEach(r => this.SetRowAttributes(r, this.NoBars ? '40' : '150'));
     
-  }
-
+  }*/
+  /*
   FindElement(tagName) : Element[] {
     return this.IterateChildren(this.container.nativeElement, tagName, []);
   }
+  */
 
   IterateChildren(el:Element, tagName:string, container: any[]): Element[] {
     if (el.children && el.children.length > 0) {

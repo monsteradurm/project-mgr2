@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { BoardItem, SubItem } from '../../../../models/BoardItem';
 import { ProjectComponent } from '../../project/project.component';
 import { OverviewComponent } from '../overview.component';
@@ -21,8 +21,13 @@ export class OverviewBoarditemComponent implements OnInit {
 
   @Input() boarditem: BoardItem;
 
+  @Output() CaptionVisible: boolean = true;
   isExpanded = false;
   @Output() subitems;
+
+  @Input() set Width(W: number) {
+      this.CaptionVisible = W > 750;
+  }
 
   OnExpandButton(i) {
     if (this.isExpanded) {

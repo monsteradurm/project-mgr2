@@ -40,7 +40,7 @@
       <div class="task-description">
         {{ boarditem.task }}
       </div>
-      <div class="task-caption" >{{ boarditem.caption?.text }}</div>
+      <div class="task-caption" *ngIf="CaptionVisible">{{ boarditem.caption?.text }}</div>
     </div>
 
   </div>

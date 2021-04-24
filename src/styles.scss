@@ -3,6 +3,10 @@
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
 @import './../node_modules/primeng/resources/primeng.min.css';
+@import './../node_modules/primeicons/primeicons.css';
+@import './../node_modules/primeflex/primeflex.css';
+@import './../node_modules/dhtmlx-gantt/codebase/dhtmlxgantt.css';
+
 @include mat-core();
 $project-mgr2-primary: mat-palette($mat-indigo);
 $project-mgr2-accent: mat-palette($mat-pink, A200, A100, A400);
@@ -86,6 +90,9 @@ button.mat-menu-item, .mat-menu-item {
   color:#555;
 }
 
+.action-mat-group > .mat-button > .mat-button-wrapper > span {
+  margin-left:10px;
+}
 
 .mat-menu-content > div > mat-divider {
   color: black;
@@ -604,4 +611,71 @@ div.bp-header-container > div > .bp-default-logo {
 
 .mat-tab-label, .mat-tab-link {
   font-family: unset !important;
+}
+
+app-overview {
+  .gantt_task_row.gantt_selected .gantt_task_cell {
+    border-right-color: #ddd;
+  }
+
+  .gantt_grid_data .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected, .gantt_task_row.gantt_selected {
+    background-color: rgb(0 0 0 / 10%)
+  }
+  .gantt_task_line.gantt_task_inline_color.gantt_project.gantt_selected, .gantt_task_line.gantt_task_inline_color.gantt_selected {
+    box-shadow: none;
+  }
+  .gantt_task_line.gantt_task_inline_color:not(.gantt_empty_task) {
+    border-radius:5px;
+    font-weight:bold;
+    border: solid 1px black;
+  }
+
+  .gantt_task_cell {
+    border-right: 1px solid #ddd;
+  }
+
+  .gantt_empty_task {
+    color:gray;
+    border:none;
+  }
+  .gantt_task_line.gantt_task_inline_color:hover:not(.gantt_empty_task) {
+    border: inset 2px #000 !important;
+    box-shadow: 1px 3px 6px 0px #00000077;
+  }
+
+  .p-splitter {
+    border: none !important;
+    height:100%;
+    }
+
+    .p-splitter .p-splitter-gutter {
+      background: #bbb;
+  }
+
+    .p-splitter .p-splitter-gutter .p-splitter-gutter-handle {
+      background: #aaa;
+  }
+  .gantt_layout_root {
+    border:none;
+  }
+
+  .gantt_task .gantt_task_scale .gantt_scale_cell {
+    color: black;
+    border-bottom: solid 1px #bbb;
+    /* border-right: solid 1px #bbb; */
+    overflow: visible;
+    font-weight: bold;
+  }
+ 
+  .gantt_task_scale, .gantt_scale_cell {
+    border:none;
+    color:black;
+    //font-size:15px;
+    font-family: 'Delius';
+    //margin-top:-15px;
+  }
+
+  .gantt-weekend {
+    background:#00000012;
+  }
 }

@@ -129,6 +129,14 @@ export class OverviewComponent implements OnInit, OnDestroy {
   Artists$ = this.parent.Artists$;
   Directors$ = this.parent.Directors$;
 
+  BoardWidth;
+  GanttWidth;
+  onBoardsResize(evt) {
+    this.BoardWidth = evt.width;
+    this.GanttWidth = window.innerWidth - evt.width;
+  }
+  
+
   UpdateBoardItem(item) {
     this.BoardItems$.pipe(take(1)).subscribe(items => {
       let entry = _.findIndex(items, i=> i.id == item.id);

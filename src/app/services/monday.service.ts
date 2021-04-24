@@ -157,7 +157,7 @@ export class MondayService {
     map(result => result['boards']),
     take(1))
 
-  Boards$ = this.Query$(`boards(state:active) 
+  Boards$ = this.Query$(`boards(state:active, limit:200) 
   { id, name, 
     workspace { name, id } 
     groups { id, title }}`)

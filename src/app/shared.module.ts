@@ -72,6 +72,7 @@ import {ColorPickerModule} from 'primeng/colorpicker';
 import { MondayBoolIsCheckedPipe } from './directives/monday/mondayBool-isChecked.directive';
 import { ReferenceComponent } from './components/reference/reference.component';
 import { MouseWheelDirective } from './directives/mousewheel.directive';
+import {SplitterModule} from 'primeng/splitter';
 
 declare var google:any;
 
@@ -133,7 +134,7 @@ const imports = [
     DialogModule,
     SkeletonModule,
     ColorPickerModule,
-
+    SplitterModule,
     ResizeModule, 
     FullCalendarModule,
 

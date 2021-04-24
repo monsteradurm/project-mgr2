@@ -1,9 +1,9 @@
 
 .title-container {
     height:100%;
-    max-width:150px;
+    //max-width:150px;
     display:flex;
-    max-width:180px;
+    width:55%;
     min-width:180px;
     justify-content:end;
     border-right: solid 1px black;
@@ -12,7 +12,7 @@
   .task-container {
     height:100%;
     display:flex;
-    width:100%;
+    width:80%;
     justify-content:start;
     border-left: solid 1px black;
   }
@@ -20,8 +20,9 @@
   .status-container {
     height:100%;
     display:flex;
-    max-width:180px;
+    //max-width:180px;
     min-width: 180px;
+    max-width: 230px;
     justify-content:end;
     background: black;
   }
@@ -119,13 +120,16 @@
     width: 100%;
     box-shadow:none;
     z-index: 2;
+    margin-left:75px;
+    margin-right:15px;
   }
   
   .element-row {
     height:35px;
     display:flex;
-    margin-top:5px;
+    margin: 2.5px 0px;
     position:relative;
+    min-width:600px;
     //padding: 5px 0px;
   }
 
