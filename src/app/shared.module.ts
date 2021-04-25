@@ -54,7 +54,7 @@ import { FilterSyncReviewsByItemPipe } from './directives/elements/FilterSyncRev
 import { FilterSyncItemsByTaskPipe } from './directives/elements/filterSyncItemsByTask.directive';
 import { FindBoardItemByIdPipe } from './directives/elements/FindBoardItemById.directive';
 import {SkeletonModule} from 'primeng/skeleton';
-import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
+import { MatchSubItemsWithBoardItemPipe } from './directives/elements/MatchSubItemsWithBoardItem.directive';
 import { FindUserFromNamePipe } from './directives/elements/FindUserFromName.drective';
 import { FindUserPhotoFromIdentityPipe } from './directives/elements/FindUserPhotoFromEmail.directive';
 import { FetchUpdatesToSyncItemPipe } from './directives/elements/FetchUpdatesToSyncItem.directive';
@@ -73,6 +73,7 @@ import { MondayBoolIsCheckedPipe } from './directives/monday/mondayBool-isChecke
 import { ReferenceComponent } from './components/reference/reference.component';
 import { MouseWheelDirective } from './directives/mousewheel.directive';
 import {SplitterModule} from 'primeng/splitter';
+import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
 
 declare var google:any;
 
@@ -93,7 +94,7 @@ const declarations = [
     FilterSyncReviewsByItemPipe,
     FilterSyncItemsByTaskPipe,
     FindBoardItemByIdPipe,
-    FetchSubItemsFromBoardItemPipe,
+    MatchSubItemsWithBoardItemPipe,
     FindUserFromNamePipe,
     FindUserPhotoFromIdentityPipe,
     FetchUpdatesToSyncItemPipe,
@@ -102,7 +103,8 @@ const declarations = [
     ReferenceDlgComponent,
     ReferenceComponent,
     MondayBoolIsCheckedPipe,
-    MouseWheelDirective
+    MouseWheelDirective,
+    FetchSubItemsFromBoardItemPipe
   ]
   
 const imports = [

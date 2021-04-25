@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, Chan
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
-import { map, tap, shareReplay, timestamp, take } from 'rxjs/operators';
+import { map, tap, shareReplay, timestamp, take, switchMap } from 'rxjs/operators';
 import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
 
 import * as _ from 'underscore';
@@ -11,6 +11,7 @@ import { Tag } from 'src/app/models/Columns';
 import { BoxService } from 'src/app/services/box.service';
 import { OverviewGanttComponent } from './overview-gantt/overview-gantt.component';
 import { OverviewSubitemComponent } from './overview-subitem/overview-subitem.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-overview',
@@ -21,30 +22,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   initializing = true;
   subscriptions = [];
-  
+  Fetching = true;
   constructor(public parent: ProjectComponent,
-     private changeDetector: ChangeDetectorRef,
-     private actionOutlet: ActionOutletFactory) {
-  }
-  
-  SubItems: OverviewSubitemComponent[] = [];
-
-  AddSubItem(s: OverviewSubitemComponent) {
-    this.SubItems.push(s);
+    private changeDetector: ChangeDetectorRef,
+    private actionOutlet: ActionOutletFactory) {
   }
 
-  RemoveSubItem(s: OverviewSubitemComponent) {
-    this.SubItems = _.filter(this.SubItems, i => i != s)
-  }
-
-  RefreshView() {
-    this.SubItems.forEach(i => i.RefreshPosition());
-    this.changeDetector.detectChanges();
-  }
-
-  ClearLines() {
-    this.SubItems.forEach(i => i.line.remove()); 
-  }
+  SubItems$ = this.parent.SubItems$;
 
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('group_work');
   private updatedBoardItems = new BehaviorSubject<BoardItem[]>(null);
@@ -79,14 +63,22 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1))
   SyncReviews$ = this.parent.SyncReviews$;
-  
+
   private get box() { return this.parent.box; }
 
   GanttView: OverviewGanttComponent;
+  @Output() Expanded: string[] = [];
+
+  onExpand(i) {
+    if (this.Expanded.indexOf(i) > -1)
+      this.Expanded = _.filter(this.Expanded, e => e != i);
+    else
+      this.Expanded = [...this.Expanded, i];
+  }
 
   SetGanttView(g) { this.GanttView = g; }
-
-  ngAfterViewChecked(){
+  
+  ngAfterViewChecked() {
     this.changeDetector.detectChanges();
   }
 
@@ -106,7 +98,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       else if (!el && item && item.id) {
         this.selectedElement.next(item);
       }
-      else if (el && !item ) {
+      else if (el && !item) {
         this.selectedElement.next(null);
       }
     })
@@ -134,20 +126,29 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       map(([directors, ignored]) => _.filter(directors, s => ignored.indexOf(s) < 0)),
     ).pipe(take(1)).subscribe(directors => this.ignoredDirectors.next(directors));
   }
-  
-  BoardItems$ = combineLatest([
-      this.parent.BoardItems$.pipe(timestamp()), 
-      this.UpdatedBoardItems$.pipe(timestamp())]).pipe(
-        map(([parent, updated]) => {
-          if (!updated.value)
-            return parent.value;
 
-          else if( updated.timestamp > parent.timestamp ) 
-            return updated.value;
+  BoardItems$ =
+    of(null).pipe(
+      switchMap(t => {
+        this.Fetching = true;
+        return combineLatest([
+          this.parent.BoardItems$.pipe(timestamp()),
+          this.UpdatedBoardItems$.pipe(timestamp())]).pipe(
+            map(([parent, updated]) => {
+              if (!updated.value)
+                return parent.value;
 
-          return parent.value;          
-    })
-  )
+              else if (updated.timestamp > parent.timestamp)
+                return updated.value;
+
+              return parent.value;
+            })
+          )
+      }),
+      tap(t => this.Fetching = false),
+      shareReplay(1)
+    )
+
   ProjectReference$ = this.parent.ProjectReference$;
   Board$ = this.parent.Board$;
   Group$ = this.parent.Group$;
@@ -164,14 +165,14 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.BoardWidth = evt.width;
     this.GanttWidth = window.innerWidth - evt.width;
   }
-  
+
   onItemClicked(item) {
     this.GanttView.ScrollTo(item)
   }
 
   UpdateBoardItem(item) {
     this.BoardItems$.pipe(take(1)).subscribe(items => {
-      let entry = _.findIndex(items, i=> i.id == item.id);
+      let entry = _.findIndex(items, i => i.id == item.id);
       items[entry] = item;
       this.updatedBoardItems.next([...items]);
     })
@@ -186,10 +187,10 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.statusMenu.setTitle('Status (' + (options.length - ignored.length) + ' Selected)')
         if (ignored.indexOf(o) == -1)
           this.statusMenu.createToggle().setIcon('add').setTitle(o)
-          .fire$.subscribe(a => this.SetStatusFilter(o))
-        else 
-        this.statusMenu.createToggle().setIcon('remove').setTitle(o)
-        .fire$.subscribe(a => this.SetStatusFilter(o))
+            .fire$.subscribe(a => this.SetStatusFilter(o))
+        else
+          this.statusMenu.createToggle().setIcon('remove').setTitle(o)
+            .fire$.subscribe(a => this.SetStatusFilter(o))
       })
 
       let bottom = this.statusMenu.createGroup();
@@ -212,10 +213,10 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.directorsMenu.setTitle('Directors (' + (options.length - ignored.length) + ' Selected)')
         if (ignored.indexOf(o) == -1)
           this.directorsMenu.createToggle().setIcon('add').setTitle(o)
-          .fire$.subscribe(a => this.SetDirectorsFilter(o))
-        else 
-        this.directorsMenu.createToggle().setIcon('remove').setTitle(o)
-        .fire$.subscribe(a => this.SetDirectorsFilter(o))
+            .fire$.subscribe(a => this.SetDirectorsFilter(o))
+        else
+          this.directorsMenu.createToggle().setIcon('remove').setTitle(o)
+            .fire$.subscribe(a => this.SetDirectorsFilter(o))
       })
 
       let bottom = this.directorsMenu.createGroup();
@@ -237,14 +238,14 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.artistsMenu.setTitle('Artists (' + (options.length - ignored.length) + ' Selected)')
         if (ignored.indexOf(o) == -1)
           this.artistsMenu.createToggle().setIcon('add').setTitle(o)
-          .fire$.subscribe(a => this.SetArtistsFilter(o))
-        else 
-        this.artistsMenu.createToggle().setIcon('remove').setTitle(o)
-        .fire$.subscribe(a => this.SetArtistsFilter(o))
+            .fire$.subscribe(a => this.SetArtistsFilter(o))
+        else
+          this.artistsMenu.createToggle().setIcon('remove').setTitle(o)
+            .fire$.subscribe(a => this.SetArtistsFilter(o))
       })
-    let bottom = this.artistsMenu.createGroup()
-    bottom.createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredArtists());
-    bottom.createButton().setIcon('clear').setTitle('Clear').fire$.subscribe(a => this.ignoredArtists.next([]));
+      let bottom = this.artistsMenu.createGroup()
+      bottom.createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredArtists());
+      bottom.createButton().setIcon('clear').setTitle('Clear').fire$.subscribe(a => this.ignoredArtists.next([]));
 
       this.initializing = false;
       return this.artistsMenu;
@@ -266,7 +267,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       let index = options.indexOf(s);
       if (index > -1)
         result.splice(index, 1);
-      else 
+      else
         result.push(s);
 
       this.ignoredArtists.next(result.sort());
@@ -280,7 +281,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       let index = options.indexOf(s);
       if (index > -1)
         result.splice(index, 1);
-      else 
+      else
         result.push(s);
 
       this.ignoredDirectors.next(result.sort());
@@ -291,7 +292,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.initializing) return;
 
     combineLatest([this.Status$, this.IgnoredStatus$]).pipe(take(1)).subscribe(
-     ([options, ignored]) => {
+      ([options, ignored]) => {
         if (ignored.length == 0) {
           this.ignoredStatus.next(_.filter(options, o => o != s))
           return;
@@ -299,14 +300,14 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
         if (ignored.indexOf(s) < 0)
           ignored.push(s)
-        else 
+        else
           ignored = _.filter(ignored, i => i != s);
 
         if (ignored.length == options.length)
           ignored = [];
-          
+
         this.ignoredStatus.next(ignored);
-     });
+      });
   }
 
   SortByMenu$ = combineLatest([this.SortBy$, this.ReverseSorting$]).pipe(
@@ -316,12 +317,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.sortByMenu.setTitle('Sort By ' + sortBy)
       this.SortByOptions.forEach(o => {
         this.sortByMenu.createButton().setTitle(o).setIcon(!doReverse ? 'north' : 'south')
-        .fire$.subscribe(a => this.SetSortBy(o));
+          .fire$.subscribe(a => this.SetSortBy(o));
       })
       this.sortByMenu.createGroup().createButton()
         .setTitle('Reverse').setIcon('flip_camera_android').fire$.subscribe(
-            a => this.SetReverseSorting()
-          );
+          a => this.SetReverseSorting()
+        );
 
       this.initializing = false;
       return this.sortByMenu;
@@ -334,12 +335,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.groupMenu.setTitle(group.title);
       this.groupMenu.removeChildren();
       board.groups.forEach(g => this.groupMenu.createButton()
-      .setTitle(g.title).fire$.subscribe(a => this.SetGroup(g.id)));
+        .setTitle(g.title).fire$.subscribe(a => this.SetGroup(g.id)));
       return this.groupMenu;
     }),
   )
 
-  
+
   SetGroup(g) {
     this.parent.SetGroup(g);
   }
@@ -347,12 +348,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   get primaryColor() { return this.parent.PrimaryColor; }
 
 
-  ngOnDestroy() : void {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  SetDepartment(d) { 
-    this.parent.SetDepartment(d); 
+  SetDepartment(d) {
+    this.parent.SetDepartment(d);
   }
 
 

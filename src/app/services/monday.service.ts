@@ -43,18 +43,6 @@ export class MondayService {
     map((users:any[]) => _.map(users, u => new MondayIdentity(u))),
   ).pipe(take(1));
 
-  SubItems$(ids: string[]) {
-    let query = `items(ids:[${ids.join(",")}]) { 
-      id name 
-          updates(limit:1) { id body creator { id } created_at }
-          column_values { title text id additional_info value }
-    }`
-
-    return this.Query$(query.split('\n').join('').trim()).pipe(
-      map((data:any) => data.items),
-    )
-  }
-
   ProjectSettings$(boardId: string) {
     let query = `boards(limit:1 ids:${boardId}) {
       items { 
@@ -74,6 +62,21 @@ export class MondayService {
   )
   }
 
+  SubItems$(ids: string[]) {
+  
+    let query = `items(ids:[${ids.join(' ')}] limit:200) {
+        id name 
+        column_values { title text id additional_info value } }`
+
+  return this.Query$(query.split('\n').join('').trim()).pipe(
+    map((data:any) => data.items),
+    catchError(err => {
+      console.log(err);
+      return err
+    })
+  )
+  }
+  
   BoardItems$(boardId: string, groupId: string) {
     let query = `boards(limit:1 ids:${boardId}) {
         groups(ids:"${groupId}") {

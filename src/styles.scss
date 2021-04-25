@@ -641,6 +641,8 @@ app-overview {
 
   .gantt_empty_task {
     color:gray;
+    background: 'transparent' !important;
+    background-color: 'transparent' !important;
     border:none;
     user-select: none; /* standard syntax */
   -webkit-user-select: none; /* webkit (safari, chrome) browsers */
@@ -686,7 +688,13 @@ app-overview {
   -khtml-user-select: none; /* webkit (konqueror) browsers */
   -ms-user-select: none; /* IE10+ */
   }
- 
+
+  .p-dialog .p-dialog-content {
+    padding: 0px
+}
+.gantt_marker {
+  background-color: rgb(0 151 118);
+}
   .gantt_task_scale, .gantt_scale_cell {
     border:none;
     color:black;
@@ -702,5 +710,12 @@ app-overview {
 
   .gantt-weekend {
     background:#00000012;
+  }
+
+  .gantt-status-bg {
+    opacity:0.2;
+    background: red;
+    height: 45px;
+    position:absolute;
   }
 }

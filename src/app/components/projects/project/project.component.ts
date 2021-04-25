@@ -39,7 +39,7 @@ export class ProjectComponent implements OnInit, OnDestroy
 
   private internalRouteParams = new BehaviorSubject<any>(null);
   private errorMessage = new BehaviorSubject<string>(null);
-
+ 
   InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
   ErrorMessage$ =
   this.errorMessage.asObservable().pipe(
@@ -138,6 +138,25 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
 
+  SubItems$ = this.BoardItems$.pipe(
+    switchMap(boardItems => {
+      if (!boardItems || boardItems.length < 1)
+        return of([]);
+      
+      let filtered = _.filter(boardItems, i => i.subitem_ids && i.subitem_ids.length > 0);
+      if (filtered.length < 1)
+        return of([]);
+
+      let subgroups = _.map(filtered, i => i.subitem_ids);
+      let flattened = _.flatten(subgroups);
+      if (flattened.length < 1)
+        return of([]);
+        
+      return this.monday.SubItems$(flattened);
+    }),
+    shareReplay(1)
+  )
+
   Departments$ = this.BoardItems$.pipe(
     map(items => _.map(items, i=> i.department)),
     map(values => values && values.length > 0 ? values : 
@@ -194,6 +213,7 @@ Please request the production data be extended to include this column.`)
     shareReplay(1),
   )
 
+
   Department$ = combineLatest([this.Departments$, this.NavigationParameters$]).pipe(
     map(([departments, params]) => {
       if (!departments || departments < 1) return null;
@@ -226,13 +246,14 @@ Please request the production data be extended to include this column.`)
         }
       })
   }
+
   SetGroup(g) {
     combineLatest([this.Board$, this.Group$, this.Department$]).pipe(take(1))
     .subscribe(
       ([board, group, department]) => {
         if (g != group) {
           this.errorMessage.next(null);
-          let params = {board: board.id, group: g}
+          let params = {board: board.id, group: g};
           
           if (department && department.id)
             params['department'] = department.id;

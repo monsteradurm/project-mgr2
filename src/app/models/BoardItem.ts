@@ -20,6 +20,7 @@ export class BoardItem {
     subitem_ids: string[];
     dependencies: ColumnValues[];
 
+    isExpanded: boolean = false;
     board: {
         id:string,
         name: string

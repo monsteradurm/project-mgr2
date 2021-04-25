@@ -12,7 +12,7 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./overview-boarditem.component.scss']
 })
 export class OverviewBoarditemComponent implements OnInit {
-  @HostListener('dblclick') onSelect() {
+  onSelect() {
     this.parent.onSelectItem(this.boarditem)
   }
 
@@ -23,11 +23,9 @@ export class OverviewBoarditemComponent implements OnInit {
 
   @Input() boarditem: BoardItem;
   @Output() itemClicked = new EventEmitter<boolean>(null);
+  @Output() onExpand = new EventEmitter<boolean>(null);
   @Output() CaptionVisible: boolean = true;
   @Output() ItemCodeVisible: boolean = true;
-
-  isExpanded = false;
-  @Output() subitems;
 
   @Input() set Width(W: number) {
       this.CaptionVisible = W > 750;
@@ -39,25 +37,8 @@ export class OverviewBoarditemComponent implements OnInit {
   }
 
   OnExpandButton(i) {
-    if (this.isExpanded) {
-      this.isExpanded = false;
-      this.subitems = null;
-    }
-    else {
-      this.isExpanded = true;
-      this.project.monday.SubItems$(i.subitem_ids).subscribe((subitems) => {
-          this.subitems = _.map(subitems, s => new SubItem(s))
-          this.boarditem.subitems = this.subitems;
-          this.parent.UpdateBoardItem(this.boarditem);
-        }
-      )
-    }
-
-    this.parent.BoardItems$.pipe(take(1)).subscribe((items) => {
-      let entry = _.find(items, e => e.id == i.id);
-      entry.subitems = this.subitems;
-      this.parent.UpdateBoardItem(items);
-    });
+    i.isExpanded = !i.isExpanded;
+    this.onExpand.next(true);
   }
 
   ngOnInit(): void {

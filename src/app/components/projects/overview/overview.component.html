@@ -62,28 +62,57 @@
       </div>
 
     </nav>
-    <ngcontainer
-      *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ | 
+    <!-- fetch boarditems early and shareReplay -->
+    <ng-container *ngIf="BoardItems$ | async"></ng-container>
+    
+    <ng-container *ngIf="!Fetching; else fetchingMonday">
+      <ng-container
+        *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ | 
               FilterItemsByArtist$ : IgnoredArtists$ | FilterItemsByDirector$ : IgnoredDirectors$ | async) as items; else noItems">
+        <ng-container *ngIf="items.length > 0; else noItems">
+          <ng-container *ngIf="(SubItems$ | async) as SubItems">
+            <p-splitter layout="horizontal" [panelSizes]="[50,50]">
+              <ng-template pTemplate>
+                <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch"
+                  style="width:100%;margin-top:50px">
+                  <ng-container *ngFor="let item of items">
+                    <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
+                      [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
+                    </app-overview-boarditem>
+                  </ng-container>
+                </div>
+              </ng-template>
 
-      <p-splitter  layout="horizontal" [panelSizes]="[50,50]">
-        <ng-template pTemplate>
-          <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch" 
-          style="width:100%;margin-top:50px">
-            <ng-container *ngFor="let item of items">
-              <app-overview-boarditem [boarditem]="item" [Width]="BoardWidth" (itemClicked)="onItemClicked(item)"
-                (dblclick)="onSelectItem(item)">
-              </app-overview-boarditem>
-            </ng-container>
-          </div>
-        </ng-template>
+              <ng-template pTemplate>
+                <div fxLayout="column" fxLayoutAlign="stretch stretch">
+                  <app-overview-gantt [BoardItems]="items" style="height:100%;min-width:550px" [Width]="GanttWidth"
+                    [Expanded]="Expanded">
+                  </app-overview-gantt>
+                </div>
+              </ng-template>
 
-        <ng-template pTemplate>
-          <div fxLayout="column" fxLayoutAlign="stretch stretch">
-            <app-overview-gantt [BoardItems]="items" style="height:100%;min-width:550px" [Width]="GanttWidth"></app-overview-gantt>
-          </div>
-        </ng-template>
-      </p-splitter>
-    </ngcontainer>
+            </p-splitter>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-template #fetchingMonday>
+      <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+        <div style="opacity:0.15;">
+          <app-swapping-squares-spinner [animationDuration]="1000" [color]="primaryColor" [size]="120"
+            style="opacity:0.15;">
+          </app-swapping-squares-spinner>
+        </div>
+        <h3 [style.color]="primaryColor" style="margin-top:30px">
+          Fetching Items from Monday...
+        </h3>
+      </div>
+    </ng-template>
+    <ng-template #noItems>
+      <div fxLayout="row" fxLayoutAlgn="center center">
+        <h3 style="width:100%;text-align:center;margin-top:40px">No Items have been added to the Monday database for
+          this board.</h3>
+      </div>
+    </ng-template>
   </ng-container>
 </ng-template>

@@ -87,13 +87,10 @@ export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewIni
   get outplug() { return this.parent.plug; }
 
   ngOnInit(): void {
-    
-    this.parent.parent.AddSubItem(this);
   }
 
   ngOnDestroy() { 
     this.line.remove(); 
-    this.parent.parent.RemoveSubItem(this);
   }
   
 }
