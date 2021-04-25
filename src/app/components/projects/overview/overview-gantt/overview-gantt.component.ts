@@ -63,11 +63,34 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     return this._Width;
   }
 
+  ScrollTo(item) {
+    let i = this.ProcessItem(item);
+    gantt.showDate(i.start_date);
+  }
+
+  ProcessItems(items) {
+    let result = []
+
+    _.forEach(items, i=> {
+      result.push(this.ProcessItem(i))
+      if (i.subitems && i.subitems.length > 0) {
+        _.forEach(i.subitems, s => {
+          let sd = this.ProcessItem(s);
+          result.push(sd);
+        });
+      }
+    })
+    return result;
+  }
   @Input() set BoardItems(items) { 
     this.boarditems.next(items); 
 
+
+    gantt.clearAll(); 
+
     this.SetViewRange(items);
-    let data = _.map(items, i => this.ProcessItem(i));
+    let data = this.ProcessItems(items);
+
     gantt.templates.task_class = (start, end, task) => {
       if (task.text == 'Unassigned, No Timeline')
         return 'gantt_empty_task'
@@ -95,6 +118,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 			gantt.config.start_date = moment(this.MinViewValue).toDate();
 			gantt.config.end_date = moment(this.MaxViewValue).toDate();
 
+    
     gantt.parse({
       data: data
     });
@@ -325,6 +349,8 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
   subscriptions = [];
   ngOnInit(): void {
+    this.parent.SetGanttView(this);
+
     this.subscriptions.push(
       this.parent.UpdatedBoardItems$.subscribe(items => {
         if (items) {

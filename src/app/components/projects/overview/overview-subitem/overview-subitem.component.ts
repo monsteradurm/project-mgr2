@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { OverviewBoarditemComponent } from '../overview-boarditem/overview-boarditem.component';
 declare var LeaderLine: any;
@@ -8,11 +8,18 @@ declare var LeaderLine: any;
   templateUrl: './overview-subitem.component.html',
   styleUrls: ['./overview-subitem.component.scss']
 })
-export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewInit {
+export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
 
   constructor(private parent: OverviewBoarditemComponent) { }
-  @ViewChild('inplug', {static: true}) plug: ElementRef;
-  line;
+  @ViewChild('inplug', {static: false, read: ElementRef}) plug: ElementRef;
+
+  @HostBinding('style.top.px') set top(t) {
+    console.log(t)
+  }
+  @HostListener('click', ['$event']) onClick(evt) {
+    this.parent.parent.onItemClicked(this.subitem);
+  }
+  @Output() line;
 
   _color: string = 'gray';
   _last: number;
@@ -53,6 +60,12 @@ export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewIni
     return this._color;
   }
 
+
+  ngAfterViewChecked() {
+    if (this.line)
+      this.RefreshPosition();
+  }
+
   ngAfterViewInit() {
     this.line = new LeaderLine(this.outplug.nativeElement, this.plug.nativeElement, 
       {
@@ -68,11 +81,19 @@ export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
 
+  RefreshPosition() {
+    this.line.position();
+  }
   get outplug() { return this.parent.plug; }
 
   ngOnInit(): void {
+    
+    this.parent.parent.AddSubItem(this);
   }
 
-  ngOnDestroy() { this.line.remove(); }
+  ngOnDestroy() { 
+    this.line.remove(); 
+    this.parent.parent.RemoveSubItem(this);
+  }
   
 }

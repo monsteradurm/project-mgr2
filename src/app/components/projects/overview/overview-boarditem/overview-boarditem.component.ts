@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding, HostListener, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { BoardItem, SubItem } from '../../../../models/BoardItem';
 import { ProjectComponent } from '../../project/project.component';
 import { OverviewComponent } from '../overview.component';
@@ -15,18 +15,27 @@ export class OverviewBoarditemComponent implements OnInit {
   @HostListener('dblclick') onSelect() {
     this.parent.onSelectItem(this.boarditem)
   }
-  @ViewChild('outplug', {static: true}) plug: ElementRef;
-  constructor(private parent: OverviewComponent,
+
+  @Output()
+  @ViewChild('outplug', {static: false, read: ElementRef}) plug: ElementRef;
+  constructor(public parent: OverviewComponent,
               private project: ProjectComponent) { }
 
   @Input() boarditem: BoardItem;
-
+  @Output() itemClicked = new EventEmitter<boolean>(null);
   @Output() CaptionVisible: boolean = true;
+  @Output() ItemCodeVisible: boolean = true;
+
   isExpanded = false;
   @Output() subitems;
 
   @Input() set Width(W: number) {
       this.CaptionVisible = W > 750;
+      this.ItemCodeVisible = W > 650;
+  }
+
+  onClick(i) {
+    this.itemClicked.next(i);
   }
 
   OnExpandButton(i) {

@@ -628,6 +628,11 @@ app-overview {
     border-radius:5px;
     font-weight:bold;
     border: solid 1px black;
+    user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
 
   .gantt_task_cell {
@@ -637,10 +642,20 @@ app-overview {
   .gantt_empty_task {
     color:gray;
     border:none;
+    user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
   .gantt_task_line.gantt_task_inline_color:hover:not(.gantt_empty_task) {
     border: inset 2px #000 !important;
     box-shadow: 1px 3px 6px 0px #00000077;
+    user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
 
   .p-splitter {
@@ -665,6 +680,11 @@ app-overview {
     /* border-right: solid 1px #bbb; */
     overflow: visible;
     font-weight: bold;
+    user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
  
   .gantt_task_scale, .gantt_scale_cell {
@@ -673,6 +693,11 @@ app-overview {
     //font-size:15px;
     font-family: 'Delius';
     //margin-top:-15px;
+    user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
 
   .gantt-weekend {

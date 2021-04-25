@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
@@ -9,22 +9,42 @@ import * as _ from 'underscore';
 import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { Tag } from 'src/app/models/Columns';
 import { BoxService } from 'src/app/services/box.service';
+import { OverviewGanttComponent } from './overview-gantt/overview-gantt.component';
+import { OverviewSubitemComponent } from './overview-subitem/overview-subitem.component';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss']
 })
-export class OverviewComponent implements OnInit, OnDestroy {
+export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   initializing = true;
   subscriptions = [];
-
+  
   constructor(public parent: ProjectComponent,
+     private changeDetector: ChangeDetectorRef,
      private actionOutlet: ActionOutletFactory) {
   }
   
+  SubItems: OverviewSubitemComponent[] = [];
 
+  AddSubItem(s: OverviewSubitemComponent) {
+    this.SubItems.push(s);
+  }
+
+  RemoveSubItem(s: OverviewSubitemComponent) {
+    this.SubItems = _.filter(this.SubItems, i => i != s)
+  }
+
+  RefreshView() {
+    this.SubItems.forEach(i => i.RefreshPosition());
+    this.changeDetector.detectChanges();
+  }
+
+  ClearLines() {
+    this.SubItems.forEach(i => i.line.remove()); 
+  }
 
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('group_work');
   private updatedBoardItems = new BehaviorSubject<BoardItem[]>(null);
@@ -61,6 +81,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
   SyncReviews$ = this.parent.SyncReviews$;
   
   private get box() { return this.parent.box; }
+
+  GanttView: OverviewGanttComponent;
+
+  SetGanttView(g) { this.GanttView = g; }
+
+  ngAfterViewChecked(){
+    this.changeDetector.detectChanges();
+  }
+
   onViewTaskClosed() {
     this.selectedElement.next(null);
   }
@@ -136,6 +165,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.GanttWidth = window.innerWidth - evt.width;
   }
   
+  onItemClicked(item) {
+    this.GanttView.ScrollTo(item)
+  }
 
   UpdateBoardItem(item) {
     this.BoardItems$.pipe(take(1)).subscribe(items => {
@@ -160,8 +192,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
         .fire$.subscribe(a => this.SetStatusFilter(o))
       })
 
-      this.statusMenu.createGroup()
-      .createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredStatus());
+      let bottom = this.statusMenu.createGroup();
+
+      bottom.createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredStatus());
+      bottom.createButton().setIcon('clear').setTitle('Clear').fire$.subscribe(a => this.ignoredStatus.next([]));
+
       this.initializing = false;
       return this.statusMenu;
     }),
@@ -183,8 +218,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
         .fire$.subscribe(a => this.SetDirectorsFilter(o))
       })
 
-      this.directorsMenu.createGroup()
-        .createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredDirectors());
+      let bottom = this.directorsMenu.createGroup();
+      bottom.createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredDirectors());
+      bottom.createButton().setIcon('clear').setTitle('Clear').fire$.subscribe(a => this.ignoredDirectors.next([]));
+
       this.initializing = false;
       return this.directorsMenu;
     }),
@@ -205,8 +242,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
         this.artistsMenu.createToggle().setIcon('remove').setTitle(o)
         .fire$.subscribe(a => this.SetArtistsFilter(o))
       })
-      this.artistsMenu.createGroup()
-          .createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredArtists());
+    let bottom = this.artistsMenu.createGroup()
+    bottom.createButton().setIcon('invert_colors').setTitle('Invert').fire$.subscribe(a => this.InvertFilteredArtists());
+    bottom.createButton().setIcon('clear').setTitle('Clear').fire$.subscribe(a => this.ignoredArtists.next([]));
+
       this.initializing = false;
       return this.artistsMenu;
     }),
@@ -250,16 +289,24 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   SetStatusFilter(s) {
     if (this.initializing) return;
-    this.IgnoredStatus$.pipe(take(1)).subscribe(options => {
-      let result = [...options];
-      let index = options.indexOf(s);
-      if (index > -1)
-        result.splice(index, 1);
-      else 
-        result.push(s);
 
-      this.ignoredStatus.next(result.sort());
-    });
+    combineLatest([this.Status$, this.IgnoredStatus$]).pipe(take(1)).subscribe(
+     ([options, ignored]) => {
+        if (ignored.length == 0) {
+          this.ignoredStatus.next(_.filter(options, o => o != s))
+          return;
+        }
+
+        if (ignored.indexOf(s) < 0)
+          ignored.push(s)
+        else 
+          ignored = _.filter(ignored, i => i != s);
+
+        if (ignored.length == options.length)
+          ignored = [];
+          
+        this.ignoredStatus.next(ignored);
+     });
   }
 
   SortByMenu$ = combineLatest([this.SortBy$, this.ReverseSorting$]).pipe(

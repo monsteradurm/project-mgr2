@@ -1,4 +1,4 @@
-<div #container class="element-row">
+<div #container class="element-row" (click)="onClick(boarditem)">
   <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
     <div #outplug></div>
   </div>
@@ -14,7 +14,7 @@
 
   <div class="element-container no-select" fxLayout="row" fxLayoutAlign="start stretch">
     <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
-      <div class="element-code">{{ boarditem.itemcode?.text }}</div>
+      <div class="element-code" *ngIf="ItemCodeVisible">{{ boarditem.itemcode?.text }}</div>
       <div class="element-title">{{ boarditem.element }}</div>
     </div>
 
@@ -40,7 +40,9 @@
       <div class="task-description">
         {{ boarditem.task }}
       </div>
-      <div class="task-caption" *ngIf="CaptionVisible">{{ boarditem.caption?.text }}</div>
+      <div class="task-caption" *ngIf="CaptionVisible" [style.color]="boarditem.status.additional_info.color">
+        {{ boarditem.caption?.text }}
+      </div>
     </div>
 
   </div>

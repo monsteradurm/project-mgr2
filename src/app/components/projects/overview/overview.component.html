@@ -66,12 +66,12 @@
       *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ | 
               FilterItemsByArtist$ : IgnoredArtists$ | FilterItemsByDirector$ : IgnoredDirectors$ | async) as items; else noItems">
 
-      <p-splitter  layout="horizontal" [panelSizes]="[60,40]">
+      <p-splitter  layout="horizontal" [panelSizes]="[50,50]">
         <ng-template pTemplate>
           <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch" 
           style="width:100%;margin-top:50px">
             <ng-container *ngFor="let item of items">
-              <app-overview-boarditem [boarditem]="item" [Width]="BoardWidth"
+              <app-overview-boarditem [boarditem]="item" [Width]="BoardWidth" (itemClicked)="onItemClicked(item)"
                 (dblclick)="onSelectItem(item)">
               </app-overview-boarditem>
             </ng-container>
@@ -80,7 +80,7 @@
 
         <ng-template pTemplate>
           <div fxLayout="column" fxLayoutAlign="stretch stretch">
-            <app-overview-gantt [BoardItems]="items" style="height:100%;" [Width]="GanttWidth"></app-overview-gantt>
+            <app-overview-gantt [BoardItems]="items" style="height:100%;min-width:550px" [Width]="GanttWidth"></app-overview-gantt>
           </div>
         </ng-template>
       </p-splitter>

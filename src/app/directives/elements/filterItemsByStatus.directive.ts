@@ -13,17 +13,16 @@ export class FilterItemsByStatusPipe  {
     return combineLatest([items$, status$]).pipe(
       map(([items, status]) => {
         if (!status || status.length < 1) return items;
-        let label = 'Not Started';
-
+        
         let filtered = _.filter(items, i => {
-            if (i && i.status && i.status.additional_info && i.status.additional_info.label)
-                label = i.status.additional_info.label;
+            let label = "Not Started"
+            if (i && i.status && i.status.text)
+              label = i.status.text;
 
             return status.indexOf(label) == -1
         });
 
-        console.log(filtered);
-        return [filtered];
+        return filtered;
       })
     )
   }
