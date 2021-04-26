@@ -77,7 +77,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   SetGanttView(g) { this.GanttView = g; }
-  
+
   ngAfterViewChecked() {
     this.changeDetector.detectChanges();
   }
@@ -204,6 +204,10 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     shareReplay(1),
   )
 
+  onMouseWheel(evt) {
+    evt.preventDefault();
+    evt.returnValue = false;
+  }
   DirectorsMenu$ = combineLatest([this.Directors$, this.IgnoredDirectors$]).pipe(
     map(([options, ignored]) => {
       this.initializing = true;

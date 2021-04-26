@@ -1,6 +1,6 @@
 
 
-<div #chart class='gantt-chart' style="height:100%;position:absolute;min-width:550px"
+<div #chart class='gantt-chart' style="height:100%;position:absolute;min-width:550px" (mousewheel)="$event.preventDefault()"
 [style.width.px]="Width"></div>
 
 <!--

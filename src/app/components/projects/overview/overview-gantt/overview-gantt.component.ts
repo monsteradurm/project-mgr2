@@ -125,7 +125,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     let isRevision = i.type != 'task';
     if (isRevision && !hasTimeline) {
       let parent = _.find(this.Data, b => b.subitem_ids && b.subitem_ids.indexOf(i.id) > -1);
-      start = moment(parent.mStart).subtract(3, 'days');
+      start = moment(parent.mStart)
     } 
     else if (!hasTimeline)
       start = this.MinViewValue;
@@ -249,11 +249,12 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     gantt.config.columns = [];
     gantt.config.readonly = true;
     gantt.config.show_unscheduled = true;
+    gantt.config.prevent_default_scroll = true;
     gantt.config.scales = [
       { unit: "month", step: 1, format: "%F, %Y" },
       { unit: "day", step: 1, format: "%j, %D" }
     ];
-
+    gantt.config.wheel_scroll_sensitivity = 0;
     gantt.config.show_tasks_outside_timescale = true;
     gantt.templates.rightside_text = function (start, end, task) {
       if (task.hasTimeline && !task.finished) {
@@ -281,7 +282,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
     let today = moment();
     gantt.addMarker({
-      start_date: today.toDate(),
+      start_date: moment().toDate(),
       css: "today",
       text: "Today",
       //title: "Today: " + today.format('YYYY-MM-DD')
@@ -323,9 +324,16 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     });
 
     gantt.templates.task_class = (start, end, task) => {
-      if (task.text.indexOf('No Timeline') > -1)
+      if (task.hasTimeline) return '';
+
+      if (!task.isRevision)
         return 'gantt_empty_task'
-      return '';
+      
+      let parent = _.find(this.Data, d => d.subitem_ids && d.subitem_ids.indexOf(task.id) > -1);
+      let index = parent.subitem_ids.indexOf(task.id);
+
+      
+      return index == parent.subitem_ids.length - 1 ? 'gantt_empty_task last-revision' : 'gantt_empty_task';
     };
 
     gantt.templates.timeline_cell_class = function (task, date) {
@@ -338,6 +346,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     gantt.init(this.chart.nativeElement);
+    
   }
 
   ngOnDestroy() {
