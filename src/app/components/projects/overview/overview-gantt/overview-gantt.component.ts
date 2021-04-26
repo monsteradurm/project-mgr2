@@ -75,9 +75,59 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
   LoadData() {
     gantt.clearAll();
 
+    if (gantt.$container) {
+      gantt.addMarker({
+        start_date: moment().toDate(),
+        css: "today",
+        text: "Today",
+        //title: "Today: " + today.format('YYYY-MM-DD')
+      });
+    }
     this.SetViewRange(this.BoardItems);
+
     gantt.config.start_date = moment(this.MinViewValue).toDate();
     gantt.config.end_date = moment(this.MaxViewValue).toDate();
+
+
+    gantt.config.min_column_width = 80;
+    var zoomConfig = {
+      minColumnWidth: 80,
+      maxColumnWidth: 150,
+      levels: [
+        [
+          {unit: "month", step: 1, format: "%M"},
+          {
+           unit: "year", step: 1, format: "%Y"
+          }
+        ],
+        [
+          { unit: "month", format: "%M %Y", step: 1 },
+          {
+            unit: "week", step: 1, format: function (date) {
+              var dateToStr = gantt.date.date_to_str("%d %M");
+              var endDate = gantt.date.add(date, 0, "day");
+              return dateToStr(date) + " - " + dateToStr(endDate);
+            }
+          }
+        ],
+        [
+          { unit: "month", format: "%M %Y", step: 1 },
+          { unit: "day", format: "%d %M", step: 1 }
+        ],
+      ],
+      startDate: gantt.config.start_date,
+      endDate: gantt.config.end_date,
+      trigger: "wheel",
+      element: function () {
+        return gantt.$root.querySelector(".gantt_task");
+      }
+    }
+
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.message({
+      text: "Use <b>ctrl + mousewheel</b> in order to zoom",
+      expire: -1
+    });
 
     let data = this.ProcessItems(this.BoardItems);
     this.Data = data;
@@ -126,7 +176,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     if (isRevision && !hasTimeline) {
       let parent = _.find(this.Data, b => b.subitem_ids && b.subitem_ids.indexOf(i.id) > -1);
       start = moment(parent.mStart)
-    } 
+    }
     else if (!hasTimeline)
       start = this.MinViewValue;
 
@@ -144,7 +194,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
       hasTimeline: hasTimeline, hasArtist: hasArtist, isRevision: isRevision, hasChildren: i.subitem_ids && i.subitem_ids.length > 0,
       isExpanded: isRevision && this.Expanded.indexOf(i) > -1, mStart: start, mEnd: end,
       id: i.id, text: artist, start_date: start.toDate(),
-      duration: hasTimeline ? end.diff(start, 'days') : 5, finished: finished, subitem_ids: _.map(i.subitem_ids, i=> i.toString()),
+      duration: hasTimeline ? end.diff(start, 'days') : 5, finished: finished, subitem_ids: _.map(i.subitem_ids, i => i.toString()),
       row_height: 40, bar_height: 33, progress: 0, color: color, textColor: hasTimeline && !isRevision ? 'white' : 'black'
     };
     return result;
@@ -281,12 +331,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
 
     let today = moment();
-    gantt.addMarker({
-      start_date: moment().toDate(),
-      css: "today",
-      text: "Today",
-      //title: "Today: " + today.format('YYYY-MM-DD')
-    });
+    
 
 
     gantt.addTaskLayer((task) => {
@@ -295,13 +340,13 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
       let sizes;
       if (task.isRevision) {
         let parent = _.find(this.Data, d => d.subitem_ids && d.subitem_ids.indexOf(task.id) > -1);
-        
+
         if (!parent || !parent.hasTimeline) return false;
 
         sizes = gantt.getTaskPosition(parent, parent.mStart.toDate(),
           parent.finished ? parent.mEnd.toDate() : moment().toDate());
 
-        let offset = (1 + _.findIndex(parent.subitem_ids, i => i == task.id)) * 45;
+        let offset = (1 + _.findIndex(parent.subitem_ids, i => i == task.id)) * 40;
         sizes.top += offset;
         color = parent.color;
       }
@@ -328,11 +373,11 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
       if (!task.isRevision)
         return 'gantt_empty_task'
-      
+
       let parent = _.find(this.Data, d => d.subitem_ids && d.subitem_ids.indexOf(task.id) > -1);
       let index = parent.subitem_ids.indexOf(task.id);
 
-      
+
       return index == parent.subitem_ids.length - 1 ? 'gantt_empty_task last-revision' : 'gantt_empty_task';
     };
 
@@ -341,12 +386,18 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
         return "gantt-weekend";
       }
     };
-    gantt.serverList("status");
+
+    gantt.addMarker({
+      start_date: moment().toDate(),
+      css: "today",
+      text: "Today",
+      //title: "Today: " + today.format('YYYY-MM-DD')
+    });
   }
 
   ngAfterViewInit() {
     gantt.init(this.chart.nativeElement);
-    
+
   }
 
   ngOnDestroy() {

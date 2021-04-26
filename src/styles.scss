@@ -627,6 +627,7 @@ app-overview {
 
   .p-scrollpanel-content {
     height: calc(100vh - 75px);
+    width: 100%;
   }
   .gantt_grid_data .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected, .gantt_task_row.gantt_selected {
     background-color: rgb(0 0 0 / 10%)
@@ -687,8 +688,13 @@ app-overview {
     }
 
     .p-splitter .p-splitter-gutter {
-      background: #bbb;
-  }
+        background: #c9c9c9;
+        /* border-style: dotted; */
+        z-index: 1000;
+        /* border-color: lightgray; */
+        box-shadow: 10px 0px 10px 5px rgb(0 0 0 / 10%);
+    }
+  
 
     .p-splitter .p-splitter-gutter .p-splitter-gutter-handle {
       background: #aaa;
@@ -697,6 +703,12 @@ app-overview {
     border:none;
   }
 
+  .gantt_layer_outer_scroll.gantt_layer_outer_scroll_vertical {
+    display:none !important;
+  }
+  .gantt_layout_content.gantt_resizer_x.gantt_grid_resize_wrap {
+    display:none !important;
+  }
   .gantt_task .gantt_task_scale .gantt_scale_cell {
     color: black;
     border-bottom: solid 1px #bbb;
@@ -736,7 +748,7 @@ app-overview {
   .gantt-status-bg {
     opacity:0.2;
     background: red;
-    height: 45px;
+    height: 40px;
     position:absolute;
   }
 }
