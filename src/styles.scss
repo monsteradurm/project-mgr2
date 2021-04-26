@@ -646,10 +646,15 @@ app-overview {
   -ms-user-select: none; /* IE10+ */
   }
 
+  .gant_task_line {
+    margin-top:1.5px;
+  }
   .gantt_task_cell {
     border-right: 1px solid #ddd;
   }
-
+  .gantt_side_content.gantt_right {
+    margin-top: -4px;
+  }
   .gantt_empty_task > .gantt_task_content {
     width: auto !important; 
     opacity:0.35;
