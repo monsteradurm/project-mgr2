@@ -619,7 +619,19 @@ div.bp-header-container > div > .bp-default-logo {
 .mat-tab-label, .mat-tab-link {
   font-family: unset !important;
 }
-
+.p-splitter.p-component.p-splitter-horizontal {
+  display:flex;
+  height:100%;
+}
+div.gantt_layout_cell.scrollVer_cell {
+  display:none !important;
+}
+.leader-line {
+  z-index: 1;
+}
+nav {
+  background: white;
+}
 app-overview {
   .gantt_task_row.gantt_selected .gantt_task_cell {
     border-right-color: #ddd;

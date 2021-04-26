@@ -67,6 +67,7 @@ export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngAfterViewInit() {
+
     this.line = new LeaderLine(this.outplug.nativeElement, this.plug.nativeElement, 
       {
         startPlug: 'behind',
@@ -79,6 +80,7 @@ export class OverviewSubitemComponent implements OnInit, OnDestroy, AfterViewIni
         //endSocketGravity: 10,
         startSocketGravity: 1
       });
+
   }
 
   RefreshPosition() {
