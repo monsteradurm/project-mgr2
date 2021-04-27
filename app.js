@@ -43,7 +43,13 @@ fs.readFile('proxy.conf.json', (err, data) => {
       res.sendFile(path.join(__dirname+'/dist/project-mgr2/index.html'));
     });
 
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
         console.log("project-mgr2 --> listening at: " + port)
-    })
+    });
+
+    const io = require('socket.io')(server);
+
+    io.on('connection', (socket) => {
+        console.log('a user connected');
+    });
 });
