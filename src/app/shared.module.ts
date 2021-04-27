@@ -76,6 +76,9 @@ import {SplitterModule} from 'primeng/splitter';
 import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
+
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+const config: SocketIoConfig = { url: 'http://projectmgr.live', options: {} };
 declare var google:any;
 
 const declarations = [
@@ -151,7 +154,9 @@ const imports = [
     
     //ng-action-outlet
     ActionOutletModule,
-    ActionMatModule.forRoot(ICON_TYPE.Font)
+    ActionMatModule.forRoot(ICON_TYPE.Font),
+
+    SocketIoModule.forRoot(config)
 ]
 
 let exports = [...declarations, ...imports];

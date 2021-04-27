@@ -13,6 +13,7 @@ import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 import { BoxService } from 'src/app/services/box.service';
 
 import {MessageService} from 'primeng/api';
+import { SocketService } from 'src/app/services/socket.service';
 
 
 const _PAGE_ = '/Projects/Overview';
@@ -28,6 +29,7 @@ export class ProjectComponent implements OnInit, OnDestroy
   constructor(public navigation: NavigationService,
               public syncSketch: SyncSketchService,
               public messenger: MessageService,
+              public socket: SocketService,
               public box: BoxService,
               public monday: MondayService) {
                 this.subscriptions.push(
