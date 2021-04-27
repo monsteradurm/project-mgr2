@@ -74,7 +74,8 @@ import { ReferenceComponent } from './components/reference/reference.component';
 import { MouseWheelDirective } from './directives/mousewheel.directive';
 import {SplitterModule} from 'primeng/splitter';
 import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
-
+import {ToastModule} from 'primeng/toast';
+import {MessageService} from 'primeng/api';
 declare var google:any;
 
 const declarations = [
@@ -137,6 +138,8 @@ const imports = [
     SkeletonModule,
     ColorPickerModule,
     SplitterModule,
+    ToastModule,
+    
     ResizeModule, 
     FullCalendarModule,
 
@@ -160,7 +163,8 @@ const providers = [
     NavigationService,
     SyncSketchService,
     BoxService,
-    ConfluenceService
+    ConfluenceService,
+    MessageService
 ];
 
 @NgModule({

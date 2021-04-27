@@ -111,12 +111,13 @@ export class Board {
     name: string;
     workspace: { name: string, id: number};
     groups: { id: string, title: string}[];
-
+    columns: any[];
     selection: string; // mat-select preview
 
     constructor(i: any) {
         this.id = i.id;
         this.name = i.name;
+        this.columns = i.columns;
         this.workspace = {name: i.workspace.name, id: i.workspace.id};
         this.groups = _.map(i.groups, g => ({ id: g.id, title: g.title }));
         this.selection = this.workspace.name + ', ' + this.name

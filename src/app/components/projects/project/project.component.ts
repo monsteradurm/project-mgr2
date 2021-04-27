@@ -12,6 +12,9 @@ import { Board, BoardItem } from 'src/app/models/BoardItem';
 import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 import { BoxService } from 'src/app/services/box.service';
 
+import {MessageService} from 'primeng/api';
+
+
 const _PAGE_ = '/Projects/Overview';
 
 @Component({
@@ -24,6 +27,7 @@ export class ProjectComponent implements OnInit, OnDestroy
 
   constructor(public navigation: NavigationService,
               public syncSketch: SyncSketchService,
+              public messenger: MessageService,
               public box: BoxService,
               public monday: MondayService) {
                 this.subscriptions.push(
@@ -65,6 +69,28 @@ export class ProjectComponent implements OnInit, OnDestroy
       return _.find(boards, b => b.id == params['board']);
     }),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    shareReplay(1)
+  )
+
+  Columns$ = this.Board$.pipe(
+    map(board => board.columns),
+  )
+
+  StatusOptions$ = this.Columns$.pipe(
+    map(columns => _.find(columns, c => c.title == "Status")),
+    map(status => {
+      let settings = JSON.parse(status.settings_str)
+      let indices = Object.keys(settings.labels);
+      let result = [];
+      indices.forEach(i => {
+        let option = settings.labels_colors[i];
+        option.index = i;
+        option.column_id = status.id;
+        option.label = settings.labels[i];
+        result.push(option);
+      });
+      return _.sortBy(result, r => r.label);
+    }),
     shareReplay(1)
   )
 

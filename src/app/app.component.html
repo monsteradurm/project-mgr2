@@ -3,6 +3,8 @@
   <app-navigation [NavigationMenu]="NavigationMenu" [IsCeloxisReachable]="IsMondayReachable"
     [IsAuthorized]="IsAuthorized" [MyPhoto]="MyPhoto" [User]="User"></app-navigation>
 
+  <p-toast></p-toast>
+
   <div class="container">
     <ng-template [ngIf]="IsMondayReachable">
       <p-dialog [(visible)]="MondayExhausted" [modal]="true" [dismissableMask]="true" [showHeader]="false" [style]="{width: '50vw', 

@@ -636,6 +636,27 @@ div.gantt_layout_cell.scrollVer_cell {
 nav {
   background: white;
 }
+
+.status-option {
+  color:white !important;
+  border:solid 1px black !important;
+  font-family: Delius !important;
+  padding: 0px 15px !important;
+  line-height: 12px !important;
+  height: 30px !important;
+  font-size: 12px !important;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: inset 0px 0px 10px 0px rgb(0 0 0 / 10%);
+}
+.status-option:hover {
+  background: lightgray !important;
+  color: black !important;
+}
+
+.p-toast.p-component {
+  opacity: 1;
+}
 app-overview {
 
   app-overview-gantt > div > div, app-overview-gantt > div, app-overview-gantt {

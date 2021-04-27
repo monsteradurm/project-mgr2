@@ -1,3 +1,22 @@
+<span #contextMenuTrigger
+[matMenuTriggerFor]="ItemContextMenu"
+style="position:absolute !important"
+[style.left.px]="contextMenuLeft"
+[style.top.px]="contextMenuTop"></span>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below">
+  <ng-template matMenuContent>
+      <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #statusMenu="matMenu" >
+  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+    [style.background]="s.color" style.color="white !important"
+    (click)= "onSetStatus(s)">{{s.label}}</button>
+</mat-menu>
+
+
 <ng-container *ngIf="(boarditem?.status | GetTaskStatus) as Status">
   <div #container class="element-row" (click)="onClick(boarditem)">
     <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">

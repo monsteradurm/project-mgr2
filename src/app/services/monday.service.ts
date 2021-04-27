@@ -76,7 +76,25 @@ export class MondayService {
     })
   )
   }
-  
+  GetBoardItem$(boardId, groupId, itemId) {
+    let query = `boards(limit:1 ids:${boardId}) {
+      groups(ids:"${groupId}") {
+      items(limit:1 ids: ${itemId}) { 
+        id name 
+        updates(limit:1) { id body creator { id } created_at }
+        column_values { title text id additional_info value }
+      }
+    }
+  }`
+  return this.Query$(query.split('\n').join('').trim()).pipe(
+    map((data:any) => data.boards[0].groups[0].items),
+    catchError(err => {
+      console.log(err);
+      return err
+    })
+  )
+  }
+
   BoardItems$(boardId: string, groupId: string) {
     let query = `boards(limit:1 ids:${boardId}) {
         groups(ids:"${groupId}") {
@@ -159,9 +177,14 @@ export class MondayService {
   }`).pipe(
     map(result => result['boards']),
     take(1))
-
+  
   Boards$ = this.Query$(`boards(state:active, limit:200) 
   { id, name, 
+    columns {
+      id
+      title
+      settings_str
+    }
     workspace { name, id } 
     groups { id, title }}`)
   .pipe(
@@ -318,5 +341,22 @@ id
 
   Query$(cmd) {
     return this.API_CMD$(cmd, 'query')
+  }
+
+  SetBoardItemStatus$(board_id: string, item_id: string, column_id: string, value: string){
+    let post = `change_simple_column_value (board_id: ${board_id}, item_id: ${item_id}, column_id: "${column_id}", value: "${value}") { id }`
+    return this.Mutate$(post)
+  }
+
+
+  CreateSubItem$(parent_item) {
+    `mutation {
+      create_subitem (parent_item_id: 20178785, item_name: "new subitem") {
+      id,
+      board {
+      id
+      }
+      }
+      }`
   }
 }
