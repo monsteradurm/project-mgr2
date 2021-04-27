@@ -29,7 +29,7 @@
           <mat-icon class="search-icon">search</mat-icon>
           <mat-form-field pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
             style="max-width:200px;top:-9px;height:100%">
-            <input matInput class="search-input">
+            <input matInput class="search-input" [ngModel]="NameFilter$ | async" (ngModelChange)="SetNameFilter($event)">
           </mat-form-field>
         </div>
         <ng-container *ngIf="(SortByMenu$ | async) as SortByMenu">
@@ -67,9 +67,9 @@
 
     <ng-container *ngIf="!Fetching; else fetchingMonday">
       <ng-container
-        *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ | 
+        *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ |
               FilterItemsByArtist$ : IgnoredArtists$ | FilterItemsByDirector$ : IgnoredDirectors$ |
-              TaskSortBy$ : SortBy$ 
+              FilterItemsByName$ : NameFilter$ | TaskSortBy$ : SortBy$ : ReverseSorting$
               | async) as items; else noItems">
         <ng-container *ngIf="items.length > 0; else noItems">
           <ng-container *ngIf="(SubItems$ | async) as SubItems">

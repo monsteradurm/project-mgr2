@@ -48,13 +48,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   private reverseSorting = new BehaviorSubject<boolean>(false);
   ReverseSorting$ = this.reverseSorting.asObservable().pipe(shareReplay(1));
 
-  private sortBy = new BehaviorSubject<string>('Name');
+  private sortBy = new BehaviorSubject<string>('Index');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
 
   private selectedElement = new BehaviorSubject<BoardItem>(null);
   SelectedElement$ = this.selectedElement.asObservable().pipe(shareReplay(1));
 
-  SortByOptions = ['Name', 'Item Code', 'Status', 'Resources', 'Start', 'Finish'];
+  SortByOptions = ['Index', 'Name', 'Item Code', 'Status', 'Artist', 'Director', 'Start', 'Finish'];
 
   statusMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Status').setIcon('library_add_check');
   artistsMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Artists').setIcon('person');
@@ -106,7 +106,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   SetNameFilter(n) {
     if (!n) n = '';
-    this.nameFilter.next(n);
+      this.nameFilter.next(n);
   }
 
   InvertFilteredStatus() {
@@ -265,8 +265,8 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     })
   }
 
-  SetMenuFilter(s, 
-      Options$: Observable<string[]>, 
+  SetMenuFilter(s,
+      Options$: Observable<string[]>,
       Ignored$: Observable<string[]>,
       Ignore: BehaviorSubject<string[]>
       ) {
@@ -298,7 +298,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   SetStatusFilter(s) {
     this.SetMenuFilter(s, this.Status$, this.IgnoredStatus$, this.ignoredStatus);
   }
-  
+
   SetArtistsFilter(s) {
     this.SetMenuFilter(s, this.Artists$, this.IgnoredArtists$, this.ignoredArtists);
   }
@@ -322,6 +322,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       return this.sortByMenu;
     })
   )
+
   GroupsMenu$ = combineLatest([this.Board$, this.Group$]).pipe(
     map(([board, group]) => {
       if (!board || !group || !group.title)

@@ -32,6 +32,7 @@ import { UserService } from 'src/app/services/user.service';
 import { NoConfluenceComponent } from './no-confluence/no-confluence.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TaskSortByDirective } from 'src/app/directives/elements/TaskSortBy.directive';
+import { FilterItemsByNameDirective } from '../../directives/elements/FilterItemsByName.directive';
 declare var google:any;
 
 @NgModule({
@@ -42,7 +43,7 @@ declare var google:any;
     OverviewSubitemComponent,
     OverviewBoarditemComponent,
     SettingsComponent,
-    
+
     FilterItemsByStatusPipe,
     FilterItemsByArtistPipe,
     FilterItemsByDirectorPipe,
@@ -50,7 +51,8 @@ declare var google:any;
     NoConfluenceComponent,
     SettingsComponent,
 
-    TaskSortByDirective
+    TaskSortByDirective,
+    FilterItemsByNameDirective
   ],
   imports: [
     SharedModule.forRoot(),
