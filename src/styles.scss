@@ -629,10 +629,19 @@ div.gantt_layout_cell.scrollVer_cell {
 .leader-line {
   z-index: 1;
 }
+
+.fc-toolbar-chunk {
+  display:flex !important;
+}
 nav {
   background: white;
 }
 app-overview {
+
+  app-overview-gantt > div > div, app-overview-gantt > div, app-overview-gantt {
+    height:100% !important;
+  }
+
   .gantt_task_row.gantt_selected .gantt_task_cell {
     border-right-color: #ddd;
   }
@@ -673,6 +682,9 @@ app-overview {
   }
   .gantt_empty_task.last-revision > .gantt_task_content {
     opacity: 1;
+  }
+  app-overview > p-scrollpanel > div > div.p-scrollpanel-wrapper > div > p-splitter > div {
+    width:calc(100vw - 26px);
   }
   
   .gantt_empty_task {

@@ -31,6 +31,7 @@ import { MondayService } from 'src/app/services/monday.service';
 import { UserService } from 'src/app/services/user.service';
 import { NoConfluenceComponent } from './no-confluence/no-confluence.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TaskSortByDirective } from 'src/app/directives/elements/TaskSortBy.directive';
 declare var google:any;
 
 @NgModule({
@@ -47,7 +48,9 @@ declare var google:any;
     FilterItemsByDirectorPipe,
     FilterItemsByDepartmentPipe,
     NoConfluenceComponent,
-    SettingsComponent
+    SettingsComponent,
+
+    TaskSortByDirective
   ],
   imports: [
     SharedModule.forRoot(),

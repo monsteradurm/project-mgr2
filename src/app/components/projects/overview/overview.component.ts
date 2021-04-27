@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, tap, shareReplay, timestamp, take, switchMap } from 'rxjs/operators';
 import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
 
@@ -208,6 +208,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     evt.preventDefault();
     evt.returnValue = false;
   }
+
   DirectorsMenu$ = combineLatest([this.Directors$, this.IgnoredDirectors$]).pipe(
     map(([options, ignored]) => {
       this.initializing = true;
@@ -264,41 +265,17 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     })
   }
 
-  SetArtistsFilter(s) {
-    if (this.initializing) return;
-    this.IgnoredArtists$.pipe(take(1)).subscribe(options => {
-      let result = [...options];
-      let index = options.indexOf(s);
-      if (index > -1)
-        result.splice(index, 1);
-      else
-        result.push(s);
-
-      this.ignoredArtists.next(result.sort());
-    });
-  }
-
-  SetDirectorsFilter(s) {
-    if (this.initializing) return;
-    this.IgnoredDirectors$.pipe(take(1)).subscribe(options => {
-      let result = [...options];
-      let index = options.indexOf(s);
-      if (index > -1)
-        result.splice(index, 1);
-      else
-        result.push(s);
-
-      this.ignoredDirectors.next(result.sort());
-    });
-  }
-
-  SetStatusFilter(s) {
+  SetMenuFilter(s, 
+      Options$: Observable<string[]>, 
+      Ignored$: Observable<string[]>,
+      Ignore: BehaviorSubject<string[]>
+      ) {
     if (this.initializing) return;
 
-    combineLatest([this.Status$, this.IgnoredStatus$]).pipe(take(1)).subscribe(
+    combineLatest([Options$, Ignored$]).pipe(take(1)).subscribe(
       ([options, ignored]) => {
         if (ignored.length == 0) {
-          this.ignoredStatus.next(_.filter(options, o => o != s))
+          Ignore.next(_.filter(options, o => o != s))
           return;
         }
 
@@ -310,9 +287,22 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (ignored.length == options.length)
           ignored = [];
 
-        this.ignoredStatus.next(ignored);
+        Ignore.next(ignored);
       });
   }
+
+  SetDirectorsFilter(s) {
+    this.SetMenuFilter(s, this.Directors$, this.IgnoredDirectors$, this.ignoredDirectors);
+  }
+
+  SetStatusFilter(s) {
+    this.SetMenuFilter(s, this.Status$, this.IgnoredStatus$, this.ignoredStatus);
+  }
+  
+  SetArtistsFilter(s) {
+    this.SetMenuFilter(s, this.Artists$, this.IgnoredArtists$, this.ignoredArtists);
+  }
+
 
   SortByMenu$ = combineLatest([this.SortBy$, this.ReverseSorting$]).pipe(
     map(([sortBy, doReverse]) => {
