@@ -8,6 +8,8 @@ const httpProxy = require('http-proxy');
 var proxy = httpProxy.createProxyServer({});
 var app = express();
 
+const cors = require('cors');
+
 proxy.on('error', function(e) {
     console.log(e);
 });
@@ -39,6 +41,7 @@ fs.readFile('proxy.conf.json', (err, data) => {
         })
     });
 
+    app.use(cors());
     app.use(express.static(__dirname+'/dist/project-mgr2'));
     app.get('*', function(req, res) {
       res.sendFile(path.join(__dirname+'/dist/project-mgr2/index.html'));
