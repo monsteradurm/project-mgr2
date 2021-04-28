@@ -1,4 +1,4 @@
-<p-dialog #viewTaskDlg [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
+<p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
     (onResizeEnd)="onResize($event)" (onResizeInit)="onResize($event)" (onShow)="onResize($event)" (onHide)="Closing()"
     [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px',
                   background: Item ? 'transparent' : 'white !important'}" *ngIf="Item">
@@ -6,7 +6,7 @@
     <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
         <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
             <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">
-                <div style="background: white !important;overflow:hidden !important" fxLayout="column">
+                <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%" fxLayout="column">
 
                     <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header"
                         [style.background-color]="Status.color">
@@ -20,14 +20,16 @@
                         </h2>
                     </div>
 
+                    <!--
                     <p-scrollPanel fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
                         [style]="{width:'75vw', 'flex-grow' : 1, height: '100%', overflow:'hidden'}">
+                    -->
+                    <div class="view-task-scroll" [style.height.px]="TaskHeight">
                         <table #taskTable style="height:100%;width:100%">
                             <tr>
                                 <td #tableColumn style="position:relative">
                                     <div style="box-shadow:0px 0px 15px 0px rgb(0 0 0 / 25%);position:fixed;height:100%;top:0px;
-                                    z-index:-1"
-                                        [style.width.px]="tableColumn.clientWidth"></div>
+                                    z-index:0" [style.width.px]="tableColumn.clientWidth"></div>
 
                                     <mat-toolbar fxLayout="column" fxLayoutAlign="stretch stretch"
                                         class="side-dlg-toolbar">
@@ -68,14 +70,15 @@
                                     <div fxLayout="row" fxLayoutAlign="space-between start"
                                         style="position: absolute;top: 0px;width:100%">
                                         <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%;padding:20px 30px;margin-bottom:50px;margin-right:20px;
-                                            position:relative" >
+                                            position:relative">
                                             <ng-container
                                                 *ngIf="View.type == 'task' || View.type == 'revision'; else boxFolder">
                                                 <!-- TASK -->
                                                 <h3 class="view-syncitem-header" [style.border-color]="Status.color">
                                                     {{View.task}}</h3>
-                                                <div style="position:relative;width:100%;" [style.height.px]="FetchHeight"
-                                                fxLayout="column" fxLayoutAlign="start start">
+                                                <div style="position:relative;width:100%;"
+                                                    [style.height.px]="FetchHeight" fxLayout="column"
+                                                    fxLayoutAlign="start start">
                                                     <ng-container *ngIf="View.type == 'task'">
                                                         <h4 style="margin-bottom:5px" [style.color]="Status.color">
                                                             Description</h4>
@@ -93,7 +96,8 @@
 
                                                     <!-- Revision Item -->
                                                     <ng-container *ngIf="View.type == 'revision'">
-                                                        <ng-container *ngIf="(SyncReview$ | FilterSyncItemsByTask$ : View : (Item.department | ArrayToStr : 'text' ) | async) as Items; else fetchingItems">
+                                                        <ng-container
+                                                            *ngIf="(SyncReview$ | FilterSyncItemsByTask$ : View : (Item.department | ArrayToStr : 'text' ) | async) as Items; else fetchingItems">
                                                             <ng-container *ngFor="let item of Items">
                                                                 <div class="review-item"
                                                                     [style.border-color]="Status.color"
@@ -294,7 +298,8 @@
                                             </ng-template>
                                         </div>
                                         <div fxLayout="column" fxLayoutAlign="start start" style="margin-top:30px;min-width:250px;
-                                            max-width:250px;width:250px;" *ngIf="View.type == 'revision' || View.type == 'task'">
+                                            max-width:250px;width:250px;"
+                                            *ngIf="View.type == 'revision' || View.type == 'task'">
 
                                             <div>
                                                 <h4 style="margin-bottom:5px;margin-top:10px"
@@ -346,11 +351,14 @@
 
                                         </div>
                                     </div>
-                                    
+
                                 </td>
                             </tr>
                         </table>
+                    </div>
+                    <!--
                     </p-scrollPanel>
+                    -->
                 </div>
             </ng-container>
         </ng-container>

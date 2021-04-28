@@ -120,3 +120,11 @@ img {
     padding-bottom: 30px;
     width: 100%;
 }
+
+.view-task-scroll {
+    width:100%;
+    display:block;
+    position:relative;
+    overflow-x: hidden;
+    overflow-y:visible;
+}

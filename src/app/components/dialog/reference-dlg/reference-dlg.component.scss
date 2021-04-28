@@ -104,3 +104,11 @@ div.reference-back-container > button > span.mat-button-wrapper > mat-iconm, .ap
     height: 100%;
 }
 
+.reference-dlg-scroll {
+    width:100%;
+    display:block;
+    position:relative;
+    overflow-x: hidden;
+    overflow-y:visible;
+    padding:40px;
+}

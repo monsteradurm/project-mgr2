@@ -33,8 +33,7 @@ export class ViewTaskDlgComponent implements OnInit {
     let el = this.DlgContainer.nativeElement as HTMLElement;
     let dlg = el.firstElementChild.firstElementChild;
     this.Height = dlg.clientHeight;
-    this.TaskHeight = this.Height - 100;
-    this.FetchHeight = this.TaskHeight - 100;
+    this.TaskHeight = this.Height - 40;
   }
  
 

@@ -1,5 +1,4 @@
-<p-scrollPanel  fxLayout="row" fxLayoutAlign="start stretch" class="viewTaskScroll"
-                        [style]="{width:'75vw', 'flex-grow' : 1, height: 'calc(100vh - 70px)'}">
+<div class="pm-page">
     <div class="people-table" fxLayout="row" fxLayoutAlign="center center">
         <ng-container *ngIf="(AllUsers$ | async) as AllUsers; else loadingUsers">        
             <table mat-table [dataSource]="AllUsers" class="mat-elevation-z8">
@@ -140,4 +139,4 @@
             </div>
         </ng-template>
     </div>
-</p-scrollPanel>
+</div>
