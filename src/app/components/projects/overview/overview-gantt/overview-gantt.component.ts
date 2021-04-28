@@ -105,7 +105,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
           {
             unit: "week", step: 1, format: function (date) {
               var dateToStr = gantt.date.date_to_str("%d %M");
-              var endDate = gantt.date.add(date, 7, "day");
+              var endDate = gantt.date.add(date, 6, "day");
               return dateToStr(date) + " - " + dateToStr(endDate);
             }
           }
