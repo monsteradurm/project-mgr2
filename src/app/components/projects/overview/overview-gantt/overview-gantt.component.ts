@@ -14,6 +14,24 @@ const _STARTDATE_ = 2;
 const _ENDDATE_ = 3;
 const NULL_MOMENT = moment(0).toDate();
 
+const DAY_SCALE = [{ unit: "month", format: "%M %Y", step: 1 },
+{ unit: "day", format: "%M %d", step: 1 }]
+
+const WEEK_SCALE = [{ unit: "month", format: "%M %Y", step: 1 },
+{
+  unit: "week", step: 1, format: (date) => {
+    let start = moment(date).format("MMM DD");
+    let end = moment(date).add(6, 'days').format("DD");
+    return start + " - " + end;
+  }
+}];
+const MONTH_SCALE = [
+  { unit: "month", step: 1, format: "%M" },
+  {
+    unit: "year", step: 1, format: "%Y"
+  }
+];
+
 @Component({
   selector: 'app-overview-gantt',
   templateUrl: './overview-gantt.component.html',
@@ -93,27 +111,8 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     var zoomConfig = {
       minColumnWidth: 80,
       maxColumnWidth: 150,
-      levels: [
-        [
-          {unit: "month", step: 1, format: "%M"},
-          {
-           unit: "year", step: 1, format: "%Y"
-          }
-        ],
-        [
-          { unit: "month", format: "%M %Y", step: 1 },
-          {
-            unit: "week", step: 1, format: function (date) {
-              var dateToStr = gantt.date.date_to_str("%d %M");
-              var endDate = gantt.date.add(date, 6, "day");
-              return dateToStr(date) + " - " + dateToStr(endDate);
-            }
-          }
-        ],
-        [
-          { unit: "month", format: "%M %Y", step: 1 },
-          { unit: "day", format: "%d %M", step: 1 }
-        ],
+      levels: [  
+        MONTH_SCALE, WEEK_SCALE, DAY_SCALE
       ],
       startDate: gantt.config.start_date,
       endDate: gantt.config.end_date,
@@ -300,10 +299,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     gantt.config.readonly = true;
     gantt.config.show_unscheduled = true;
     gantt.config.prevent_default_scroll = true;
-    gantt.config.scales = [
-      { unit: "month", step: 1, format: "%F, %Y" },
-      { unit: "day", step: 1, format: "%j, %D" }
-    ];
+    gantt.config.scales = DAY_SCALE;
     gantt.config.wheel_scroll_sensitivity = 0;
     gantt.config.show_tasks_outside_timescale = true;
     gantt.templates.rightside_text = function (start, end, task) {
@@ -331,7 +327,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
 
     let today = moment();
-    
+
 
 
     gantt.addTaskLayer((task) => {
