@@ -78,7 +78,7 @@ import {ToastModule} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-const config: SocketIoConfig = { url: 'http://localhost', options: {} };
+const config: SocketIoConfig = { url: 'https://projectmgr.live', options: {} };
 declare var google:any;
 
 const declarations = [
