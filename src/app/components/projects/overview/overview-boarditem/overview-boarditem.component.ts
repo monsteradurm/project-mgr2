@@ -51,41 +51,48 @@ export class OverviewBoarditemComponent implements OnInit {
   }
 
   onSetStatus(s) {
+    let label = s.label;
+
+    if (label == this.boarditem.status.text || !this.boarditem.status && label == 'Not Started') {
+      this.parent.parent.messenger.add({
+        severity: 'info',
+        summary: 'Status is already "' + label + '"',
+        life: 3000,
+        detail: this.boarditem.name
+      });
+      return;
+    } else {
     this.parent.Board$.pipe(
       map(board => board.id),
       switchMap(board_id => 
       this.parent.parent.monday.SetBoardItemStatus$(board_id, this.boarditem.id.toString(), s.column_id, s.index))
       ).pipe(
         take(1)
-      ).subscribe(result => {
-        if (result) {
-            console.log(result);
+      ).subscribe((result:any) => {
+        if (result && result.change_simple_column_value && result.change_simple_column_value.id) {
             this.parent.parent.messenger.add(
               { severity:'success',
                 summary: 'Status Updated',
-                life: 50000,
+                life: 3000,
                 detail: this.boarditem.name
             });
 
-            this.RefreshItem()
+            this.parent.parent.socket.SendBoardItemUpdate(
+              this.boarditem.board.id, this.boarditem.group.id, this.boarditem.id
+            );
+
+        } else {
+          this.parent.parent.messenger.add(
+            {
+              severity:'error',
+              summary: 'Error Updating Status',
+              life: 3000,
+              detail: this.boarditem.name
+            }
+          )
         }
       })
-  }
-
-  RefreshItem() {
-    combineLatest([this.parent.parent.Board$, this.parent.parent.Group$, this.parent.parent.Workspace$])
-    .pipe(take(1))
-    .subscribe(
-      ([board, group, workspace]) => 
-        this.parent.parent.monday.GetBoardItem$(board.id, group.id, this.boarditem.id)
-        .pipe(take(1))
-        .subscribe(
-          result => {
-            let item = result[0];
-            this.boarditem = new BoardItem(item, workspace, group, board)
-          }
-        )
-      )
+    }
   }
 
   onClick(i) {

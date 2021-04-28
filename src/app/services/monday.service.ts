@@ -62,6 +62,22 @@ export class MondayService {
   )
   }
 
+  GetSubItem$(id: string) {
+    let query = `items(ids:[${id}] limit:1) {
+      id name 
+      column_values { title text id additional_info value } }`
+
+      return this.Query$(query.split('\n').join('').trim()).pipe(
+        map((data:any) => data.items),
+        map((items: any[]) => items[0]),
+        take(1),
+        catchError(err => {
+          console.log(err);
+          return err
+          })
+        )
+  }
+
   SubItems$(ids: string[]) {
   
     let query = `items(ids:[${ids.join(' ')}] limit:200) {
@@ -70,11 +86,12 @@ export class MondayService {
 
   return this.Query$(query.split('\n').join('').trim()).pipe(
     map((data:any) => data.items),
+    take(1),
     catchError(err => {
       console.log(err);
       return err
-    })
-  )
+      })
+    )
   }
   GetBoardItem$(boardId, groupId, itemId) {
     let query = `boards(limit:1 ids:${boardId}) {
@@ -86,8 +103,12 @@ export class MondayService {
       }
     }
   }`
+
+
   return this.Query$(query.split('\n').join('').trim()).pipe(
     map((data:any) => data.boards[0].groups[0].items),
+    map((items:any[]) => items[0]),
+    take(1),
     catchError(err => {
       console.log(err);
       return err
@@ -119,6 +140,7 @@ export class MondayService {
     map((boards:any[]) => _.flatten(_.map(boards, b=> b.columns))),
     map((columns: any[]) => _.uniq(columns, c => JSON.stringify(c))),
     map((columns:any[]) => _.map(columns, c => new Column(c))),
+    take(1),
     shareReplay(1)
   )
 
@@ -340,12 +362,12 @@ id
     shareReplay(1))
 
   Query$(cmd) {
-    return this.API_CMD$(cmd, 'query')
+    return this.API_CMD$(cmd, 'query').pipe(take(1))
   }
 
   SetBoardItemStatus$(board_id: string, item_id: string, column_id: string, value: string){
     let post = `change_simple_column_value (board_id: ${board_id}, item_id: ${item_id}, column_id: "${column_id}", value: "${value}") { id }`
-    return this.Mutate$(post)
+    return this.Mutate$(post).pipe(take(1))
   }
 
 

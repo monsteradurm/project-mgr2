@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, Chan
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { map, tap, shareReplay, timestamp, take, switchMap } from 'rxjs/operators';
+import { map, tap, shareReplay, timestamp, take, switchMap, distinctUntilChanged } from 'rxjs/operators';
 import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
 
 import * as _ from 'underscore';
@@ -28,10 +28,9 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     private actionOutlet: ActionOutletFactory) {
   }
 
-  SubItems$ = this.parent.SubItems$;
-
   private groupMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('group_work');
   private updatedBoardItems = new BehaviorSubject<BoardItem[]>(null);
+  private updatedSubItems = new BehaviorSubject<SubItem[]>(null);
 
   private ignoredStatus = new BehaviorSubject<string[]>([]);
   IgnoredStatus$ = this.ignoredStatus.asObservable().pipe(shareReplay(1));
@@ -61,13 +60,37 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   directorsMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Directors').setIcon('supervisor_account')
   sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By').setIcon('sort_by_alpha');
 
-  UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1))
+  UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1));
+  UpdatedSubItems$ = this.updatedSubItems.asObservable().pipe(shareReplay(1));
   SyncReviews$ = this.parent.SyncReviews$;
 
   private get box() { return this.parent.box; }
 
   GanttView: OverviewGanttComponent;
   @Output() Expanded: string[] = [];
+
+
+  SubItems$ =
+    of(null).pipe(
+      switchMap(t => {
+        this.Fetching = true;
+        return combineLatest([
+          this.parent.SubItems$.pipe(timestamp()),
+          this.UpdatedSubItems$.pipe(timestamp())]).pipe(
+            map(([parent, updated]) => {
+              if (!updated.value)
+                return parent.value;
+
+              else if (updated.timestamp > parent.timestamp)
+                return updated.value;
+
+              return parent.value;
+            })
+          )
+      }),
+      tap(t => this.Fetching = false),
+      shareReplay(1)
+    );
 
   onExpand(i) {
     if (this.Expanded.indexOf(i) > -1)
@@ -106,7 +129,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   SetNameFilter(n) {
     if (!n) n = '';
-      this.nameFilter.next(n);
+    this.nameFilter.next(n);
   }
 
   InvertFilteredStatus() {
@@ -175,6 +198,14 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       let entry = _.findIndex(items, i => i.id == item.id);
       items[entry] = item;
       this.updatedBoardItems.next([...items]);
+    })
+  }
+
+  UpdateSubItem(item) {
+    this.SubItems$.pipe(take(1)).subscribe(items => {
+      let entry = _.findIndex(items, i => i.id == item.id);
+      items[entry] = item;
+      this.updatedSubItems.next([...items]);
     })
   }
 
@@ -266,10 +297,10 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   SetMenuFilter(s,
-      Options$: Observable<string[]>,
-      Ignored$: Observable<string[]>,
-      Ignore: BehaviorSubject<string[]>
-      ) {
+    Options$: Observable<string[]>,
+    Ignored$: Observable<string[]>,
+    Ignore: BehaviorSubject<string[]>
+  ) {
     if (this.initializing) return;
 
     combineLatest([Options$, Ignored$]).pipe(take(1)).subscribe(
@@ -352,7 +383,66 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
+  ReceivedItemUpdate(workspace, board, group, user, update) {
+
+    combineLatest([this.BoardItems$, this.SubItems$]).pipe(
+      take(1)).subscribe( ([items, subitems]) => {
+
+        if (!items || !subitems)
+          return;
+
+        let obser: Observable<BoardItem | SubItem> = null;
+              let isSubItem = false;
+              let entry = _.find(items, i => i.id == update.item_id);
+
+              if (!entry) {
+                entry = _.find(subitems, i => i.id == update.item_id);
+                if (!entry)
+                  return;
+                isSubItem = true;
+              
+                obser = this.parent.monday.GetSubItem$(update.item_id);
+              }
+              else {
+                obser = this.parent.monday.GetBoardItem$(update.board_id, update.group_id, update.item_id);
+              }
+
+              if (!obser)
+                return;
+
+              obser.pipe(take(1)).subscribe(
+                item => {
+                  if (!isSubItem) {
+                    this.UpdateBoardItem(new BoardItem(item, workspace, group, board));
+                  } else {
+                    this.UpdateSubItem(new SubItem(item));
+                  }
+                }
+              )
+      });
+  }
+
+  BoardItemUpdates$ = this.parent.socket.BoardItemUpdates$
   ngOnInit(): void {
+    this.subscriptions.push(
+      combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.parent.userService.User$, this.BoardItemUpdates$]).subscribe(
+        ([workspace, board, group, user, update]) => {
+          
+          if (!workspace || !board || !group || !user || !update)
+            return;
+
+          if (!workspace.id || board.id != update.board_id || group.id != update.group_id)
+            return;
+
+          if (!update.item_id)
+            return;
+
+            console.log("Received BoardItem Update,", update);
+          
+          this.ReceivedItemUpdate(workspace, board, group, user, update);
+        })
+    );
+
     this.initializing = false;
   }
 

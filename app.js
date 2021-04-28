@@ -12,6 +12,7 @@ proxy.on('error', function(e) {
     console.log(e);
 });
 
+  
 fs.readFile('proxy.conf.json', (err, data) => {
     if (err) throw err;
     var config = JSON.parse(data);
@@ -49,7 +50,24 @@ fs.readFile('proxy.conf.json', (err, data) => {
 
     const io = require('socket.io')(server);
 
-    io.on('connection', (socket) => {
-        console.log('a user connected');
+    io.on("connection", socket => {
+        socket.on('test-message', (update) => {
+            io.emit("test-message", update);
+        });
+
+        socket.on('send-boarditem-update', (update) => {
+            console.log(update);
+            io.emit('boarditem-update', update);
+        });
+
+        socket.on('send-board-update', (update) => {
+            io.emit('board-update', update);
+        });
+
+        socket.on('send-syncketch-update', (update) => {
+            io.emit('syncsketch-update', update);
+        });
+
+        socket.on('disconnect', () => {});
     });
 });

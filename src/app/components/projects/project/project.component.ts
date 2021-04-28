@@ -14,6 +14,7 @@ import { BoxService } from 'src/app/services/box.service';
 
 import {MessageService} from 'primeng/api';
 import { SocketService } from 'src/app/services/socket.service';
+import { UserService } from 'src/app/services/user.service';
 
 
 const _PAGE_ = '/Projects/Overview';
@@ -31,6 +32,7 @@ export class ProjectComponent implements OnInit, OnDestroy
               public messenger: MessageService,
               public socket: SocketService,
               public box: BoxService,
+              public userService: UserService,
               public monday: MondayService) {
                 this.subscriptions.push(
                   this.navigation.PrimaryColor$.subscribe(c => this.PrimaryColor = c)
@@ -295,6 +297,7 @@ Please request the production data be extended to include this column.`)
   subscriptions = [];
   ngOnInit(): void {
     this.errorMessage.next(null);
+
     this.subscriptions.push(
       combineLatest(
         [this.Workspace$, this.Board$]).subscribe(

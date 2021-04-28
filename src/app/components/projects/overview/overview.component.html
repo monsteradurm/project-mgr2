@@ -64,7 +64,7 @@
     </nav>
     <!-- fetch boarditems early and shareReplay -->
     <ng-container *ngIf="BoardItems$ | async"></ng-container>
-
+    <ng-container *ngIf="SubItems$ | async"></ng-container>
     <ng-container *ngIf="!Fetching; else fetchingMonday">
       <ng-container
         *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ |

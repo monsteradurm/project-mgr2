@@ -25,6 +25,7 @@ import { TaskTooltipComponent } from './../tooltips/task/task.component';
 
 import tippy from "tippy.js";
 import { Board, BoardItem } from 'src/app/models/BoardItem';
+import { SocketService } from 'src/app/services/socket.service';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline', 
           'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -67,6 +68,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private navigation: NavigationService,
     private cfr: ComponentFactoryResolver,
     public monday: MondayService,
+    private socket: SocketService,
     private UserService : UserService,
     ) { 
       const name = Calendar.name; 
