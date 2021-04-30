@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
 
   showHoursDlg: boolean = false;
-  TabOptions = ['Calendar', 'List', 'Kanban', 'Chart']
+  TabOptions = ['Calendar', 'List', 'Requires Review', 'Requires Assistance', 'Received Feedback', 'Chart']
   
   private tab = new BehaviorSubject<string>('Calendar')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
@@ -136,6 +136,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
       )  
     return filtered;
     }),
+    shareReplay(1)
+  )
+
+  RequiresReview$ = this.MyItems$.pipe(
+    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
+    shareReplay(1)
+  )
+
+  RequiresAssistance$ = this.MyItems$.pipe(
+    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Requires Assistance') > -1)),
+    shareReplay(1)
+  )
+
+  ReceivedFeedback$ = this.MyItems$.pipe(
+    map(items => _.filter(items, i => i.status && i.status.text && 
+        i.status.text.indexOf('Received') > -1 && i.status.text.indexOf('Feedback') > -1)),
     shareReplay(1)
   )
 

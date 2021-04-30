@@ -7,8 +7,10 @@
 
   <ng-container *ngIf="(SelectedElement$ | async) as selected">
     <app-view-task-dlg [Departments]="Departments$ | async" [ProjectReference]="ProjectReference$ | async"
-      [Item]="SelectedElement$ | async" [SyncReview$]="SyncReviews$ | FilterSyncReviewsByItem$ : selected"
-      (onClose)="onViewTaskClosed()"></app-view-task-dlg>
+      [Item]="SelectedElement$ | async" [SyncBoard]="SyncBoard$ | async"
+      [User]="User$ | async"
+      [SyncReview$]="SyncReviews$ | FilterSyncReviewsByItem$ : selected" (onClose)="onViewTaskClosed()">
+    </app-view-task-dlg>
   </ng-container>
 
   <ng-container *ngIf="(GroupsMenu$ | async) as groupsMenu">
@@ -29,13 +31,24 @@
           <mat-icon class="search-icon">search</mat-icon>
           <mat-form-field pmFocusLabel pmFocusInput [primaryColor]="primaryColor"
             style="max-width:200px;top:-9px;height:100%">
-            <input matInput class="search-input" [ngModel]="NameFilter$ | async" (ngModelChange)="SetNameFilter($event)">
+            <input matInput class="search-input" [ngModel]="NameFilter$ | async"
+              (ngModelChange)="SetNameFilter($event)">
           </mat-form-field>
         </div>
         <ng-container *ngIf="(SortByMenu$ | async) as SortByMenu">
           <div class="directors-menu-container">
             <ng-container *actionOutlet="SortByMenu"></ng-container>
           </div>
+          <button mat-flat-button class="reverse-sort-btn" (click)="SetReverseSorting()">
+            <ng-container *ngIf="!(ReverseSorting$ | async)">
+              <mat-icon class="reverse-sort-icon" >north</mat-icon>
+              Ascending 
+            </ng-container>
+            <ng-container *ngIf="(ReverseSorting$ | async)">
+              <mat-icon class="reverse-sort-icon" >south</mat-icon>
+              Descending
+            </ng-container>
+          </button>
         </ng-container>
 
         <ng-container *ngIf="(DirectorsMenu$ | async) as DirectorsMenu">
@@ -66,36 +79,35 @@
     <ng-container *ngIf="BoardItems$ | async"></ng-container>
     <ng-container *ngIf="SubItems$ | async"></ng-container>
     <ng-container *ngIf="!Fetching; else fetchingMonday">
-      <ng-container
-        *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ |
+      <ng-container *ngIf="(BoardItems$ | FilterItemsByDepartment$ : Department$ | FilterItemsByStatus$ : IgnoredStatus$ |
               FilterItemsByArtist$ : IgnoredArtists$ | FilterItemsByDirector$ : IgnoredDirectors$ |
               FilterItemsByName$ : NameFilter$ | TaskSortBy$ : SortBy$ : ReverseSorting$
               | async) as items; else noItems">
         <ng-container *ngIf="items.length > 0; else noItems">
           <ng-container *ngIf="(SubItems$ | async) as SubItems">
             <p-scrollPanel [style]="{width: '100%', height: '100%'}">
-            <p-splitter layout="horizontal" [panelSizes]="[50,50]">
-              <ng-template pTemplate>
-                <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch"
-                  style="width:100%;margin-top:50px">
-                  <ng-container *ngFor="let item of items">
-                    <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
-                      [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
-                    </app-overview-boarditem>
-                  </ng-container>
-                </div>
-              </ng-template>
+              <p-splitter layout="horizontal" [panelSizes]="[50,50]">
+                <ng-template pTemplate>
+                  <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch"
+                    style="width:100%;margin-top:50px">
+                    <ng-container *ngFor="let item of items">
+                      <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
+                        [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
+                      </app-overview-boarditem>
+                    </ng-container>
+                  </div>
+                </ng-template>
 
-              <ng-template pTemplate>
-                <div fxLayout="column" fxLayoutAlign="stretch stretch" (mousewheel)="$event.preventDefault()">
-                  <app-overview-gantt [BoardItems]="items" style="height:100%;min-width:550px" [Width]="GanttWidth"
-                    [Expanded]="Expanded">
-                  </app-overview-gantt>
-                </div>
-              </ng-template>
+                <ng-template pTemplate>
+                  <div fxLayout="column" fxLayoutAlign="stretch stretch" (mousewheel)="$event.preventDefault()">
+                    <app-overview-gantt [BoardItems]="items" style="height:100%;min-width:550px" [Width]="GanttWidth"
+                      [Expanded]="Expanded">
+                    </app-overview-gantt>
+                  </div>
+                </ng-template>
 
-            </p-splitter>
-          </p-scrollPanel>
+              </p-splitter>
+            </p-scrollPanel>
           </ng-container>
         </ng-container>
       </ng-container>

@@ -128,3 +128,22 @@ img {
     overflow-x: hidden;
     overflow-y:visible;
 }
+
+
+.task-btn-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+.task-btn-container > button {
+    background:gray !important;
+}
+.task-btn-container > button > .mat-button-wrapper > .mat-icon {
+    color: white !important;
+}
+
+.task-btn-container > button:hover {
+    background:black !important;
+}

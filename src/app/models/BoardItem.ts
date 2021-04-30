@@ -6,6 +6,7 @@ export class BoardItem {
     name: string;
     task: string;
     type: string = 'task';
+    updated_at: string;
     element: string;
     group: { id: string, title: string }
     department: ColumnValues[];
@@ -71,6 +72,7 @@ export class BoardItem {
     constructor(i: any, w:any, g:any, b:any) {
         this.id = i.id;
         this.name = i.name;
+        this.updated_at = i.updated_at;
         this.group = { id: g.id, title: g.title};
         this.board = { id: b.id, name: b.name };
         let arr = i.name.split('/');
@@ -128,6 +130,7 @@ export class Board {
 export class SubItem {
     id: number;
     name: string;
+    updated_at: string;
     element: string;
     task: string;
     artist: ColumnValues[];
@@ -142,6 +145,7 @@ export class SubItem {
     }[]; //limited to [].length 1
     constructor(i:any) {
         this.id = i.id;
+        this.updated_at = i.updated_at;
         this.name = i.name;
         this.task = i.name; // duplicated for gantt chart processing
         this.artist = ColumnValues.ParseDistinct(i.column_values, ColumnType.Artist);

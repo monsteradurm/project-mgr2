@@ -75,9 +75,12 @@ import { MouseWheelDirective } from './directives/mousewheel.directive';
 import {SplitterModule} from 'primeng/splitter';
 import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
 import {ToastModule} from 'primeng/toast';
+import {BadgeModule} from 'primeng/badge';
 import {MessageService} from 'primeng/api';
+import {FileUploadModule} from 'primeng/fileupload';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { EitherOrValueDirective } from './directives/elements/EitherOrValue.directive';
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
 
@@ -108,7 +111,8 @@ const declarations = [
     ReferenceComponent,
     MondayBoolIsCheckedPipe,
     MouseWheelDirective,
-    FetchSubItemsFromBoardItemPipe
+    FetchSubItemsFromBoardItemPipe,
+    EitherOrValueDirective,
   ]
   
 const imports = [
@@ -142,7 +146,8 @@ const imports = [
     ColorPickerModule,
     SplitterModule,
     ToastModule,
-    
+    BadgeModule,
+    FileUploadModule,
     ResizeModule, 
     FullCalendarModule,
 

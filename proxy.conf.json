@@ -8,6 +8,24 @@
             "^/syncsketch/*": ""
         }
     },
+    "/syncsketch-v2/*": {
+        "target": "https://syncsketch.com/api/v2",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/syncsketch-v2/*": ""
+        }
+    },
+    "/syncsketch-upload/*": {
+        "target": "https://syncsketch.com",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/syncsketch-upload/*": ""
+        }
+    },
     "/confluence/*": {
         "target": "https://liquidanimation.atlassian.net/wiki/rest/api/",
         "secure": false,

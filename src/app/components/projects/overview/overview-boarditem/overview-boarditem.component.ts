@@ -20,15 +20,27 @@ export class OverviewBoarditemComponent implements OnInit {
   @ViewChild(MatMenu, {static:false}) contextMenu:MatMenu;
   @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
 
+  @HostListener('mouseover', ['$event']) onMouseOver(evt) {
+    this.Hovering = true;
+  }
+  @HostListener('mouseout', ['$event']) onMouseLeave(evt) {
+    if (!this.HasContext)
+      this.Hovering = false;
+  }
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     this.contextMenuLeft = evt.x;
     this.contextMenuTop = evt.y - 105;
     this.contextMenuTrigger.toggleMenu()
-
+    this.HasContext = true;
     event.preventDefault();
   }
 
   StatusOptions$ = this.parent.parent.StatusOptions$;
+
+  onContextClosed() {
+    this.HasContext = false;
+    this.Hovering = false;
+  }
 
   onSelect() {
     this.parent.onSelectItem(this.boarditem)
@@ -39,6 +51,8 @@ export class OverviewBoarditemComponent implements OnInit {
   constructor(public parent: OverviewComponent,
               private project: ProjectComponent) { }
 
+  @Output() Hovering: boolean = false;
+  HasContext = false;
   @Input() boarditem: BoardItem;
   @Output() itemClicked = new EventEmitter<boolean>(null);
   @Output() onExpand = new EventEmitter<boolean>(null);
@@ -52,8 +66,11 @@ export class OverviewBoarditemComponent implements OnInit {
 
   onSetStatus(s) {
     let label = s.label;
-
-    if (label == this.boarditem.status.text || !this.boarditem.status && label == 'Not Started') {
+    if (
+        (!this.boarditem.status && label == "Not Started") || 
+        (this.boarditem.status && (!this.boarditem.status.text && label == "Not Started")) || 
+        (this.boarditem.status && (label == this.boarditem.status.text))
+     ) {
       this.parent.parent.messenger.add({
         severity: 'info',
         summary: 'Status is already "' + label + '"',

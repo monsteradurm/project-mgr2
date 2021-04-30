@@ -1,49 +1,98 @@
 <ng-container #tooltipCreator></ng-container>
 <div *ngIf="(Tab$ | async) as tab">
   <nav mat-tab-nav-bar pmTabUnderline [primaryColor]="primaryColor">
-      <a mat-tab-link *ngFor="let t of TabOptions"
-      (click)="SetTab(t)" [active]="tab == t"> {{t}} </a>
+    <a mat-tab-link *ngFor="let t of TabOptions" (click)="SetTab(t)" [active]="tab == t"> {{t}}
+      <ng-container *ngIf="t == 'Requires Review'">
+        <ng-container *ngIf="(RequiresReview$ | async) as RequiresReview">
+          <p-badge *ngIf="RequiresReview.length > 0" class="badge-requires-review" [value]="RequiresReview.length">
+          </p-badge>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="t == 'Received Feedback'">
+        <ng-container *ngIf="(ReceivedFeedback$ | async) as ReceivedFeedback">
+          <p-badge *ngIf="ReceivedFeedback.length > 0" class="badge-received-feedback"
+            [value]="ReceivedFeedback.length"></p-badge>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="t == 'Requires Assistance'">
+        <ng-container *ngIf="(RequiresAssistance$ | async) as RequiresAssistance">
+          <p-badge *ngIf="RequiresAssistance.length > 0" class="badge-requires-assistance"
+            [value]="RequiresAssistance.length"></p-badge>
+        </ng-container>
+      </ng-container>
+    </a>
 
 
     <ng-contaer *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
       <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;"
         [style.display]="tab == 'Calendar' ? 'block' : 'none'">
-          <div>
-            <ng-container *actionOutlet="ViewModeMenu"></ng-container>
-          </div>
+        <div>
+          <ng-container *actionOutlet="ViewModeMenu"></ng-container>
+        </div>
       </div>
     </ng-contaer>
   </nav>
   <div>
-</div>
+  </div>
 
   <ng-container *ngIf="(Me$ | async) as me">
 
-      <div class="home-container">
-    
-        <div class="pm-page-wtab">      
-          <ng-container [ngSwitch]="tab">
-            
-            <full-calendar #calendar *ngSwitchCase="'Calendar'"
-              [plugins]="calendarPlugins"
-              [weekends]="false"
-              [options]="Options$ | async"
-            ></full-calendar>
+    <div class="home-container">
 
-            <full-calendar #list *ngSwitchCase="'List'"
-              [plugins]="listPlugin"
-              [weekends]="true"
-              [options]="ListOptions$ | async"
-            ></full-calendar>
-          </ng-container>
-          
+      <div class="pm-page-wtab">
+        <ng-container [ngSwitch]="tab">
+
+          <full-calendar #calendar *ngSwitchCase="'Calendar'" [plugins]="calendarPlugins" [weekends]="false"
+            [options]="Options$ | async"></full-calendar>
+
+          <full-calendar #list *ngSwitchCase="'List'" [plugins]="listPlugin" [weekends]="true"
+            [options]="ListOptions$ | async"></full-calendar>
+
+          <div *ngSwitchCase="'Requires Review'">
+            <ng-container *ngIf="(RequiresReview$ | async) as RequiresReview">
+              <div *ngFor="let item of RequiresReview">
+                {{item | json}}
+              </div>
+              <div *ngIf="RequiresReview.length < 1" fxLayout="row" fxLayoutAlign="center center"
+                style="width:100%;height:100%">
+                <h3>You have no current items "Requiring Review"</h3>
+              </div>
+            </ng-container>
+          </div>
+
+          <div *ngSwitchCase="'Received Feedback'">
+            <ng-container *ngIf="(ReceivedFeedback$ | async) as ReceivedFeedback">
+              <div *ngFor="let item of ReceivedFeedback">
+                {{item | json}}
+              </div>
+              <div *ngIf="ReceivedFeedback.length < 1" fxLayout="row" fxLayoutAlign="center center"
+                style="width:100%;height:100%">
+                <h3>You have no current items set as "Received Feedback"</h3>
+              </div>
+            </ng-container>
+          </div>
+
+          <div *ngSwitchCase="'Requires Assistance'">
+            <ng-container *ngIf="(RequiresAssistance$ | async) as RequiresAssistance">
+              <div *ngFor="let item of RequiresAssistance">
+                {{item | json}}
+              </div>
+              <div *ngIf="RequiresAssistance.length < 1" fxLayout="row" fxLayoutAlign="center center"
+                style="width:100%;height:100%">
+                <h3>You have no current items "Requiring Assistance"</h3>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+        <!--
           <div style="position:fixed;bottom:20px;right:20px" fxLayout="row" fxLayoutAlign="end end">
             <button class="" addTippy mat-fab tippyText="Log Hours" (click)="OnVisibilityChange(true)">
               <mat-icon class="app-fab-icon-btn  app-center-fab-icon">more_time</mat-icon>
             </button>
           </div>
-        </div>
+        -->
       </div>
+    </div>
   </ng-container>
 </div>
 

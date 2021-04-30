@@ -1,4 +1,4 @@
-<span #contextMenuTrigger
+<span #contextMenuTrigger (menuClosed)="onContextClosed()"
 [matMenuTriggerFor]="ItemContextMenu"
 style="position:absolute !important"
 [style.left.px]="contextMenuLeft"
@@ -23,16 +23,20 @@ style="position:absolute !important"
       <div #outplug></div>
     </div>
     <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
-      <div class="subitem-control">
-        <button mat-icon-button class="v-mini-fab" [matBadge]="boarditem.subitem_ids.length" matBadgeSize="small"
-          (click)="OnExpandButton(boarditem)" [pmBadgeOverride] [primaryColor]="Status.color" top="7.5px"
+      <div class="subitem-control" fxLayout="row" fxLayoutAlign="center center">
+        
+        <button mat-icon-button class="v-mini-fab" 
+          (click)="OnExpandButton(boarditem)" [primaryColor]="Status.color" top="7.5px"
           fontSize="10px">
           <mat-icon class="v-mini-fab-icon">more_vert</mat-icon>
         </button>
+        <p-badge styleClass="subitem-badge" [value]="boarditem.subitem_ids.length" 
+          [style]="{background: Status.color, 'margin-left':'-10px'}"></p-badge>
       </div>
     </ng-container>
 
-    <div class="element-container no-select" fxLayout="row" fxLayoutAlign="start stretch" (dblclick)="onSelect()">
+    <div class="element-container no-select" [ngClass]="{'hovering' : Hovering}"
+      fxLayout="row" fxLayoutAlign="start stretch" (dblclick)="onSelect()">
       <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
         <div class="element-code" *ngIf="ItemCodeVisible">{{ boarditem.itemcode?.text }}</div>
         <div class="element-title">{{ boarditem.element }}</div>

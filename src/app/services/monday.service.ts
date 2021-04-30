@@ -97,7 +97,7 @@ export class MondayService {
     let query = `boards(limit:1 ids:${boardId}) {
       groups(ids:"${groupId}") {
       items(limit:1 ids: ${itemId}) { 
-        id name 
+        id name updated_at
         updates(limit:1) { id body creator { id } created_at }
         column_values { title text id additional_info value }
       }
@@ -120,7 +120,7 @@ export class MondayService {
     let query = `boards(limit:1 ids:${boardId}) {
         groups(ids:"${groupId}") {
         items { 
-          id name 
+          id name updated_at
           updates(limit:1) { id body creator { id } created_at }
           column_values { title text id additional_info value }
         }
@@ -275,17 +275,15 @@ export class MondayService {
       return;
       console.log(errors);
       let error = _.find(errors, e=> e.message && e.message.indexOf('Complexity') > -1)
-
+      if (!error) {
+        console.log(errors);
+        throw(errors);
+      }
       let messageArr = error.message.split(' ')
       return parseInt(messageArr.splice(messageArr.length - 2, 1));
 
   }
 
-  /*mutation {
-change_column_value (board_id: 20178755, item_id: 200819371, column_id: "status", value: "{\"index\": 1}") {
-id
-}
-}*/
   AddHoursLog(log: NewHourLog) {
      log.SelectedTask$.pipe(
       map((task: ScheduledItem) => {
@@ -367,18 +365,19 @@ id
 
   SetBoardItemStatus$(board_id: string, item_id: string, column_id: string, value: string){
     let post = `change_simple_column_value (board_id: ${board_id}, item_id: ${item_id}, column_id: "${column_id}", value: "${value}") { id }`
-    return this.Mutate$(post).pipe(take(1))
+    return this.Mutate$(post).pipe(take(1));
   }
 
 
-  CreateSubItem$(parent_item) {
-    `mutation {
-      create_subitem (parent_item_id: 20178785, item_name: "new subitem") {
-      id,
-      board {
-      id
-      }
-      }
-      }`
+  CreateSubItem$(parent_item_id, item_name) {
+    let post = `create_subitem (parent_item_id: ${parent_item_id}, item_name: "${item_name}") 
+    { id name }`
+
+    return this.Mutate$(post).pipe(take(1));
+  }
+
+  DeleteBoardItem$(item_id) {
+    let post = `delete_item (item_id: ${item_id}) { id }`;
+    return this.Mutate$(post).pipe(take(1))
   }
 }

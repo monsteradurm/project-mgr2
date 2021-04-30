@@ -104,6 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
       let accounts = this.authService.instance.getAllAccounts();
       this.authService.instance.setActiveAccount(accounts[0]);
     }
+    this.userService.GetUser();
   }
 
   login() {

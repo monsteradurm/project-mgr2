@@ -47,22 +47,25 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   private reverseSorting = new BehaviorSubject<boolean>(false);
   ReverseSorting$ = this.reverseSorting.asObservable().pipe(shareReplay(1));
 
-  private sortBy = new BehaviorSubject<string>('Index');
+  private sortBy = new BehaviorSubject<string>('Name');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
 
   private selectedElement = new BehaviorSubject<BoardItem>(null);
   SelectedElement$ = this.selectedElement.asObservable().pipe(shareReplay(1));
 
-  SortByOptions = ['Index', 'Name', 'Item Code', 'Status', 'Artist', 'Director', 'Start', 'Finish'];
+  SortByOptions = ['Name', 'Item Code', 'Status', 'Artist', 'Director', 'Caption', 'Start', 'Finish'];
 
   statusMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Status').setIcon('library_add_check');
   artistsMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Artists').setIcon('person');
   directorsMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Directors').setIcon('supervisor_account')
-  sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By').setIcon('sort_by_alpha');
+
+  sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By')
+    .setIcon('sort_by_alpha');
 
   UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1));
   UpdatedSubItems$ = this.updatedSubItems.asObservable().pipe(shareReplay(1));
   SyncReviews$ = this.parent.SyncReviews$;
+  SyncBoard$ = this.parent.SyncBoard$;
 
   private get box() { return this.parent.box; }
 
@@ -335,20 +338,15 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
-  SortByMenu$ = combineLatest([this.SortBy$, this.ReverseSorting$]).pipe(
-    map(([sortBy, doReverse]) => {
+  SortByMenu$ = this.SortBy$.pipe(
+    map((sortBy) => {
       this.initializing = true;
       this.sortByMenu.removeChildren();
       this.sortByMenu.setTitle('Sort By ' + sortBy)
       this.SortByOptions.forEach(o => {
-        this.sortByMenu.createButton().setTitle(o).setIcon(!doReverse ? 'north' : 'south')
-          .fire$.subscribe(a => this.SetSortBy(o));
+        this.sortByMenu.createButton().setTitle(o).fire$.subscribe(a => this.SetSortBy(o));
       })
-      this.sortByMenu.createGroup().createButton()
-        .setTitle('Reverse').setIcon('flip_camera_android').fire$.subscribe(
-          a => this.SetReverseSorting()
-        );
-
+      
       this.initializing = false;
       return this.sortByMenu;
     })
@@ -422,10 +420,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       });
   }
 
+  User$ = this.parent.userService.User$;
   BoardItemUpdates$ = this.parent.socket.BoardItemUpdates$
   ngOnInit(): void {
     this.subscriptions.push(
-      combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.parent.userService.User$, this.BoardItemUpdates$]).subscribe(
+      combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.User$, this.BoardItemUpdates$]).subscribe(
         ([workspace, board, group, user, update]) => {
           
           if (!workspace || !board || !group || !user || !update)

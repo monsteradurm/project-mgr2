@@ -407,6 +407,13 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       color: $primary;
     }
 
+    div.p-dialog[role=dialog]:not(empty), div.p-dialog[role=dialog]:not(empty) > .p-dialog-content {
+      background: transparent !important;
+    }
+
+    div.p-dialog[role=dialog]:empty, div.p-dialog[role=dialog]:empty > .p-dialog-content {
+      box-shadow:none !important;
+    }
     mat-toolbar.side-dlg-toolbar {
         background: transparent;
         //box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 25%);
@@ -420,7 +427,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
     }
 
     mat-toolbar.side-dlg-toolbar > .mat-flat-button {
-      padding:3px 8px;
+      //padding:3px 8px;
       font-family: $font;
       position:relative;
       text-align:right !important;
@@ -430,7 +437,8 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
     }
     
     mat-toolbar.side-dlg-toolbar > .mat-flat-button.side-btn-active {
-      color:black;
+      color:black !important;
+      font-weight: bold !important;
     }
 
     mat-toolbar.side-dlg-toolbar > .mat-flat-button > .mat-button-wrapper > .side-btn-active {
@@ -454,6 +462,21 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       position:absolute;
       height:100%;
     }
+
+    mat-toolbar.side-dlg-toolbar > .mat-button-disabled {
+      background: transparent !important;
+      height:30px !important;
+    }
+    mat-toolbar.side-dlg-toolbar > .mat-button-disabled > .mat-button-wrapper > .side-btn-inactive{
+      font-style: italic;
+      color: #acacac;
+      font-size: 12px;
+      opacity: 1;
+      text-align: right;
+      padding-right:10px;
+      width: 100%;
+      height: 30px !important;
+    }
   }
 }
 
@@ -468,6 +491,62 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   $component: "app-overview",
 );
 
+p-toastitem {
+  $success: rgb(0, 152, 118);
+  $info: rgb(153, 87, 255);
+  $error: rgb(200, 0, 81);
+
+  .p-toast-message-success > div {
+    background: $success;
+    /* border: solid #000000; */
+    border: solid 2px black;
+    border-width: 2px !important;
+    color: white;
+    border-radius: 10px;
+  }
+  .p-toast-message-info > div {
+    background: $info;
+    /* border: solid #000000; */
+    border: solid 2px black;
+    border-width: 2px !important;
+    color: white;
+    border-radius: 10px;
+  }
+
+  .p-toast-message-error > div {
+    background: $error;
+    /* border: solid #000000; */
+    border: solid 2px black;
+    border-width: 2px !important;
+    color: white;
+    border-radius: 10px;
+  }
+
+  div.p-toast-message {
+    background: transparent !important;
+    border: none !important;
+    border-width: 0px !important;
+    border-radius: 10px !important;
+    margin: 0px !important;
+  }
+
+  button {
+    color: white !important;
+    -webkit-text-stroke: 2px;
+    opacity: 0.35;
+  }
+
+  .p-toast-message-icon {
+    -webkit-text-stroke: 3px;
+    opacity: 0.5;
+    color:white !important;
+  }
+
+  .p-toast-message-text {
+    opacity:0.8;
+  }
+}
+
 @include set-component-colors(
   $primary: rgb(0, 152, 118) !important,
   $component: "app-settings",
@@ -477,6 +556,42 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   $primary: rgb(200, 0, 81) !important,
   $component: "app-system",
 );
+
+span.p-button.p-component, p-button > button, .p-button {
+  background: gray !important;
+  color: white !important;
+  border-color:black !important;
+  box-shadow:none !important;
+}
+
+span.p-button.p-component:hover, p-button > button:hover, .p-button:hover {
+  background: black !important;
+}
+.p-fileupload .p-fileupload-buttonbar {
+  border: none !important;
+  background: transparent !important;
+  padding: 1rem;
+}
+.p-fileupload .p-fileupload-content {
+  background: transparent !important;
+  border:none !important;
+  border-top: 2px solid lightgray;
+  border-left:none !important;
+  border-right:none !important;
+  border-bottom:none !important;
+}
+.p-fileupload-buttonbar {
+  display: flex;
+  justify-content: center;
+}
+p-fileupload {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.p-fileupload-row > div:not(empty) {
+  width: 100%;
+}
 
 .reference-thumbnail {
   border-radius: 10px;
@@ -845,4 +960,31 @@ app-overview {
   overflow-y:visible;
   height:calc(100vh - 70px);
   margin-top:36px;
+}
+
+app-home > div > nav > div.mat-tab-link-container > div > div > a > p-badge {
+  margin-top:-10px;
+}
+
+app-home > div > nav > div.mat-tab-link-container > div > div > a > p-badge > span {
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+}
+
+p-badge.badge-requires-review > span {
+  background: rgb(255, 100, 46);
+}
+
+
+p-badge.badge-received-feedback > span {
+  background: rgb(187, 51, 84);
+}
+
+
+p-badge.badge-requires-assistance > span {
+  background: rgb(255, 90, 196);
 }

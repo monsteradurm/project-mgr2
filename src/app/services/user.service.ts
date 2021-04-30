@@ -19,13 +19,13 @@ export class UserService {
 
 
   private IsAuthorized = new BehaviorSubject<boolean>(true);
-  IsAuthorized$ = this.IsAuthorized.asObservable().pipe(shareReplay(1));
+  IsAuthorized$ = this.IsAuthorized.asObservable().pipe(shareReplay());
 
   private IsAdmin = new BehaviorSubject<boolean>(false);
-  IsAdmin$ = this.IsAdmin.asObservable().pipe(shareReplay(1));
+  IsAdmin$ = this.IsAdmin.asObservable().pipe(shareReplay());
 
   private User = new BehaviorSubject<UserIdentity>(null);
-  User$ = this.User.asObservable().pipe(shareReplay(1));
+  User$ = this.User.asObservable().pipe(shareReplay());
 
   MyPhoto$ = this.User$.pipe(
     switchMap((user) =>
@@ -99,6 +99,7 @@ export class UserService {
             })
           )
         }),
+        take(1),
       ).subscribe((user) => {
         this.SetUser(user);
       })
@@ -160,7 +161,6 @@ export class UserService {
   )
 
   SetUser(user) {
-
     let u = this.User.value;
     if (user != u) {
       this.User.next(user);
