@@ -1,0 +1,28 @@
+<ng-container *ngIf="Item">
+
+        <div class="font-weight:bold;text-align:right">
+            <div>{{Item.timeline?.text | timeline}}</div>
+        </div>
+        <div class="kanban-item no-select;position:relative">
+        <ng-container *ngIf="(Item.status | GetTaskStatus) as Status">
+            <div class="kanban-header" fxLayout="row" [style.background]="Status.color"
+                fxLayoutAlign="space-between center">
+                <div>{{Item.name}}</div>
+                <div>{{Status.text}}</div>
+            </div>
+
+            <div class="kanban-contents">
+                <div style="width:100%;position:relative;color:black" fxLayoutAlign="center center">
+
+                    <div *ngIf="Item.subitem_ids.length > 0; else noSubItems">
+                    </div>
+                    <ng-template #noSubItems>
+                        <h4 style="text-align:center;margin: 0px;
+                        margin-top: 20px;">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review have been uploaded.</h4>
+                    </ng-template>
+                </div>
+            </div>
+
+        </ng-container>
+    </div>
+</ng-container>

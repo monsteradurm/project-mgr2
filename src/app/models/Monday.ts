@@ -105,6 +105,7 @@ export class ScheduledItem {
 
         this.column_ids[ColumnType.SubItems] = ColumnValues.FindColumnId(i.column_values, ColumnType.SubItems)
         let subitems = ColumnValues.ParseFirst(i.column_values, ColumnType.SubItems);
+        
         if (!subitems) {
             this.subitem_ids = [];
             return;

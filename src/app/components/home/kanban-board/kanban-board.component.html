@@ -1,0 +1,22 @@
+<ng-container *ngIf="Items$">
+    <div style="padding:40px">
+        <ng-container *ngFor="let ws of (Workspaces$ | async)">
+            <h2 [style.color]="primaryColor" style="font-weight:bold;margin-bottom:10px">{{ws.name}}</h2>
+            <div style="padding-left:80px">
+                <ng-contaer *ngFor="let board of (Boards$ | async)">
+                    <ng-container *ngFor="let group of (Groups$ | async)">
+                        <h3 style="font-weight:bold;font-size:18px">{{board.name}}, {{group.title}}</h3>
+                        <ng-container *ngIf="(Items$ | async) as Items">
+                            <div fxLayout="row">
+                                <ng-container *ngFor="let item of Items">
+                                    <app-kanban-board-item [Item]="item"></app-kanban-board-item>
+                                </ng-container>
+
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-contaer>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

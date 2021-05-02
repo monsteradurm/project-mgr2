@@ -81,6 +81,10 @@ import {FileUploadModule} from 'primeng/fileupload';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { EitherOrValueDirective } from './directives/elements/EitherOrValue.directive';
+import { GroupbyPipe } from './directives/elements/GroupBy.directive';
+import { ParseJSONPipe } from './directives/elements/ParseJSON.directive';
+import { TimelinePipe } from './directives/elements/timeline.directive';
+import { StringSplitPipe } from './directives/StringSplit.directive';
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
 
@@ -113,6 +117,10 @@ const declarations = [
     MouseWheelDirective,
     FetchSubItemsFromBoardItemPipe,
     EitherOrValueDirective,
+    GroupbyPipe,
+    ParseJSONPipe,
+    TimelinePipe,
+    StringSplitPipe
   ]
   
 const imports = [

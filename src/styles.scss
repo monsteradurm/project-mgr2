@@ -232,6 +232,9 @@ nav {
 h1 {
   font-family:$font;
 }
+h2 {
+  font-family:$font;
+}
 h3 {
   font-family:$font;
 }
@@ -987,4 +990,21 @@ p-badge.badge-received-feedback > span {
 
 p-badge.badge-requires-assistance > span {
   background: rgb(255, 90, 196);
+}
+
+.kanban-attr {
+  width: unset !important;
+  padding:5px;
+  padding-bottom:0px;
+
+  .mat-form-field-infix {
+      width: unset !important;
+  }
+}
+.kanban-attr > .mat-form-field-wrapper{
+  width:unset !important;
+  padding-bottom:0px !important;
+}
+.kanban-attr > .mat-form-field-wrapper > .mat-form-field-underline {
+  display:none !important;
 }

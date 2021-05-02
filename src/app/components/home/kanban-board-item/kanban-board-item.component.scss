@@ -1,0 +1,37 @@
+.kanban-item {
+    border:solid 1px black;
+    border-radius:10px;
+    width: calc(30vw);
+    height:100%;
+}
+
+.kanban-item:hover {
+    box-shadow: 10px 10px 10px 0px rgb(0 0 0 / 25%) !important;
+    border-width:2px;
+}
+
+.kanban-header {
+    padding: 10px 20px;
+    padding-top:10px;
+    color: white;
+    border-bottom:solid 1px black;
+    font-weight:bold;
+    border-top-left-radius:10px;
+    border-top-right-radius:10px;
+}
+.kanban-contents {
+    padding:0px;
+    margin:0px;
+}
+.attr-header {
+    font-weight:bold;
+}
+.attr-header:not(:first-child) {
+    margin-top:10px;
+}
+.attr-value {
+    margin-right:0px;
+}
+.kanban-attr > mat-label {
+    font-weight:bold !important;
+}
