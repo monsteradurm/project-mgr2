@@ -64,52 +64,8 @@ export class OverviewBoarditemComponent implements OnInit {
       this.ItemCodeVisible = W > 650;
   }
 
-  onSetStatus(s) {
-    let label = s.label;
-    if (
-        (!this.boarditem.status && label == "Not Started") || 
-        (this.boarditem.status && (!this.boarditem.status.text && label == "Not Started")) || 
-        (this.boarditem.status && (label == this.boarditem.status.text))
-     ) {
-      this.parent.parent.messenger.add({
-        severity: 'info',
-        summary: 'Status is already "' + label + '"',
-        life: 3000,
-        detail: this.boarditem.name
-      });
-      return;
-    } else {
-    this.parent.Board$.pipe(
-      map(board => board.id),
-      switchMap(board_id => 
-      this.parent.parent.monday.SetBoardItemStatus$(board_id, this.boarditem.id.toString(), s.column_id, s.index))
-      ).pipe(
-        take(1)
-      ).subscribe((result:any) => {
-        if (result && result.change_simple_column_value && result.change_simple_column_value.id) {
-            this.parent.parent.messenger.add(
-              { severity:'success',
-                summary: 'Status Updated',
-                life: 3000,
-                detail: this.boarditem.name
-            });
-
-            this.parent.parent.socket.SendBoardItemUpdate(
-              this.boarditem.board.id, this.boarditem.group.id, this.boarditem.id
-            );
-
-        } else {
-          this.parent.parent.messenger.add(
-            {
-              severity:'error',
-              summary: 'Error Updating Status',
-              life: 3000,
-              detail: this.boarditem.name
-            }
-          )
-        }
-      })
-    }
+  onSetStatus(column) {
+    this.parent.parent.projectService.SetItemStatus(this.boarditem.board.id, this.boarditem, column);
   }
 
   onClick(i) {

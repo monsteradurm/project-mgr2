@@ -2,49 +2,44 @@ import { Pipe } from '@angular/core';
 import * as _ from 'underscore';
 import { Observable, combineLatest, of } from 'rxjs';
 import { tap, map, switchMap, catchError } from 'rxjs/operators';
-import { BoardItem } from 'src/app/models/BoardItem';
+import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 
 @Pipe({
-  name: 'FilterSyncItemsByTask$'
+  name: 'FindSyncItem$'
 })
 
-export class FilterSyncItemsByTaskPipe  {
+export class FindSyncItemPipe  {
 constructor(private sanitizer: DomSanitizer,
             private syncSketch: SyncSketchService) { }
-  transform(review$: Observable<any>, view: BoardItem, department: string) {
+  transform(review$: Observable<any>, subitem: SubItem) {
     
     return review$.pipe(
         switchMap(review => {
             if (!review || !review.id)
                 throw 'no review item to map';
-
+            if (!subitem || !subitem.id)
+                throw 'no subitem to map';
+            
             return this.syncSketch.Items$(review.id).pipe(
                 map((items: any[]) => 
-                    _.filter(items, i => {
-                        let nameArr = i.name.split('/');
-                        let d = nameArr[0];
-                        
-                        
-                        if (department.indexOf(d) < 0) return false;
-
-                        if (view.task != nameArr[1])
-                            return false;
-                            
-                        i['review'] = review.reviewURL + '#/' + i.id;
-
-                        return true;
-                    })
+                    _.find(items, i => i.name.indexOf(subitem.id + '_') == 0)
                 ),
-                tap(console.log)
+
+                map(item => {
+                    if (!item)
+                        return 'NO ITEM';
+
+                    item.reviewURL = review.reviewURL;
+                    return item;
+                })
             )
         }),
         catchError(err => {
             console.log(err);
             return of([]);
         }),
-        tap(console.log)
     )
     
   }

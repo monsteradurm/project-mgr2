@@ -51,7 +51,7 @@ import { ArrayToStrDirective } from './directives/arrayToString.directive';
 import { GetTaskStatusDirective } from './directives/elements/getTaskStatus.directive';
 import { SyncSketchService } from './services/sync-sketch.service';
 import { FilterSyncReviewsByItemPipe } from './directives/elements/FilterSyncReviewsByItem.drective';
-import { FilterSyncItemsByTaskPipe } from './directives/elements/filterSyncItemsByTask.directive';
+import { FindSyncItemPipe } from './directives/elements/FindSyncItem.directive';
 import { FindBoardItemByIdPipe } from './directives/elements/FindBoardItemById.directive';
 import {SkeletonModule} from 'primeng/skeleton';
 import { MatchSubItemsWithBoardItemPipe } from './directives/elements/MatchSubItemsWithBoardItem.directive';
@@ -85,6 +85,11 @@ import { GroupbyPipe } from './directives/elements/GroupBy.directive';
 import { ParseJSONPipe } from './directives/elements/ParseJSON.directive';
 import { TimelinePipe } from './directives/elements/timeline.directive';
 import { StringSplitPipe } from './directives/StringSplit.directive';
+import { GetLastSubItemByBoardItemPipe } from './directives/elements/GetLastSubItemByBoardItem.directive';
+import { FindSyncReviewPipe } from './directives/elements/FindSyncReview.directive';
+import { SyncUpdateComponent } from './components/syncsketch/sync-update/sync-update.component';
+import { SyncItemComponent } from './components/syncsketch/sync-item/sync-item.component';
+import { MaxCharactersPipe } from './directives/maxCharacters.directive';
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
 
@@ -103,7 +108,7 @@ const declarations = [
     NavBtnDirective,
     GetTaskStatusDirective,
     FilterSyncReviewsByItemPipe,
-    FilterSyncItemsByTaskPipe,
+    FindSyncItemPipe,
     FindBoardItemByIdPipe,
     MatchSubItemsWithBoardItemPipe,
     FindUserFromNamePipe,
@@ -120,7 +125,12 @@ const declarations = [
     GroupbyPipe,
     ParseJSONPipe,
     TimelinePipe,
-    StringSplitPipe
+    StringSplitPipe,
+    GetLastSubItemByBoardItemPipe,
+    FindSyncReviewPipe,
+    SyncItemComponent,
+    SyncUpdateComponent,
+    MaxCharactersPipe
   ]
   
 const imports = [

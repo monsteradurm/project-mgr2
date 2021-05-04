@@ -1,0 +1,49 @@
+<ng-container *ngIf="item">
+    <ng-container *ngIf="(Updates$ | async) as Updates; else fetchingUpdates">
+        <ng-container *ngIf="!LastUpdateOnly || !Updates || (LastUpdateOnly && Updates.length < 1)">
+            <div class="review-item" [style.border-color]="Status.color" fxLayout="column" fxLayoutAlign="end start"
+                [ngClass]="{ 'last-update-only': LastUpdateOnly }" (click)="onClick()">
+
+                <div fxLayout="row" fxLayoutAlign="space-between">
+
+                    <div style="margin-right:10px" fxLayout="column" fxLayoutAlign="center center">
+                        <img [src]="item.thumbnail_url" style="cursor:pointer" (click)="NewTab(item.review)">
+
+                        <div class="img-caption" (click)="NewTab(item.review)" *ngIf="ShowViewHint">
+                            Click
+                            to
+                            view in a new tab...</div>
+                        <!--<iframe width="640" height="480" [src]="item.review" allowfullscreen=""></iframe>-->
+                    </div>
+
+                    <ng-container *ngIf="(item.creator.full_name | FindUserFromName$ | async) as User">
+                        <div style='margin-right:20px;font-size:15px' fxLayout="column" fxLayoutAlign="center start">
+                            <h3 [style.color]="Status.color" style="font-weight:bold"
+                                [ngClass]="{'last-update-only' : LastUpdateOnly}">
+                                {{User.displayName}}
+                            </h3>
+                            <h3>
+                                Uploaded {{item.created |date: 'medium'}}
+                            </h3>
+                        </div>
+                    </ng-container>
+
+                </div>
+
+
+
+            </div>
+        </ng-container>
+        <div *ngFor="let u of Updates" class="review-item" [ngClass]="{'last-update-only' : LastUpdateOnly }"
+        [style.border-color]="Status.color">
+            <app-sync-update [update]="u" [Status]="Status" style="width:100%"></app-sync-update>
+        </div>
+    </ng-container>
+
+    <ng-template #fetchingUpdates>
+        <h3 style="color:#aaa">Fetching Comments/Updates
+            from
+            SyncSketch...
+        </h3>
+    </ng-template>
+</ng-container>

@@ -8,8 +8,7 @@
   <ng-container *ngIf="(SelectedElement$ | async) as selected">
     <app-view-task-dlg [Departments]="Departments$ | async" [ProjectReference]="ProjectReference$ | async"
       [Item]="SelectedElement$ | async" [SyncBoard]="SyncBoard$ | async"
-      [User]="User$ | async"
-      [SyncReview$]="SyncReviews$ | FilterSyncReviewsByItem$ : selected" (onClose)="onViewTaskClosed()">
+      [User]="User$ | async" (onClose)="onViewTaskClosed()">
     </app-view-task-dlg>
   </ng-container>
 

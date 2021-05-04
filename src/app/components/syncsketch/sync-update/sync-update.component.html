@@ -1,0 +1,66 @@
+<ng-container *ngIf="(Update$ | async) as update">
+    <ng-container *ngIf="update.type == 'sketch'; else comment">
+        <div fxLayout="row" style="margin-top:0px;" fxLayoutAlign="start start">
+            <img class="img-update" [src]="update.data.imageData | TrustResourceURL"
+                (click)="NewTab(item.review + '/' + update.id)">
+            <div fxLayout="column" fxLayoutAlign="start start" style="margin-left:20px">
+                <h3 class="post-description"><span [style.color]="Status.color" class="poster">
+                        {{(Updater$ | async).full_name}}</span>
+                    <span style="font-style:bold;color:black">
+                        sketched
+                    </span>
+                </h3>
+                <h4 class="post-date">
+                    {{update.created
+                    |
+                    date:
+                    'medium'}}</h4>
+                <div class="post-text"  maxCharacters [maxLength]=50>
+                    {{update.text | maxCharacters : 120}}
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #comment>
+        <div fxLayout="row" style="margin-top:0px" fxLayoutAlign="start center">
+            <ng-container *ngIf="update.attachments.length > 0">
+                <img class="img-update" *ngIf="update.attachments.length > 0"
+                    [src]="update.attachments[0].thumb_url | TrustResourceURL">
+                <div fxLayout="column" fxLayoutAlign="start start" style="margin-left:20px">
+                    <h3 class="post-description">
+                        <span [style.color]="Status.color" class="poster">
+                            {{(Updater$ | async).full_name}}</span>
+                        <span style="font-style:bold;color:black">
+                            attached
+                        </span>
+                    </h3>
+                    <h4 class="post-date">
+                        {{update.created
+                        |
+                        date: 'medium'}}</h4>
+                    <div class="post-text"  maxCharacters [maxLength]=50>
+                        {{update.text | maxCharacters : 120}}
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="update.attachments.length < 1">
+                <div fxLayout="column" fxLayoutAlign="start start" style="margin-left:20px;">
+                    <h3 class="post-description">
+                        <span [style.color]="Status.color" class="poster">
+                            {{(Updater$ | async).full_name}}</span>
+                        <span style="font-style:bold;color:black">
+                            commented
+                        </span>
+                    </h3>
+                    <h4 class="post-date">
+                        {{update.created
+                        |
+                        date: 'medium'}}</h4>
+                    <div class="post-text">
+                        {{update.text | maxCharacters : 120}}
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-template>
+</ng-container>

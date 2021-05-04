@@ -15,6 +15,7 @@ import { BoxService } from 'src/app/services/box.service';
 import {MessageService} from 'primeng/api';
 import { SocketService } from 'src/app/services/socket.service';
 import { UserService } from 'src/app/services/user.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 
 const _PAGE_ = '/Projects/Overview';
@@ -30,6 +31,7 @@ export class ProjectComponent implements OnInit, OnDestroy
   constructor(public navigation: NavigationService,
               public syncSketch: SyncSketchService,
               public messenger: MessageService,
+              public projectService: ProjectService,
               public socket: SocketService,
               public box: BoxService,
               public userService: UserService,
@@ -205,14 +207,11 @@ Please request the production data be extended to include this column.`)
       return [];
     }),
   )
+
   SyncBoard$ = this.Board$.pipe(
     switchMap(board => this.syncSketch.Project$(board))
   );
 
-  SyncReviews$ = this.SyncBoard$.pipe(
-    switchMap((project:any) => project && project.id ? this.syncSketch.Reviews$(project.id) : []),
-    shareReplay(1)
-  )
 
   Status$ = this.BoardItems$.pipe(
     map(items => _.map(items, i => i.status)),

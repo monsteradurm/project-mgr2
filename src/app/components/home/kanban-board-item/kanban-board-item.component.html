@@ -1,28 +1,91 @@
+<span #contextMenuTrigger (menuClosed)="onContextClosed()"
+[matMenuTriggerFor]="ItemContextMenu"
+style="position:absolute !important"
+[style.left.px]="contextMenuLeft"
+[style.top.px]="contextMenuTop"></span>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below">
+  <ng-template matMenuContent>
+      <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #statusMenu="matMenu" >
+  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+    [style.background]="s.color" style.color="white !important"
+    (click)= "onSetStatus(s)">{{s.label}}</button>
+</mat-menu>
+
 <ng-container *ngIf="Item">
-
-        <div class="font-weight:bold;text-align:right">
-            <div>{{Item.timeline?.text | timeline}}</div>
-        </div>
-        <div class="kanban-item no-select;position:relative">
+    <div class="kanban-item no-select;position:relative" [ngClass]="{'hovering' : Hovering}">
         <ng-container *ngIf="(Item.status | GetTaskStatus) as Status">
-            <div class="kanban-header" fxLayout="row" [style.background]="Status.color"
-                fxLayoutAlign="space-between center">
-                <div>{{Item.name}}</div>
-                <div>{{Status.text}}</div>
-            </div>
-
-            <div class="kanban-contents">
-                <div style="width:100%;position:relative;color:black" fxLayoutAlign="center center">
-
-                    <div *ngIf="Item.subitem_ids.length > 0; else noSubItems">
-                    </div>
-                    <ng-template #noSubItems>
-                        <h4 style="text-align:center;margin: 0px;
-                        margin-top: 20px;">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review have been uploaded.</h4>
-                    </ng-template>
+            <div fxLayout="column" class="kanban-header" [style.background]="Status.color">
+                <div fxLayout="row" fxLayoutAlign="space-between">
+                    <div class="kanban-workspace" style="opacity:0.5">{{Item.workspace.name}}</div>
+                    <div style="opacity:0.7">{{Item.board.name}}</div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" style="margin-top:10px">
+                    <div>{{Item.name}}</div>
                 </div>
             </div>
 
+            <div class="kanban-contents">
+                <div style="width:100%;position:relative;color:black;padding:0px 20px" fxLayout="column"
+                    fxLayoutAlign="center center">
+                    <ng-container *ngIf="SubItem; else noSubItems">
+                        <h4 style="text-align:left;width:100%;font-weight:bold;    padding: 10px 10px 0px 5px;
+                       margin: 0px 20px;
+                        border-bottom:solid 2px gray" [style.border-color]="Status.color">
+                            {{SubItem.name}}
+                        </h4>
+                        <ng-container
+                            *ngIf="(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async) as SyncItem; else fetchingItems">
+                            <ng-container *ngIf="SyncItem != 'NO ITEM'">
+                                <app-sync-item 
+                                    [parent]=""
+                                    [item]="SyncItem" [Status]="Status" [LastUpdateOnly]="true"
+                                    [ShowViewHint]="false">
+                                </app-sync-item>
+                            </ng-container>
+                            <ng-container *ngIf="SyncItem == 'NO ITEM'">
+                                <h4 style="text-align:center;margin: 0px;
+            margin-top: 20px;margin-bottom:20px">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review
+                    have
+                    been uploaded.</h4>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                </div>
+            </div>
+
+            <div fxLayout="column" class="kanban-footer" [style.background]="Status.color">
+                <div fxLayout="row" fxLayoutAlign="space-between center" style="opacity:0.7">
+                    <div>{{Item.timeline?.text | timeline}}</div>
+                    <div>{{Status.text}}</div>
+                </div>
+
+            </div>
+
+
+            <ng-template #noSubItems>
+                <h4 style="text-align:center;margin: 0px;
+            margin-top: 20px;margin-bottom:20px">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review
+                    have
+                    been uploaded.</h4>
+            </ng-template>
+
+            <ng-template #fetchingItems>
+                <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%;margin-top:20px">
+                    <app-swapping-squares-spinner [animationDuration]="1000" [size]="120" [color]="Status.color"
+                        style="opacity:0.15;">
+                    </app-swapping-squares-spinner>
+                    <h3 [style.color]="Status.color" style="margin-top:30px">Fetching
+                        Items
+                        from SyncSketch...</h3>
+                </div>
+            </ng-template>
         </ng-container>
+
     </div>
 </ng-container>

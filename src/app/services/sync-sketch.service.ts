@@ -116,6 +116,13 @@ export class SyncSketchService {
     );
   }
 
+  FindReview$(board_id: string, group_title: string, element:string) {
+    return this.QueryArray$(`/syncsketch/review/?name__istartswith=${board_id}_${group_title}/${element}&active=1`).pipe(
+      map(results => results.length < 1 ? null : results[0]),
+      take(1)
+    )
+  }
+
   Patch$(addr:string, body: any) {
     return this.http.patch(addr, body, httpOptions).pipe(
       take(1)

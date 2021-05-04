@@ -66,6 +66,9 @@ export class ScheduledItem {
     subitems: SubItem[];
     subitem_ids: string[];
 
+    task:string;
+    element:string;
+
     selection: string;
     column_values: any;
     column_ids: any = {};
@@ -73,6 +76,10 @@ export class ScheduledItem {
     constructor(i:any) {
         this.id = i.id;
         this.name = i.name;
+        let arr = i.name.split('/');
+        this.task = arr[arr.length - 1];
+        this.element = arr[arr.length - 2];
+        
         this.board = { id: i.board.id, name: i.board.name };
         this.group = { id: i.group.id, title: i.group.title };
         this.selection = this.group.title + ', ' + this.name;
@@ -105,7 +112,7 @@ export class ScheduledItem {
 
         this.column_ids[ColumnType.SubItems] = ColumnValues.FindColumnId(i.column_values, ColumnType.SubItems)
         let subitems = ColumnValues.ParseFirst(i.column_values, ColumnType.SubItems);
-        
+
         if (!subitems) {
             this.subitem_ids = [];
             return;

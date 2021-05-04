@@ -46,15 +46,24 @@
             [options]="ListOptions$ | async"></full-calendar>
 
           <div *ngSwitchCase="'Review'">
-            <app-kanban-board [primaryColor]="primaryColor" [Items$]="RequiresReview$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" 
+            [SubItems$]="SubItems$"
+            Status = "Waiting Internal Review"
+            [Items$]="RequiresReview$"></app-kanban-board>
           </div>
 
           <div *ngSwitchCase="'Feedback'">
-            <app-kanban-board [primaryColor]="primaryColor" [Items$]="ReceivedFeedback$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" 
+            [SubItems$]="SubItems$"
+            Status="Receieved Client Feedback, Received Internal Feedback"
+            [Items$]="ReceivedFeedback$"></app-kanban-board>
           </div>
 
           <div *ngSwitchCase="'Assist'">
-            <app-kanban-board [primaryColor]="primaryColor" [Items$]="RequiresAssistance$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" 
+            Status = "Requires Assistance"
+            [SubItems$]="SubItems$"
+            [Items$]="RequiresAssistance$"></app-kanban-board>
           </div>
         </ng-container>
         <!--

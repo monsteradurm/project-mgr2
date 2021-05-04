@@ -4,7 +4,7 @@ import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import * as moment from 'moment';
 import { BehaviorSubject, combineLatest, fromEvent, Observable, of, timer } from 'rxjs';
-import { catchError, delay, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, delay, distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap, timestamp } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { UserIdentity } from 'src/app/models/UserIdentity';
@@ -26,6 +26,7 @@ import { TaskTooltipComponent } from './../tooltips/task/task.component';
 import tippy from "tippy.js";
 import { Board, BoardItem } from 'src/app/models/BoardItem';
 import { SocketService } from 'src/app/services/socket.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline', 
           'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -38,6 +39,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
+
+  private internalRouteParams = new BehaviorSubject<any>(null);
+  private errorMessage = new BehaviorSubject<string>(null);
+ 
+  InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
 
   showHoursDlg: boolean = false;
   TabOptions = ['Calendar', 'List', 'Review', 'Assist', 'Feedback', 'Chart']
@@ -63,11 +69,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return result;
     })).pipe(shareReplay(1));
 
+    NavigationParameters$ = combineLatest([
+      this.navigation.NavigationParameters$.pipe(timestamp()),
+      this.InternalRouteParams$.pipe(timestamp())]).pipe(
+      map(
+       ( [nav, internal] ) => {
+        if( internal.value == null || nav.timestamp > internal.timestamp ) {
+          return nav.value;
+        }
+        return internal.value
+      } ),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    )
+
   constructor(
     private actionOutlet: ActionOutletFactory,
     private navigation: NavigationService,
     private cfr: ComponentFactoryResolver,
     public monday: MondayService,
+    public projectService: ProjectService,
     private socket: SocketService,
     private UserService : UserService,
     ) { 
@@ -76,8 +96,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     
   SetTab(t) {
     this.Tab$.pipe(take(1)).subscribe(tab => {
-      if (t && t != tab)
+      if (t && t != tab) {
+        this.navigation.Relocate('/Home', {tab: t})
         this.tab.next(t);
+      }
     })
     
   }
@@ -109,8 +131,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
+  Boards$ = this.monday.Boards$.pipe(shareReplay(1));
 
-  Boards$ = this.monday.Boards$;
   User$ = this.UserService.User$;
 
   Items$ = combineLatest([this.Boards$, this.Columns$, this.User$]).pipe(
@@ -138,6 +160,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }),
     shareReplay(1)
   )
+
+  SubItems$ = this.MyItems$.pipe(
+    map(items => _.map(items, i => i.subitem_ids)),
+    map(nestedIds => _.map(nestedIds, ids => ids && ids.length > 0 ? 
+      ids[ids.length - 1] : [])),
+    map(nested => _.flatten(nested)),
+    switchMap(ids => this.monday.SubItems$(ids)),
+    shareReplay(1)
+  ) 
 
   RequiresReview$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
@@ -357,6 +388,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     this.subscriptions.push(
       this.DayBtn.fire$.subscribe(a => this.ViewModeChange('Day'))
+    )
+    this.subscriptions.push(
+      this.NavigationParameters$.subscribe(params => 
+        {
+          this.Tab$.pipe(take(1)).subscribe(tab => {
+            if (tab != params.tab)
+              this.SetTab(params.tab);
+          })
+        })
+    )
+    this.subscriptions.push(
+      this.Tab$.subscribe(
+          (tab) => {
+            this.navigation.SetPageTitles([tab]);
+          }
+      )
     )
   }
 }

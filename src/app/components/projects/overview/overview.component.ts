@@ -64,7 +64,6 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   UpdatedBoardItems$ = this.updatedBoardItems.asObservable().pipe(shareReplay(1));
   UpdatedSubItems$ = this.updatedSubItems.asObservable().pipe(shareReplay(1));
-  SyncReviews$ = this.parent.SyncReviews$;
   SyncBoard$ = this.parent.SyncBoard$;
 
   private get box() { return this.parent.box; }

@@ -1,22 +1,25 @@
-<ng-container *ngIf="Items$">
-    <div style="padding:40px">
+<ng-container *ngIf="(Items$ | async) as Items">
+    <div style="padding:40px" class="no-select">
         <ng-container *ngFor="let ws of (Workspaces$ | async)">
-            <h2 [style.color]="primaryColor" style="font-weight:bold;margin-bottom:10px">{{ws.name}}</h2>
-            <div style="padding-left:80px">
-                <ng-contaer *ngFor="let board of (Boards$ | async)">
-                    <ng-container *ngFor="let group of (Groups$ | async)">
-                        <h3 style="font-weight:bold;font-size:18px">{{board.name}}, {{group.title}}</h3>
-                        <ng-container *ngIf="(Items$ | async) as Items">
-                            <div fxLayout="row">
-                                <ng-container *ngFor="let item of Items">
-                                    <app-kanban-board-item [Item]="item"></app-kanban-board-item>
-                                </ng-container>
-
-                            </div>
+            <ng-contaer *ngFor="let board of (Boards$ | async)">
+                <ng-container *ngFor="let group of (Groups$ | async)">
+                    <div fxLayout="row">
+                        <ng-container *ngFor="let item of Items">
+                            <app-kanban-board-item [Item]="item"
+                                [SubItem]="SubItems$ | GetLastSubItemByBoardItem$ : item | async">
+                            </app-kanban-board-item>
                         </ng-container>
-                    </ng-container>
-                </ng-contaer>
-            </div>
+
+                    </div>
+                </ng-container>
+            </ng-contaer>
         </ng-container>
+    </div>
+
+    <div *ngIf="Items.length < 1">
+        <h4 style="text-align:center;margin: 0px;
+            margin-top: 20px;margin-bottom:20px">
+            There are no items with a status <span style="font-weight:bold">"{{Status}}"</span> that you are currently attached to.
+            </h4>
     </div>
 </ng-container>

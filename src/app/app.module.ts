@@ -141,7 +141,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     SystemComponent,
     GalleryComponent,
     KanbanBoardItemComponent,
-    KanbanBoardComponent
+    KanbanBoardComponent,
   ],
 
   imports: [

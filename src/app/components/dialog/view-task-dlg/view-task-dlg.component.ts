@@ -74,10 +74,18 @@ export class ViewTaskDlgComponent implements OnInit {
 
   SelectedSubItem;
 
-  @Input() SyncReview$: Observable<any>;
+  
   @Input() SyncBoard: any;
   @Input() User: UserIdentity;
   _Item;
+
+  SyncReview$ = this.Item$.pipe(
+    switchMap(Item => Item ? 
+      this.syncSketch.FindReview$(Item.board.id, Item.group.title, Item.element)  :
+      of (null)),
+    shareReplay(1)
+  )
+
   @Input() set Item(s: BoardItem) {
     this._Item = s;
     this.item.next(s);
@@ -191,6 +199,7 @@ Refresh() {
       })
   }
 
+
   DeleteSubItem(subitem) {
     let setSelected;
     let index = _.findIndex(this.Item.subitem_ids, i => i == subitem.id);
@@ -200,6 +209,7 @@ Refresh() {
     else
       setSelected = this.Item.id;
 
+    
     this.SyncReview$.pipe(
       switchMap(review => this.syncSketch.Items$(review.id)),
       map(items => _.filter(items, i => i.name.indexOf(subitem.name > -1))),
@@ -287,9 +297,10 @@ Refresh() {
 
   handleUploads(event, subitem) {
     let project = this.Item.workspace.name + ', ' + this.Item.board.name;
-    let name = this.Item.group.title + '/' + this.Item.element;
+    let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
     let file = event.files[0];
-    let description = name + '/' + subitem.name;
+    let description = name + '\n' + this.Item.department_text + '\n' +
+       this.Item.task + '\n' + subitem.name;
 
     this.SyncReview$.pipe(
       switchMap(review => {
@@ -308,7 +319,7 @@ Refresh() {
         switchMap(() => this.syncSketch.Items$(review.id)),
         map((items) => _.find(items, i => i.name + i.extension == file.name)),
         switchMap(item => this.syncSketch.RenameItem$(item.id, 
-          this.Item.department_text + '/' + subitem.name + '/' + file.name)
+          subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name)
         )
       ).subscribe(result => {
         this.fileInput.clear();
@@ -323,9 +334,7 @@ Refresh() {
   }
 
 
-  NewTab(url) {
-    window.open(url, "_blank");
-  }
+
 
   subscriptions = [];
   ngOnInit(): void {
