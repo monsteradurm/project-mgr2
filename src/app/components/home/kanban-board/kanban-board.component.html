@@ -1,25 +1,22 @@
 <ng-container *ngIf="(Items$ | async) as Items">
     <div style="padding:40px" class="no-select">
-        <ng-container *ngFor="let ws of (Workspaces$ | async)">
-            <ng-contaer *ngFor="let board of (Boards$ | async)">
-                <ng-container *ngFor="let group of (Groups$ | async)">
-                    <div fxLayout="row">
-                        <ng-container *ngFor="let item of Items">
-                            <app-kanban-board-item [Item]="item"
-                                [SubItem]="SubItems$ | GetLastSubItemByBoardItem$ : item | async">
-                            </app-kanban-board-item>
-                        </ng-container>
 
-                    </div>
-                </ng-container>
-            </ng-contaer>
-        </ng-container>
+        <div fxLayout="row wrap" fxLayoutGap="32px grid">
+            <ng-container *ngFor="let item of Items">
+                <app-kanban-board-item [Item]="item" style="margin-bottom:32px"
+                    [SubItem]="SubItems$ | GetLastSubItemByBoardItem$ : item | async">
+                </app-kanban-board-item>
+            </ng-container>
+
+        </div>
+
     </div>
 
     <div *ngIf="Items.length < 1">
         <h4 style="text-align:center;margin: 0px;
             margin-top: 20px;margin-bottom:20px">
-            There are no items with a status <span style="font-weight:bold">"{{Status}}"</span> that you are currently attached to.
-            </h4>
+            There are no items with a status <span style="font-weight:bold">"{{Status}}"</span> that you are currently
+            attached to.
+        </h4>
     </div>
 </ng-container>

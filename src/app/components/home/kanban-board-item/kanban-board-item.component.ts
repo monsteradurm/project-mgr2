@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { BehaviorSubject, combineLatest, EMPTY, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -22,6 +22,7 @@ export class KanbanBoardItemComponent implements OnInit {
   @ViewChild(SyncItemComponent, {static:false}) SyncItemComp: SyncItemComponent;
   Hovering = false;
   HasContext = false;
+
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {
     if (this.SyncItemComp)
       this.Hovering = true;
