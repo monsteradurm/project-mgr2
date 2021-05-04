@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Board, BoardItem } from '../models/BoardItem';
 import { ScheduledItem } from '../models/Monday';
 import { MondayService } from './monday.service';
 import { SocketService } from './socket.service';
 import { UserService } from './user.service';
+import * as _ from 'underscore';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,29 @@ export class ProjectService {
       return false;
     }
     return true;
+  }
+
+  Boards$ = this.monday.Boards$;
+  GetStatusOptions$(boardid) {
+    return this.Boards$.pipe(
+      map(boards => _.find(boards, b => b.id == boardid)),
+      map(board => board.columns),
+      map(columns => _.find(columns, c => c.title == "Status")),
+      map(status => {
+        let settings = JSON.parse(status.settings_str)
+        let indices = Object.keys(settings.labels);
+        let result = [];
+        indices.forEach(i => {
+          let option = settings.labels_colors[i];
+          option.index = i;
+          option.column_id = status.id;
+          option.label = settings.labels[i];
+          result.push(option);
+        });
+        return _.sortBy(result, r => r.label);
+      }),
+      take(1)
+    )
   }
   SetItemStatus(boardid: string, item: BoardItem | ScheduledItem, column: any) {
     if (!this.QueryStatusChanged(item, column))

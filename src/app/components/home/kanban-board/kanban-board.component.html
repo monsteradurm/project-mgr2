@@ -1,7 +1,7 @@
 <ng-container *ngIf="(Items$ | async) as Items">
-    <div style="padding:40px" class="no-select">
+    <div class="no-select" style="margin-top:32px;margin-right:32px">
 
-        <div fxLayout="row wrap" fxLayoutGap="32px grid">
+        <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center start">
             <ng-container *ngFor="let item of Items">
                 <app-kanban-board-item [Item]="item" style="margin-bottom:32px"
                     [SubItem]="SubItems$ | GetLastSubItemByBoardItem$ : item | async">

@@ -1008,3 +1008,12 @@ p-badge.badge-requires-assistance > span {
 .kanban-attr > .mat-form-field-wrapper > .mat-form-field-underline {
   display:none !important;
 }
+
+app-itemchart > div > p-chart > div > canvas {
+    align-self:center !important;
+    display:flex !important;
+  }
+  app-itemchart > div > p-chart > div {
+    height:100% !important;
+    display: flex !important;
+  }

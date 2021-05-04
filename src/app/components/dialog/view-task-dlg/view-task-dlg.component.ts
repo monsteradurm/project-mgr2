@@ -19,6 +19,7 @@ import { HttpErrorResponse, HttpEventType, HttpResponse } from '@angular/common/
 import { Identity } from '@fullcalendar/common';
 import { FileUpload } from 'primeng/fileupload'
 import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-view-task-dlg',
@@ -29,6 +30,9 @@ export class ViewTaskDlgComponent implements OnInit {
   Show: boolean = true;
   contextMenuTop;
   contextMenuLeft;
+  @ViewChild(MatMenu, {static:false}) statusMenu:MatMenu;
+  @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
+
   @ViewChild('fileInput') fileInput: FileUpload; 
   @HostListener('window:resize', ['$event']) onWindowResize() {
     this.onResize(null);
@@ -57,6 +61,7 @@ export class ViewTaskDlgComponent implements OnInit {
     private el: ElementRef,
     private syncSketch: SyncSketchService,
     private box: BoxService,
+    private projectService: ProjectService,
     private sanitizer: DomSanitizer,
     private socket: SocketService,
     private messager: MessageService,
@@ -77,6 +82,7 @@ export class ViewTaskDlgComponent implements OnInit {
   
   @Input() SyncBoard: any;
   @Input() User: UserIdentity;
+
   _Item;
 
   SyncReview$ = this.Item$.pipe(
@@ -251,6 +257,24 @@ Refresh() {
   UploadURL$: Observable<string>;
   onSelect(event) {
 
+  }
+
+  StatusOptions$ = this.Item$.pipe(
+    map(item => item.board.id),
+    switchMap(boardid => this.projectService.GetStatusOptions$(boardid))
+  )
+
+  EditStatus() {
+    this.contextMenuTrigger.openMenu();
+  }
+
+  onSetStatus(column) {
+    this.projectService.SetItemStatus(this.Item.board.id, this.Item, column);
+
+    this.Item.status['additional_info']['color'] = column.color;
+    this.Item.status['additional_info']['label'] = column.label;
+    this.Item.status['text'] = column.label;
+    this.Item = JSON.parse(JSON.stringify(this.Item));
   }
 
   Upload$(review, subitem, file, description) {

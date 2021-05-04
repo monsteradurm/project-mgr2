@@ -1,0 +1,5 @@
+<ng-container *ngIf="(ChartData$ | async) as Data">
+    <div fxLayout="row" fxLayoutAlign="center center" style="width:100%;calc(100vh - 115px);">
+        <p-chart type="pie" [data]="Data" style="width:calc(100vh + 200px);height: calc(100vh - 115px)"></p-chart>
+    </div>
+</ng-container>

@@ -46,9 +46,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
 
   showHoursDlg: boolean = false;
-  TabOptions = ['Calendar', 'List', 'Review', 'Assist', 'Feedback', 'Chart']
+  TabOptions = ['Month', 'Week', 'Review', 'Assist', 'Feedback', 'Chart']
   
-  private tab = new BehaviorSubject<string>('Calendar')
+  private tab = new BehaviorSubject<string>('Month')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
 
   calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
@@ -361,6 +361,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
   primaryColor:string;
   subscriptions = [];
+
+  Workspaces$ = this.MyItems$.pipe(
+    map(items => items ? _.map(items, i => i.workspace) : []),
+    map(ws => _.uniq(ws, w => w.id)),
+  )
+
+  WorkspacesMenu$ = of(null);
 
   ngAfterViewInit() {;
   }

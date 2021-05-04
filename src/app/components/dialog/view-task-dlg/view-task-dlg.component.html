@@ -1,6 +1,12 @@
 
 <p-toast></p-toast>
 
+<mat-menu #statusMenu="matMenu">
+    <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+    [style.background]="s.color" style.color="white !important"
+    (click)= "onSetStatus(s)">{{s.label}}</button>
+</mat-menu>
+
 <p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
     (onResizeEnd)="onResize($event)" (onResizeInit)="onResize($event)" (onShow)="onResize($event)" (onHide)="Closing()"
     [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px'}" *ngIf="Item">
@@ -8,16 +14,21 @@
     <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
 
         <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%" fxLayout="column">
-            <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header"
+            <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header no-select"
                 [style.background-color]="Status.color">
                 <ng-container *actionOutlet="ViewMenu$ | async"></ng-container>
                 <h2 class="dialog-header view-task-header" style="color:white !important;margin-left:50px">
                     {{Item?.element}}
                     <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
                 </h2>
-                <h2 class="dialog-status-header" style="color:white !important">
+                <h2 class="dialog-status-header" 
+                    style="color:white !important;cursor:pointer;border-bottom:solid 2px white;    height: 32px;
+                    margin-bottom: 20px;" 
+                    (dblclick)="EditStatus()"  [matMenuTriggerFor]="statusMenu">
                     {{Status.text}}
+                    <mat-icon style="color:white !important; font-size:30px;height:30px;vertical-align:middle;padding:0px">arrow_drop_down</mat-icon>
                 </h2>
+                
             </div>
             <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
                 <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">

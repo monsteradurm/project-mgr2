@@ -18,19 +18,19 @@
         </ng-container>
       </ng-container>
     </a>
-
-
-    <ng-contaer *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
-      <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;"
-        [style.display]="tab == 'Calendar' ? 'block' : 'none'">
-        <div>
-          <ng-container *actionOutlet="ViewModeMenu"></ng-container>
+    <!--
+    <ng-container *ngIf="tab == 'Calendar' || tab == 'list'">
+      <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
+        <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;"
+          [style.display]="tab == 'Calendar' ? 'block' : 'none'">
+          <div>
+            <ng-container *actionOutlet="ViewModeMenu"></ng-container>
+          </div>
         </div>
-      </div>
-    </ng-contaer>
+      </ng-container>
+    </ng-container>
+    -->
   </nav>
-  <div>
-  </div>
 
   <ng-container *ngIf="(Me$ | async) as me">
 
@@ -39,31 +39,30 @@
       <div class="pm-page-wtab">
         <ng-container [ngSwitch]="tab">
 
-          <full-calendar #calendar *ngSwitchCase="'Calendar'" [plugins]="calendarPlugins" [weekends]="false"
+          <full-calendar #month *ngSwitchCase="'Month'" [plugins]="calendarPlugins" [weekends]="false"
             [options]="Options$ | async"></full-calendar>
 
-          <full-calendar #list *ngSwitchCase="'List'" [plugins]="listPlugin" [weekends]="true"
+          <full-calendar #list *ngSwitchCase="'Week'" [plugins]="listPlugin" [weekends]="true"
             [options]="ListOptions$ | async"></full-calendar>
 
           <div *ngSwitchCase="'Review'">
-            <app-kanban-board [primaryColor]="primaryColor" 
-            [SubItems$]="SubItems$"
-            Status = "Waiting Internal Review"
-            [Items$]="RequiresReview$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" [SubItems$]="SubItems$" Status="Waiting Internal Review"
+              [Items$]="RequiresReview$"></app-kanban-board>
           </div>
 
           <div *ngSwitchCase="'Feedback'">
-            <app-kanban-board [primaryColor]="primaryColor" 
-            [SubItems$]="SubItems$"
-            Status="Receieved Client Feedback, Received Internal Feedback"
-            [Items$]="ReceivedFeedback$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" [SubItems$]="SubItems$"
+              Status="Receieved Client Feedback, Received Internal Feedback" [Items$]="ReceivedFeedback$">
+            </app-kanban-board>
           </div>
 
           <div *ngSwitchCase="'Assist'">
-            <app-kanban-board [primaryColor]="primaryColor" 
-            Status = "Requires Assistance"
-            [SubItems$]="SubItems$"
-            [Items$]="RequiresAssistance$"></app-kanban-board>
+            <app-kanban-board [primaryColor]="primaryColor" Status="Requires Assistance" [SubItems$]="SubItems$"
+              [Items$]="RequiresAssistance$"></app-kanban-board>
+          </div>
+
+          <div *ngSwitchCase="'Chart'">
+            <app-itemchart></app-itemchart>
           </div>
         </ng-container>
         <!--
@@ -77,5 +76,6 @@
     </div>
   </ng-container>
 </div>
-
+<!--
 <app-log-hours-dlg [Show]="showHoursDlg" (visbilityChanged)="OnVisibilityChange($event)"></app-log-hours-dlg>
+-->

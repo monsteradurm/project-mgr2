@@ -22,6 +22,9 @@ export class KanbanBoardItemComponent implements OnInit {
   @ViewChild(SyncItemComponent, {static:false}) SyncItemComp: SyncItemComponent;
   Hovering = false;
   HasContext = false;
+  @HostBinding('style.opacity') get opacity() {
+    return this.SyncItemComp ? 1: 0.5;
+  }
 
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {
     if (this.SyncItemComp)

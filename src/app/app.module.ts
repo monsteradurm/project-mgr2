@@ -76,6 +76,8 @@ import { GalleryComponent } from './components/gallery/gallery.component';
 import { ReferenceComponent } from './components/reference/reference.component';
 import { KanbanBoardItemComponent } from './components/home/kanban-board-item/kanban-board-item.component';
 import { KanbanBoardComponent } from './components/home/kanban-board/kanban-board.component';
+import {ChartModule} from 'primeng/chart';
+import { ItemchartComponent } from './components/home/itemchart/itemchart.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -142,6 +144,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     GalleryComponent,
     KanbanBoardItemComponent,
     KanbanBoardComponent,
+    ItemchartComponent,
   ],
 
   imports: [
@@ -149,6 +152,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     BrowserAnimationsModule,
     AppRoutingModule,
     MsalModule,
+    ChartModule,
     SharedModule.forRoot(),
   ],
 

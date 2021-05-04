@@ -41,6 +41,7 @@
     "angular-epic-spinners": "^2.0.0",
     "angular-google-charts": "^2.2.0",
     "body-parser": "^1.19.0",
+    "chart.js": "^2.9.4",
     "component": "^1.1.0",
     "cors": "^2.8.5",
     "dhtmlx-gantt": "^7.1.1",

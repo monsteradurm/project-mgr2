@@ -1,7 +1,7 @@
 .kanban-item {
     border:solid 1px black;
     border-radius:10px;
-    width: calc(30vw);
+    width: 500px;
 }
 
 .kanban-item.hovering {
@@ -11,7 +11,7 @@
 }
 
 .kanban-workspace {
-    font-size: 22px;
+    font-size: 20px;
     //opacity: 0.5;
 }
 
