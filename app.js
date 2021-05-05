@@ -44,10 +44,10 @@ fs.readFile('proxy.conf.json', (err, data) => {
     app.options('*', cors())
     app.use(
         helmet({
-          referrerPolicy: { policy: "no-referrer" },
+          frameguard: false,
         })
       );
-      
+
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
