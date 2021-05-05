@@ -35,16 +35,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
   constructor(
     private navigation: NavigationService) { 
     this.navigation.Component = this;
-    console.log(window, window.parent);
-    try {
-      this.IsIframe = !window || !window.parent || window.location == window.parent.location;
-    }
-    catch { 
-      this.IsIframe = false;
-    }
   }
 
-  IsIframe: boolean = false;
   PageTitles$ = this.navigation.PageTitles$;
   Selected$ = this.navigation.Selected$;
   subscriptions = [];
