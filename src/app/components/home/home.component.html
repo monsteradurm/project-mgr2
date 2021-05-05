@@ -1,5 +1,5 @@
 <ng-container #tooltipCreator></ng-container>
-<div *ngIf="(Tab$ | async) as tab">
+<div *ngIf="(Tab$ | async) as tab" class="no-select">
   <nav mat-tab-nav-bar pmTabUnderline [primaryColor]="primaryColor">
     <a mat-tab-link *ngFor="let t of TabOptions" (click)="SetTab(t)" [active]="tab == t"> {{t}}
       <ng-container *ngIf="t == 'Review'">
@@ -17,7 +17,22 @@
           <p-badge class="badge-requires-assistance" [value]="length"></p-badge>
         </ng-container>
       </ng-container>
+
     </a>
+    <div style="position:absolute;right:20px;" fxLayout="row" fxLayoutAlign="end end">
+      
+      <ng-container *ngFor="let menu$ of [ViewProjectMenu$, ViewBoardMenu$, ViewGroupMenu$, ViewUserMenu$]">
+        <ng-container *ngIf="(menu$ | async) as ViewMenu">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <div>
+              <ng-container *actionOutlet="ViewMenu"></ng-container>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+    </div>
+
     <!--
     <ng-container *ngIf="tab == 'Calendar' || tab == 'list'">
       <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">

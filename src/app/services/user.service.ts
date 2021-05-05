@@ -10,6 +10,7 @@ import { AuthenticationResult } from '@azure/msal-common';
 
 import * as _ from 'underscore';
 import { MondayIdentity } from '../models/Monday';
+import { MondayService } from './monday.service';
 
 
 @Injectable({
@@ -26,6 +27,21 @@ export class UserService {
 
   private User = new BehaviorSubject<UserIdentity>(null);
   User$ = this.User.asObservable().pipe(shareReplay());
+
+  MondayUsers$ = this.monday.MondayUsers$.pipe(shareReplay(1));
+
+  MondayUser$ = this.User$.pipe(
+    switchMap(user => this.MondayUsers$.pipe(
+      map(users => _.find(users, (u: MondayIdentity) => u.email == user.mail)),
+      shareReplay(1)
+    ))
+  )
+
+  UserIsManager$ = this.MondayUser$.pipe(
+    map(user => user && user.teams && user.teams.indexOf('Managers') > -1),
+    shareReplay(1)
+  )
+
 
   MyPhoto$ = this.User$.pipe(
     switchMap((user) =>
@@ -76,7 +92,9 @@ export class UserService {
     ).pipe(take(1))
   }
 
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer,
+  constructor(private http: HttpClient, 
+    private monday: MondayService,
+    private sanitizer: DomSanitizer,
     private app: ApplicationRef,
     private auth: MsalService) {
   }

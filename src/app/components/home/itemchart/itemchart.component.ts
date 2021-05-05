@@ -14,8 +14,8 @@ export class ItemchartComponent implements OnInit {
 
   constructor(private parent: HomeComponent) { }
 
-  MyItems$ = this.parent.MyItems$;
-  ChartData$ = this.MyItems$.pipe(
+  Items$ = this.parent.MyFilteredItems$;
+  ChartData$ = this.Items$.pipe(
     map(items => _.map(items, i => i.status)
   ),
     map(status => _.map(status, s => s  && s.additional_info ? 
@@ -29,7 +29,6 @@ export class ItemchartComponent implements OnInit {
       let backgroundColor = _.map(labels, l=> groups[l][0].color);
       return {labels, datasets: [{ data, backgroundColor }] }
     }),
-    tap(console.log)
   )
 
   ngOnInit(): void {

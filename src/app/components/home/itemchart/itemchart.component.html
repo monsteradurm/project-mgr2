@@ -1,5 +1,12 @@
 <ng-container *ngIf="(ChartData$ | async) as Data">
-    <div fxLayout="row" fxLayoutAlign="center center" style="width:100%;calc(100vh - 115px);">
-        <p-chart type="pie" [data]="Data" style="width:calc(100vh + 200px);height: calc(100vh - 115px)"></p-chart>
+    <div fxLayout="row" fxLayoutAlign="center center" *ngIf="Data.labels.length > 0; else noData"
+        style="width:100%;calc(100vh - 115px);">
+        <p-chart type="pie" [data]="Data" 
+        style="width:calc(100vh + 200px);height: calc(100vh - 115px)"></p-chart>
     </div>
+    <ng-template #noData>
+        <h4 style="text-align:center;margin: 0px;margin-top: 20px;margin-bottom:20px">
+            There are no items that match the filtered criteria.
+        </h4>
+    </ng-template>
 </ng-container>

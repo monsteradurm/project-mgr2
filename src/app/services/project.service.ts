@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { map, take } from 'rxjs/operators';
+import { map, shareReplay, switchMap, take } from 'rxjs/operators';
 import { Board, BoardItem } from '../models/BoardItem';
-import { ScheduledItem } from '../models/Monday';
+import { MondayIdentity, ScheduledItem } from '../models/Monday';
 import { MondayService } from './monday.service';
 import { SocketService } from './socket.service';
 import { UserService } from './user.service';
@@ -19,6 +19,8 @@ export class ProjectService {
     private messenger: MessageService) {
   }
 
+  User$ = this.userService.User$;
+  
   QueryStatusChanged(item, column) {
     let label = column.label;
     if (

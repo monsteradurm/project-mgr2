@@ -107,6 +107,15 @@ export class BoardItem {
         this.subitem_ids = _.map(subitems.value.linkedPulseIds, i => i.linkedPulseId);
     }
 }
+export class Workspace {
+    id: number;
+    name: string;
+
+    constructor(w:{name:string, id:number}) {
+        this.id = w.id;
+        this.name = w.name;
+    }
+}
 
 export class Board {
     id: number;

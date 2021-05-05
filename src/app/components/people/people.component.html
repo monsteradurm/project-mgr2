@@ -37,6 +37,15 @@
                 </td>
             </ng-container>
 
+            <ng-container matColumnDef="Manager">
+                <th mat-header-cell *matHeaderCellDef style="text-align:center"> Manager </th>
+                <td mat-cell *matCellDef="let p" style="text-align:center">
+                    <ng-container *ngIf="p.monday && p.monday?.teams.indexOf('Managers') > -1">
+                        <mat-icon class="role-icon">done</mat-icon>
+                    </ng-container>
+                </td>
+            </ng-container>
+
             <ng-container matColumnDef="Monday">
                 <th mat-header-cell *matHeaderCellDef style="text-align:center"> Monday </th>
                 <ng-container *matCellDef="let p">

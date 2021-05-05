@@ -22,8 +22,7 @@ const _TENMINUTES_ = 1000 * 60 * 10;
 })
 export class MondayService {
 
-  constructor(
-    private UserService: UserService) {
+  constructor() {
     monday.setToken(_ENV_.token);
   }
 
@@ -33,15 +32,12 @@ export class MondayService {
   private ComplexityExhausted = new BehaviorSubject<string>(null);
   ComplexityExhausted$ = this.ComplexityExhausted.asObservable();
 
-  MondayUsers$ = this.UserService.AllUsers$.pipe(
-    switchMap((users:any[]) => 
-      this.Query$(
-        `users(limit:${users.length}) { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
-      )
-    ),
+  MondayUsers$ = this.Query$(
+        `users { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
+  ).pipe(
     map((res:any) => res && res.users ? res.users : []),
     map((users:any[]) => _.map(users, u => new MondayIdentity(u))),
-  ).pipe(take(1));
+  ).pipe(take(1), shareReplay(1));
 
   ProjectSettings$(boardId: string) {
     let query = `boards(limit:1 ids:${boardId}) {

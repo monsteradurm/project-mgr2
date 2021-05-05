@@ -22,7 +22,7 @@ export class PeopleComponent implements OnInit, OnDestroy {
 
   @Output() primaryColor: string = 'gray';
 
-  displayedColumns = ['Avatar', 'Email', 'Role', 'Remote', 'Confluence', 'Monday', 'SyncSketch']
+  displayedColumns = ['Avatar', 'Email', 'Role', 'Manager', 'Remote', 'Confluence', 'Monday', 'SyncSketch']
   GraphUsers$ = this.UserService.AllUsers$;
   MondayUsers$ = this.monday.MondayUsers$.pipe(shareReplay(1));
   SyncUsers$ = this.syncSketh.AllUsers$.pipe(shareReplay(1));
