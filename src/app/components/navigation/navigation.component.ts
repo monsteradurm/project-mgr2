@@ -35,7 +35,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
   constructor(
     private navigation: NavigationService) { 
     this.navigation.Component = this;
-    this.IsIframe = window.location == window.parent.location;
+    console.log(window, window.parent);
+    this.IsIframe = !window || !window.parent || window.location == window.parent.location;
   }
 
   IsIframe: boolean = false;
