@@ -41,7 +41,7 @@ fs.readFile('proxy.conf.json', (err, data) => {
         })
     });
 
-    app.use(cors());
+    app.options('*', cors())
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
