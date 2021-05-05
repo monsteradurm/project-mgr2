@@ -23,7 +23,7 @@ export class KanbanBoardItemComponent implements OnInit {
   Hovering = false;
   HasContext = false;
   @HostBinding('style.opacity') get opacity() {
-    return this.SyncItemComp ? 1: 0.5;
+    return this.SyncItemComp ? 1: 0.75;
   }
 
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {

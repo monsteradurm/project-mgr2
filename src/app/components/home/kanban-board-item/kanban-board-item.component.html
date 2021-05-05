@@ -17,7 +17,8 @@ style="position:absolute !important"
 </mat-menu>
 
 <ng-container *ngIf="Item">
-    <div class="kanban-item no-select;position:relative" [ngClass]="{'hovering' : Hovering}">
+    <div class="kanban-item no-select;position:relative" fxLayout="column" fxLayoutAlign="stretch stretch"
+    [ngClass]="{'hovering' : Hovering}">
         <ng-container *ngIf="(Item.status | GetTaskStatus) as Status">
             <div fxLayout="column" class="kanban-header" [style.background]="Status.color">
                 <div fxLayout="row" fxLayoutAlign="space-between">
@@ -69,7 +70,7 @@ style="position:absolute !important"
 
 
             <ng-template #noSubItems>
-                <h4 style="text-align:center;margin: 0px;
+                <h4 style="text-align:center;margin: 0px;height:100%;
             margin-top: 20px;margin-bottom:20px">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review
                     have
                     been uploaded.</h4>

@@ -219,9 +219,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
 
-  MyFilteredItems$ = combineLatest([this.MyItems$, this.SelectedUser$, this.SelectedProject$])
+  MyFilteredItems$ = combineLatest([this.MyItems$, 
+    this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
   .pipe(
-    map(([items, user, project]) => {
+    map(([items, user, project, board, group]) => {
       if (user == 'All Users' && project == 'All Projects')
         return items;
 
@@ -236,6 +237,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
       if (project != 'All Projects') {
         filtered = _.filter(filtered, i => i.workspace.name.indexOf(project) > -1);
+      }
+
+      if (board != 'All Boards') {
+        filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1)
+      }
+
+      if (group != 'All Groups') {
+        filtered = _.filter(filtered, i => i.group.title.indexOf(group) > -1)
       }
       return filtered;
     }),
@@ -269,7 +278,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       let filtered = _.filter(items, i => i.workspace.name.indexOf(project) > -1);
       filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1);
 
-      return _.uniq(_.map(filtered, i => i.board.name));
+      return _.uniq(_.map(filtered, i => i.group.title));
     })
   )
 
@@ -288,7 +297,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     })
   )
 
-  ViewBoardMenu$ = combineLatest([this.SelectedGroup$, this.MyBoards$]).pipe(
+  ViewBoardMenu$ = combineLatest([this.SelectedBoard$, this.MyBoards$]).pipe(
     map(([selected, boards]) => {
       let menu = this.ViewBoardMenu;
       let options = ['All Boards'].concat(boards);
