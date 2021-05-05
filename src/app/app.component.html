@@ -7,12 +7,8 @@
 
   <div class="container" [style.margin-top.px]="MarginTop">
     <ng-template [ngIf]="IsMondayReachable">
-      <p-dialog [(visible)]="MondayExhausted" [modal]="true" [dismissableMask]="true" [showHeader]="false" [style]="{width: '50vw', 
-                    background: 'white',
-                    padding:'5px',
-                    'border-radius' : '5px',
-                    'box-shadow': '5px 15px 20px 0px rgb(0 0 0 / 30%)',
-                    border: 'solid 1px black'}">
+      <p-dialog [(visible)]="MondayExhausted" [modal]="true" [dismissableMask]="true" [showHeader]="false" 
+      [style]="{width: '50vw', 'border-radius': '10px'}">
 
         <div fxLayout="column" fxLayoutAlign="center center">
           <h3 style="margin-bottom:0px;padding-bottom:0px;font-weight:bold;font-size:15;">Monday complexity exceeded
