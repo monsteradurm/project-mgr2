@@ -1,0 +1,30 @@
+<div class="box-header" style.width="100%">
+    <div class="box-header-title">
+        {{Root}}
+    </div>
+
+    <app-user [User]="User$ | async" [Photo]="MyPhoto$ | async" [IsNav]="true" style="color:white"></app-user>
+
+</div>
+<div class="box-workspace" style.width="100%" [style.background]="primaryColor">
+    <div class="box-workspace-title">
+        {{Workspace}}
+    </div>
+</div>
+
+<div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+    <div *ngIf="(BoxRoot$ | async) else fetching">
+
+    </div>
+    <ng-template #fetching>
+        <div style="opacity:0.15;">
+            <app-swapping-squares-spinner [animationDuration]="1000"
+                [color]="primaryColor"
+                [size]="120" style="opacity:0.15;">
+            </app-swapping-squares-spinner>
+        </div>
+        <h3 [style.color]="primaryColor" style="margin-top:30px">
+            Fetching Resources from Box...
+        </h3>
+    </ng-template>
+</div>

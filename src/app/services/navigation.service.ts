@@ -13,6 +13,8 @@ import { Location } from '@angular/common';
 import { DropDownMenuGroup, NavigationMapping } from '../components/navigation/navigation-map';
 import { ConfluenceService } from './confluence.service';
 import { BoxService } from './box.service';
+import { NavigationComponent } from '../components/navigation/navigation.component';
+import { AppComponent } from '../app.component';
 
 
 @Injectable({
@@ -35,6 +37,9 @@ export class NavigationService {
     map(projects => _.find(projects, p => p.name.indexOf('PM2') > -1)),
     shareReplay(1)
   )
+  
+  Component: NavigationComponent;
+  AppComponent: AppComponent;
   
   NavigationMenu$ = this.monday.Pages$.pipe(
      map(pages => {
@@ -323,7 +328,6 @@ export class NavigationService {
   ShowReferenceDlg$ = this.showReferenceDlg.asObservable().pipe(shareReplay(1));
 
   ReferenceFolder$;
-
   constructor( 
     private location:Location,
     private confluence: ConfluenceService,

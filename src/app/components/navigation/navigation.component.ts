@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList, Output, Inject, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList, Output, Inject, AfterViewInit, HostBinding } from '@angular/core';
 import { NavigationMapping } from './navigation-map';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -13,12 +13,15 @@ import tippy from 'tippy.js';
 import { ConfluenceService } from 'src/app/services/confluence.service';
 import { MondayService } from 'src/app/services/monday.service';
 
+const _IGNORE_ = '/Box';
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss']
 })
 export class NavigationComponent implements OnInit, OnDestroy {
+
+  @HostBinding('style.display') DisplayNavigation = 'block';
 
   @ViewChildren(ActionOutletDirective) Groups : QueryList<ActionOutletDirective>
   @Input() IsCeloxisReachable: boolean = true;
@@ -31,6 +34,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
   ReferenceFolder$ = this.navigation.ReferenceFolder$;
   constructor(
     private navigation: NavigationService) { 
+    this.navigation.Component = this;
   }
 
   PageTitles$ = this.navigation.PageTitles$;

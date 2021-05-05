@@ -40,18 +40,23 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
-    private navigation: NavigationService,
+    public navigation: NavigationService,
     private application: ApplicationRef,
     private monday: MondayService,
     private msalBroadcastService: MsalBroadcastService,
     private userService: UserService
-  ) {}
+  ) {
+    this.navigation.AppComponent = this;
+  }
+
+  MarginTop: number = 71;
+  DisplayNavigation:boolean = true;
 
   NavigationMenu$ = this.navigation.NavigationMenu$;
   IsMondayReachable: boolean = true;
   IsAuthorized: boolean = true;
   IsAdmin: boolean = false;
-
+  
   @Output() User: UserIdentity = null;
   @Output() MyPhoto: any;
 

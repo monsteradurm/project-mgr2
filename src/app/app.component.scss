@@ -18,7 +18,9 @@ h3 {
     margin-top:71px;
     display:grid;
 }
-
+.container.no-margin {
+    margin-top:0px !important;
+}
 .tooltip-container {
     padding:5px;
     background:white;

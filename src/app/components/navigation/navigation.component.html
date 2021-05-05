@@ -1,4 +1,5 @@
-<div *ngIf="(Selected$ | async) as selected" class="no-select">
+<div *ngIf="(Selected$ | async) as selected" class="no-select"
+[ngStyle]="{'display' : window.location !== window.parent.location ? 'none' : 'blocked'}">
     <div class="nav-toolbar">
 
         <h2 class="nav-title" matBadge="2" matBadgePosition="below after">

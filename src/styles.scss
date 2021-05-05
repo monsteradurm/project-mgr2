@@ -1022,3 +1022,18 @@ app-itemchart > div > p-chart > div > canvas {
     height:100% !important;
     display: flex !important;
   }
+
+  app-box {
+    position: absolute;
+    margin-top: -71px;
+    height: 100vh;
+    width: 100vw;
+    
+  app-user > div.user-avatar-nav {
+    right:10px !important;
+  }
+
+  app-user > div > div > img {
+    border-color: black !important;
+  }
+}
