@@ -4,7 +4,7 @@ const fs = require('fs');
 const port = 80;
 const express = require('express');
 const httpProxy = require('http-proxy');
-
+const helmer = require('helmet')
 var proxy = httpProxy.createProxyServer({});
 var app = express();
 
@@ -42,6 +42,12 @@ fs.readFile('proxy.conf.json', (err, data) => {
     });
 
     app.options('*', cors())
+    app.use(
+        helmet({
+          referrerPolicy: { policy: "no-referrer" },
+        })
+      );
+      
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
