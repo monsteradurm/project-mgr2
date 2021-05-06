@@ -550,7 +550,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  primaryColor: string;
+  primaryColor: string;     
   subscriptions = [];
 
   Workspaces$ = this.MyItems$.pipe(
