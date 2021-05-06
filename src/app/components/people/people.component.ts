@@ -20,7 +20,7 @@ export class PeopleComponent implements OnInit, OnDestroy {
 
   private error = new BehaviorSubject<string>(null);
 
-  @Output() primaryColor: string = 'gray';
+  @Output() primaryColor: string = 'gray'; 
 
   displayedColumns = ['Avatar', 'Email', 'Role', 'Manager', 'Remote', 'Confluence', 'Monday', 'SyncSketch']
   GraphUsers$ = this.UserService.AllUsers$;
