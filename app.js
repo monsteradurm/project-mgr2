@@ -4,7 +4,7 @@ const fs = require('fs');
 const port = 80;
 const express = require('express');
 const httpProxy = require('http-proxy');
-const helmer = require('helmet')
+const helmet = require('helmet')
 var proxy = httpProxy.createProxyServer({});
 var app = express();
 
