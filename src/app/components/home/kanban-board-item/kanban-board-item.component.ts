@@ -41,6 +41,7 @@ export class KanbanBoardItemComponent implements OnInit {
     this.HasContext = true;
     event.preventDefault();
   }
+  
   @HostListener('click', ['$event']) onClick(evt) {
     console.log(this.SyncItemComp)
     if (!this.SyncItemComp)
