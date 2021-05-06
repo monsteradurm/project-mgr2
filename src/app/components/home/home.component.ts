@@ -36,8 +36,8 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('month', {static: false}) calendarComponent: FullCalendarComponent;
-  @ViewChild('list', {static: false}) listComponent: FullCalendarComponent;
+  @ViewChild('month', { static: false }) calendarComponent: FullCalendarComponent;
+  @ViewChild('list', { static: false }) listComponent: FullCalendarComponent;
   @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
 
@@ -373,47 +373,63 @@ export class HomeComponent implements OnInit, AfterViewInit {
     map((items: ScheduledItem[]) => {
       let result = [];
       let counter = 0;
-      _.forEach(items, i => {
+      _.forEach(items, (i: ScheduledItem) => {
         let color = this.GetStatusColor(i);
-        result.push({
-          extendedProps: { tooltipId: i.id, type: 'allocation' },
-          id: i.id,
-          title: i.itemcode && i.itemcode.text ? i.itemcode.text + ', ' + i.name : i.name
-            + ' (' + this.GetStatusText(i) + ')',
-          start: i.timeline.value.from,
-          end: i.timeline.value.to,
-          backgroundColor: color
-        });
+        let ismilestone = i.is_milestone();
 
-        if (i.timetracking) {
-          let values = i.timetracking.additional_value;
-          if (values && values.length > 0) {
-            _.forEach(values, t => {
-              let started = moment(t.started_at);
-              let finished = moment(t.ended_at);
-              let time = finished.diff(started, 'minutes');
-              let tracked = time + ' minutes';
+        if (!ismilestone) {
+          result.push({
+            extendedProps: { tooltipId: i.id, type: 'allocation' },
+            id: i.id,
+            title: i.itemcode && i.itemcode.text ? i.itemcode.text + ', ' + i.name : i.name
+              + ' (' + this.GetStatusText(i) + ')',
+            start: i.timeline.value.from,
+            end: i.timeline.value.to,
+            backgroundColor: color,
+            background: i.is_milestone() ? 'background' : null
+          });
 
-              if (time >= 60) {
-                time = time / 60;
-                tracked = time + ' hours';
-              }
+          if (i.timetracking) {
+            let values = i.timetracking['additional_value'];
+            if (values && values.length > 0) {
+              _.forEach(values, t => {
+                let started = moment(t.started_at);
+                let finished = moment(t.ended_at);
+                let time = finished.diff(started, 'minutes');
+                let tracked = time + ' minutes';
 
-              result.push({
-                extendedProps: { tooltipId: i.id, type: 'timetracking' },
-                id: t.id,
-                backgroundColor: color,
-                start: t.started_at,
-                end: t.ended_at,
-                title: `Logged ${tracked}`,
-                display: 'list-item',
-                classNames: ['log-item']
-              });
-            })
+                if (time >= 60) {
+                  time = time / 60;
+                  tracked = time + ' hours';
+                }
+
+                result.push({
+                  extendedProps: { tooltipId: i.id, type: 'timetracking' },
+                  id: t.id,
+                  backgroundColor: color,
+                  start: t.started_at,
+                  end: t.ended_at,
+                  title: `Logged ${tracked}`,
+                  display: 'list-item',
+                  classNames: ['log-item']
+                });
+              })
+
+            }
+
 
           }
-
-
+        }
+        else {
+          result.push({
+            extendedProps: { tooltipId: i.id, type: 'milestone' },
+            id: i.id,
+            start: i.timeline.value.from,
+            end: i.timeline.value.to,
+            title: i.name,
+            display: 'background',
+            classNames: ['milestone-item']
+          });
         }
         counter += 1;
       })
@@ -495,7 +511,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   eventDidMount(info) {
     let props = info.event.extendedProps;
-    if (props.type != 'logbtn') {
+    console.log(props);
+    if (props.type != 'logbtn' && props.type != 'milestone') {
       info.el.setAttribute('data-id', props.tooltipId);
       let t = tippy(info.el, {
         content: "",
@@ -512,6 +529,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     if (t == 'allocation')
       return r.event.title; //{ html: '<i>some html</i>' }
+    else if (t == 'milestone') {
+      let icon = `<mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" 
+        aria-hidden="true" data-mat-icon-type="font" style=" font-size: 22px;
+        line-height: 22px;margin-top:3px">priority_high</mat-icon>`
+      let html = `${icon} <span style="margin-left: 2px;vertical-align:super;font-weight:bold">${r.event.title}</span>`
+      return { html }
+    }
+
     let icon = `<mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" 
         aria-hidden="true" data-mat-icon-type="font" style="    font-size: 18px;
         line-height: 25px;">schedule</mat-icon>`
@@ -550,7 +575,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  primaryColor: string;     
+  primaryColor: string;
   subscriptions = [];
 
   Workspaces$ = this.MyItems$.pipe(

@@ -171,6 +171,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
           )
       }),
       tap(t => this.Fetching = false),
+      tap(console.log),
       shareReplay(1)
     )
 

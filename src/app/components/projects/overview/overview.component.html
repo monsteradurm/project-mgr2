@@ -89,7 +89,7 @@
                 <ng-template pTemplate>
                   <div thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch"
                     style="width:100%;margin-top:50px">
-                    <ng-container *ngFor="let item of items">
+                    <ng-container *ngFor="let item of (items | FilterMilestones)">
                       <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
                         [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
                       </app-overview-boarditem>

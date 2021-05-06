@@ -100,6 +100,16 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
         text: "Today",
         //title: "Today: " + today.format('YYYY-MM-DD')
       });
+
+      let milestones = _.filter(this.BoardItems, i => i.is_milestone());
+      milestones.forEach(i => {
+        console.log("MILESTONE", i)
+        gantt.addMarker({
+          start_date: i.timeline.value.from,
+          css: "Milestone",
+          text: i.name,
+        })
+      })
     }
     this.SetViewRange(this.BoardItems);
 
@@ -111,7 +121,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     var zoomConfig = {
       minColumnWidth: 80,
       maxColumnWidth: 150,
-      levels: [  
+      levels: [
         MONTH_SCALE, WEEK_SCALE, DAY_SCALE
       ],
       startDate: gantt.config.start_date,
@@ -137,10 +147,10 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
   }
 
 
-  ProcessItems(items) {
+  ProcessItems(items: BoardItem[]) {
     let result = []
 
-    _.forEach(items, i => {
+    _.forEach(_.filter(items, i => !i.is_milestone()), i => {
       result.push(this.ProcessItem(i))
       let isExpanded = this.Expanded.indexOf(i.id) > -1;
 
@@ -287,7 +297,8 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.parent.SetGanttView(this);
     gantt.plugins({
-      marker: true
+      marker: true,
+      //tooltip: true 
     });
 
     gantt.config.smart_scales = false;
@@ -382,6 +393,16 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
         return "gantt-weekend";
       }
     };
+
+    let milestones = _.filter(this.BoardItems, i => i.is_milestone());
+    milestones.forEach(i => {
+      console.log(
+      gantt.addMarker({
+        start_date: moment(i.timeline.value.from),
+        css: "Milestone",
+        text: i.name,
+      }));
+    })
 
     gantt.addMarker({
       start_date: moment().toDate(),

@@ -71,7 +71,6 @@ export class NewHourLog {
     return true;
   }
   Submit() { 
-    console.log(this, this.SelectedTask.value);
     if (this.Validate())
       this.monday.AddHoursLog(this); 
   }

@@ -90,6 +90,8 @@ import { FindSyncReviewPipe } from './directives/elements/FindSyncReview.directi
 import { SyncUpdateComponent } from './components/syncsketch/sync-update/sync-update.component';
 import { SyncItemComponent } from './components/syncsketch/sync-item/sync-item.component';
 import { MaxCharactersPipe } from './directives/maxCharacters.directive';
+import { FilterMilestonesPipe } from './directives/elements/FilterMilestones.directive'
+
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
 
@@ -130,7 +132,8 @@ const declarations = [
     FindSyncReviewPipe,
     SyncItemComponent,
     SyncUpdateComponent,
-    MaxCharactersPipe
+    MaxCharactersPipe,
+    FilterMilestonesPipe
   ]
   
 const imports = [

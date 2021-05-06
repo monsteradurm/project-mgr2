@@ -78,7 +78,6 @@ import { KanbanBoardItemComponent } from './components/home/kanban-board-item/ka
 import { KanbanBoardComponent } from './components/home/kanban-board/kanban-board.component';
 import {ChartModule} from 'primeng/chart';
 import { ItemchartComponent } from './components/home/itemchart/itemchart.component';
-import { BoxComponent } from './components/box/box.component';
 import {APP_BASE_HREF} from '@angular/common';
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -145,8 +144,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     GalleryComponent,
     KanbanBoardItemComponent,
     KanbanBoardComponent,
-    ItemchartComponent,
-    BoxComponent,
+    ItemchartComponent
   ],
 
   imports: [

@@ -7,7 +7,6 @@ import { PeopleComponent } from './components/people/people.component';
 import { SystemComponent } from './components/system/system.component';
 import { ProjectComponent } from './components/projects/project/project.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
-import { BoxComponent } from './components/box/box.component';
 
 const routes: Routes = [
   {
@@ -22,10 +21,6 @@ const routes: Routes = [
   {
     path: 'code',
     component: HomeComponent,
-  },
-  {
-    path: 'Box',
-    component: BoxComponent
   },
   {
     path: '',

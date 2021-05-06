@@ -13,7 +13,7 @@ export class BoardItem {
     department_text: string[];
     artist: ColumnValues[];
     director: ColumnValues[];
-    timeline: ColumnValues[];
+    timeline: ColumnValues;
     timetracking: ColumnValues[];
     status: ColumnValues;
     itemcode: ColumnValues;
@@ -44,6 +44,9 @@ export class BoardItem {
         created_at: Date;
     }[]; //limited to [].length 1
 
+    is_milestone() : boolean {
+        return this.timeline && this.timeline.value && this.timeline.value.visualization_type == 'milestone';
+    }
     validate(col_values) {
         let errors = [];
         if (ColumnValues.FindColumn(col_values, ColumnType.Department, true).length < 1)

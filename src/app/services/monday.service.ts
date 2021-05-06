@@ -283,14 +283,15 @@ export class MondayService {
   AddHoursLog(log: NewHourLog) {
      log.SelectedTask$.pipe(
       map((task: ScheduledItem) => {
-        let col_id = task.column_ids[ColumnType.TimeTracking];
-
-        console.log(task.timetracking);
-        let value;
-
+        console.log(task.column_ids['Time Tracking'])
+        let column_id = task.column_ids['Time Tracking'];
+        console.log("HERE", task.timetracking);
+        let col = _.find(task.column_values, c => c.id == column_id);
+        let currentVal = JSON.parse(col.value);
+        /*
         return `change_column_value(board_id: ${task.board.id}, item_id: "${task.id}", column_id: "${col_id}", value: ${value}) {
           id
-        }`
+        }` */
       }),
       take(1)
     ).subscribe((result) => {

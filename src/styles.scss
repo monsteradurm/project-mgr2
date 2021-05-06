@@ -153,6 +153,13 @@ action-mat-group > button > span > mat-icon {
 .fc-daygrid-event:hover {
   opacity:1 !important;
 }
+.fc-daygrid-bg-harness > .fc-bg-event.milestone-item {
+  background: #646477!important;
+  color: white !important;
+  font-size: 15px !important;
+  opacity: 1 !important;
+}
+
 th.fc-col-header-cell.fc-day.fc-day-sun,
 th.fc-col-header-cell.fc-day.fc-day-mon,
 th.fc-col-header-cell.fc-day.fc-day-tue,
@@ -851,8 +858,8 @@ app-overview {
   -ms-user-select: none; /* IE10+ */
   }
   .gantt_task_line.gantt_task_inline_color:hover:not(.gantt_empty_task) {
-    border: inset 2px #000 !important;
-    box-shadow: 1px 3px 6px 0px #00000077;
+    //border: inset 2px white !important;
+    //box-shadow: 1px 3px 6px 0px #00000077;
     user-select: none; /* standard syntax */
   -webkit-user-select: none; /* webkit (safari, chrome) browsers */
   -moz-user-select: none; /* mozilla browsers */
@@ -905,6 +912,9 @@ app-overview {
 }
 .gantt_marker {
   background-color: rgb(0 151 118);
+}
+.gantt_marker.Milestone {
+  background-color:black;
 }
   .gantt_task_scale, .gantt_scale_cell {
     border:none;
@@ -1019,6 +1029,9 @@ p-badge.badge-requires-assistance > span {
   display:none !important;
 }
 app-people {
+  table {
+    border-radius:10px;
+  }
   .mat-cell, .mat-header-cell {
     border-right: solid 1px lightgray;
     padding-left: 20px !important;
@@ -1027,11 +1040,39 @@ app-people {
   .mat-header-cell {
     border-bottom: solid;
     //border-top:solid;
-    //border-top-width:1px;
+    border-top-width:1px !important;
+    border-top-style:solid;
+    border-top-color:black !important;
     //border-bottom-color: gray;
     //border-bottom-width: 1px;
-    box-shadow: 0px 5px 10px -1px rgb(0 0 0 / 30%);
+
+    //box-shadow: 0px 5px 10px -1px rgb(0 0 0 / 30%);
   }
+  .mat-cell:first-child{
+    border-left:solid 1px black;
+  }
+  .mat-cell:last-child{
+    border-right:solid 1px black;
+  }
+  .mat-header-cell:first-child{
+    border-top-left-radius: 10px;
+    border-left: solid 1px black;
+  }
+  .mat-header-cell:last-child {
+    border-top-right-radius: 10px;
+    border-right: solid 1px black;
+  }
+  .mat-row:last-child > .mat-cell:first-child, .mat-row:last-child  {
+    border-bottom-left-radius: 10px;
+  }
+  .mat-row:last-child > .mat-cell:last-child, .mat-row:last-child  {
+    border-bottom-right-radius: 10px;
+  }
+  .mat-row:last-child > .mat-cell {
+    border-bottom: solid 1px black;
+  }
+
+
   app-user > div > div > div.avatar-circle, app-user > div > div > img  {
     height:37px !important;
     width: 37px !important;
