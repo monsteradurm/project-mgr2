@@ -36,7 +36,8 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('calendar') calendarComponent: FullCalendarComponent;
+  @ViewChild('month', {static: false}) calendarComponent: FullCalendarComponent;
+  @ViewChild('list', {static: false}) listComponent: FullCalendarComponent;
   @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
 
@@ -46,9 +47,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
 
   showHoursDlg: boolean = false;
-  TabOptions = ['Month', 'Week', 'Review', 'Assist', 'Feedback', 'Chart']
+  TabOptions = ['Schedule', 'Review', 'Assist', 'Feedback', 'Chart']
 
-  private tab = new BehaviorSubject<string>('Month')
+  private tab = new BehaviorSubject<string>('Schedule')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
 
   calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
@@ -122,8 +123,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
   ViewModeOptions = {
-    'Day': 'dayGrid',
-    'Week': 'dayGridWeek',
+    'Day': 'dayList',
+    'Week': 'weekList',
     'Month': 'dayGridMonth'
   }
 
@@ -138,7 +139,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private MonthBtn = this.ViewModeMenu.createButton().setTitle('Month');
   private WeekBtn = this.ViewModeMenu.createButton().setTitle('Week');
   private DayBtn = this.ViewModeMenu.createButton().setTitle('Day');
-
   private viewModeMenu = new BehaviorSubject<ActionGroup>(this.ViewModeMenu);
 
   ViewModeMenu$ = combineLatest([this.Tab$, this.ViewMode$]).pipe(
@@ -164,7 +164,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     shareReplay(1)
   )
 
-  
+
   ViewProjectMenu$ = this.SelectedProject$.pipe(
     switchMap(selected => {
       let menu = this.ViewProjectMenu;
@@ -172,7 +172,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       menu.removeChildren();
       return this.MyProjects$.pipe(
         map(projects => ['All Projects'].concat(projects)),
-        map(projects => projects.forEach(p => 
+        map(projects => projects.forEach(p =>
           menu.createButton().setTitle(p)
             .fire$.subscribe(a => this.selectedProject.next(p))))
       )
@@ -190,7 +190,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       let b_ids = _.map(boards, b => b.id);
       return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
     }),
-    map(items => _.filter(items, i => 
+    map(items => _.filter(items, i =>
       i.board.name.indexOf('Subitems') < 0
       && i.name[0] != '_'
       && i.board.name[0] != '_')
@@ -198,13 +198,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
     map((items: any[]) => _.map(items, i => new ScheduledItem(i))),
     shareReplay(1)
   )
-  
+
   MyItems$ = combineLatest([this.Me$, this.Items$]).pipe(
     map(([me, items]) => {
       let name = me.name;
       if (me.teams.indexOf('Managers') > -1)
         return items;
-  
+
       let filtered = _.filter(items, i =>
         (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0)
       );
@@ -219,37 +219,37 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
 
-  MyFilteredItems$ = combineLatest([this.MyItems$, 
-    this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
-  .pipe(
-    map(([items, user, project, board, group]) => {
-      if (user == 'All Users' && project == 'All Projects')
-        return items;
+  MyFilteredItems$ = combineLatest([this.MyItems$,
+  this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
+    .pipe(
+      map(([items, user, project, board, group]) => {
+        if (user == 'All Users' && project == 'All Projects')
+          return items;
 
-      let filtered = items;
-      if (user != 'All Users') {
-        filtered = _.filter(filtered, i => {
-          let artists = _.pluck(i.artist, 'text').join(', ');
-          let directors =  _.pluck(i.director, 'text').join(', ');
-          return artists.indexOf(user) > -1 || directors.indexOf(user) > -1
-        });
-      }
+        let filtered = items;
+        if (user != 'All Users') {
+          filtered = _.filter(filtered, i => {
+            let artists = _.pluck(i.artist, 'text').join(', ');
+            let directors = _.pluck(i.director, 'text').join(', ');
+            return artists.indexOf(user) > -1 || directors.indexOf(user) > -1
+          });
+        }
 
-      if (project != 'All Projects') {
-        filtered = _.filter(filtered, i => i.workspace.name.indexOf(project) > -1);
-      }
+        if (project != 'All Projects') {
+          filtered = _.filter(filtered, i => i.workspace.name.indexOf(project) > -1);
+        }
 
-      if (board != 'All Boards') {
-        filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1)
-      }
+        if (board != 'All Boards') {
+          filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1)
+        }
 
-      if (group != 'All Groups') {
-        filtered = _.filter(filtered, i => i.group.title.indexOf(group) > -1)
-      }
-      return filtered;
-    }),
-    shareReplay(1)
-  )
+        if (group != 'All Groups') {
+          filtered = _.filter(filtered, i => i.group.title.indexOf(group) > -1)
+        }
+        return filtered;
+      }),
+      shareReplay(1)
+    )
 
   MyTimelineItems$ = this.MyFilteredItems$.pipe(
     map(items => _.filter(items, i => i.timeline)),
@@ -287,7 +287,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       let menu = this.ViewGroupMenu;
       let options = ['All Groups'].concat(groups);
       let valid = options.indexOf(selected) > -1;
-      
+
       menu.setTitle(valid ? selected : options[0]);
       menu.removeChildren();
       options.forEach(o => menu.createButton().setTitle(o).fire$.subscribe(
@@ -302,7 +302,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       let menu = this.ViewBoardMenu;
       let options = ['All Boards'].concat(boards);
       let valid = options.indexOf(selected) > -1;
-      
+
       menu.setTitle(valid ? selected : options[0]);
       menu.removeChildren();
       options.forEach(o => menu.createButton().setTitle(o).fire$.subscribe(
@@ -314,19 +314,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   MyUsers$ = this.MyItems$.pipe(
     map(items => {
-      let artists = 
-      _.map(
-        _.filter(items, i => i.artist && i.artist.length > 0), 
-        a => a.artist);
+      let artists =
+        _.map(
+          _.filter(items, i => i.artist && i.artist.length > 0),
+          a => a.artist);
 
-      let directors = 
+      let directors =
         _.map(
           _.filter(items, i => i.director && i.director.length > 0),
           d => d.director);
 
-      artists = _.map(artists, cols => _.map(cols, a => 
+      artists = _.map(artists, cols => _.map(cols, a =>
         a.text.split(', ')));
-      directors = _.map(directors, cols =>  _.map(cols, a => a.text.split(', ')));
+      directors = _.map(directors, cols => _.map(cols, a => a.text.split(', ')));
 
       return _.filter(
         _.uniq(_.flatten(artists.concat(directors))), u => u.length > 0)
@@ -466,12 +466,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return '#000'
   }
 
-  ListOptions$ = this.Events$.pipe(
+  WeekListOptions$ = this.Events$.pipe(
     map(allocations =>
     ({
       plugins: [listPlugin],
       events: allocations,
       initialView: 'listWeek',
+      eventDidMount: (r) => this.eventDidMount(r)
+    })
+    )
+  )
+
+  DayListOptions$ = this.Events$.pipe(
+    map(allocations =>
+    ({
+      plugins: [listPlugin],
+      events: allocations,
+      initialView: 'listDay',
       eventDidMount: (r) => this.eventDidMount(r)
     })
     )
@@ -527,8 +538,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.ViewMode$.pipe(take(1)).subscribe(current => {
       if (current != v && v) {
         this.viewMode.next(v);
-        let calendarApi = this.calendarComponent.getApi();
-        calendarApi.changeView(this.ViewModeOptions[v]);
+        /*
+        if (v == 'Month') {
+          let calendarApi = this.calendarComponent.getApi();
+          calendarApi.changeView(this.ViewModeOptions[v]);
+        }
+         else {
+          let listApi = this.listComponent.getApi();
+          listApi.changeView(this.ViewModeOptions[v]);
+         } */
       }
     });
   }
@@ -570,6 +588,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.subscriptions.push(
       this.DayBtn.fire$.subscribe(a => this.ViewModeChange('Day'))
     )
+
     this.subscriptions.push(
       this.NavigationParameters$.subscribe(params => {
         this.Tab$.pipe(take(1)).subscribe(tab => {

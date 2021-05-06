@@ -42,6 +42,7 @@ fs.readFile('proxy.conf.json', (err, data) => {
     });
 
     app.options('*', cors())
+    
     app.use(
         helmet({
           frameguard: false,

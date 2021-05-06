@@ -20,7 +20,6 @@
 
     </a>
     <div style="position:absolute;right:20px;" fxLayout="row" fxLayoutAlign="end end">
-      
       <ng-container *ngFor="let menu$ of [ViewProjectMenu$, ViewBoardMenu$, ViewGroupMenu$, ViewUserMenu$]">
         <ng-container *ngIf="(menu$ | async) as ViewMenu">
           <div fxLayout="row" fxLayoutAlign="end center">
@@ -30,21 +29,16 @@
           </div>
         </ng-container>
       </ng-container>
-
-    </div>
-
-    <!--
-    <ng-container *ngIf="tab == 'Calendar' || tab == 'list'">
-      <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
-        <div fxLayout="row" fxLayoutAlign="end center" style="position:absolute;right:20px;"
-          [style.display]="tab == 'Calendar' ? 'block' : 'none'">
-          <div>
-            <ng-container *actionOutlet="ViewModeMenu"></ng-container>
+      <ng-container *ngIf="tab == 'Schedule'">
+        <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
+          <div fxLayout="row" fxLayoutAlign="end center">
+            <div>
+              <ng-container *actionOutlet="ViewModeMenu"></ng-container>
+            </div>
           </div>
-        </div>
+        </ng-container>
       </ng-container>
-    </ng-container>
-    -->
+    </div>
   </nav>
 
   <ng-container *ngIf="(Me$ | async) as me">
@@ -54,12 +48,27 @@
       <div class="pm-page-wtab">
         <ng-container [ngSwitch]="tab">
 
-          <full-calendar #month *ngSwitchCase="'Month'" [plugins]="calendarPlugins" [weekends]="false"
-            [options]="Options$ | async"></full-calendar>
+          <ng-container *ngSwitchCase="'Schedule'">
+            <ng-container *ngIf="(ViewMode$ | async) as ViewMode">
+              <full-calendar *ngIf="ViewMode == 'Month'" [plugins]="calendarPlugins" [weekends]="false"
+                [options]="Options$ | async">
+              </full-calendar>
 
-          <full-calendar #list *ngSwitchCase="'Week'" [plugins]="listPlugin" [weekends]="true"
-            [options]="ListOptions$ | async"></full-calendar>
+              <full-calendar *ngIf="ViewMode == 'Week'" [plugins]="listPlugin" [weekends]="false"
+                [options]="WeekListOptions$ | async">
+              </full-calendar>
 
+              <full-calendar *ngIf="ViewMode == 'Day'" [plugins]="listPlugin" [weekends]="false"
+                [options]="DayListOptions$ | async">
+              </full-calendar>
+            </ng-container>
+            <div style="position:fixed;bottom:20px;right:20px" fxLayout="row" fxLayoutAlign="end end">
+              <button class="" addTippy mat-fab tippyText="Log Hours" (click)="OnVisibilityChange(true)">
+                <mat-icon class="app-fab-icon-btn  app-center-fab-icon">more_time</mat-icon>
+              </button>
+            </div>
+
+          </ng-container>
           <div *ngSwitchCase="'Review'">
             <app-kanban-board [primaryColor]="primaryColor" [SubItems$]="SubItems$" Status="Waiting Internal Review"
               [Items$]="RequiresReview$"></app-kanban-board>
@@ -80,17 +89,9 @@
             <app-itemchart></app-itemchart>
           </div>
         </ng-container>
-        <!--
-          <div style="position:fixed;bottom:20px;right:20px" fxLayout="row" fxLayoutAlign="end end">
-            <button class="" addTippy mat-fab tippyText="Log Hours" (click)="OnVisibilityChange(true)">
-              <mat-icon class="app-fab-icon-btn  app-center-fab-icon">more_time</mat-icon>
-            </button>
-          </div>
-        -->
       </div>
     </div>
   </ng-container>
 </div>
-<!--
+
 <app-log-hours-dlg [Show]="showHoursDlg" (visbilityChanged)="OnVisibilityChange($event)"></app-log-hours-dlg>
--->
