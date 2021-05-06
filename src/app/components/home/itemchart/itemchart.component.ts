@@ -51,7 +51,7 @@ export class ItemchartComponent implements OnInit {
         boxWidth: 13,
       },
     },
-    layout: {
+    layout: {    
       padding: {
         top: 0,
       }
