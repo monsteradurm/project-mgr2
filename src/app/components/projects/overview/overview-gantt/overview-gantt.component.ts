@@ -103,9 +103,8 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
       let milestones = _.filter(this.BoardItems, i => i.is_milestone());
       milestones.forEach(i => {
-        console.log("MILESTONE", i)
         gantt.addMarker({
-          start_date: i.timeline.value.from,
+          start_date: moment(i.timeline.value.from),
           css: "Milestone",
           text: i.name,
         })
