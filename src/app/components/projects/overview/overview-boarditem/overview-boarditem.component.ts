@@ -64,9 +64,14 @@ export class OverviewBoarditemComponent implements OnInit {
       this.ItemCodeVisible = W > 650;
   }
 
+  onHoursDlg() {
+    this.parent.onHoursDlg(this.boarditem);
+  }
+
   onSetStatus(column) {
     this.parent.parent.projectService.SetItemStatus(this.boarditem.board.id, this.boarditem, column);
   }
+
 
   onClick(i) {
     this.itemClicked.next(i);

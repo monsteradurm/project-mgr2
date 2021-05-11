@@ -7,6 +7,7 @@ style="position:absolute !important"
 <mat-menu #ItemContextMenu="matMenu" yPosition="below">
   <ng-template matMenuContent>
       <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
+      <button mat-menu-item (click)="onHoursDlg(true)">Time Logging</button>
   </ng-template>
 </mat-menu>
 
@@ -15,7 +16,6 @@ style="position:absolute !important"
     [style.background]="s.color" style.color="white !important"
     (click)= "onSetStatus(s)">{{s.label}}</button>
 </mat-menu>
-
 
 <ng-container *ngIf="(boarditem?.status | GetTaskStatus) as Status">
   <div #container class="element-row" (click)="onClick(boarditem)">

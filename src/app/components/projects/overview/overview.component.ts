@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
@@ -12,6 +12,8 @@ import { BoxService } from 'src/app/services/box.service';
 import { OverviewGanttComponent } from './overview-gantt/overview-gantt.component';
 import { OverviewSubitemComponent } from './overview-subitem/overview-subitem.component';
 import * as moment from 'moment';
+import { LogHoursDlgComponent } from '../../dialog/log-hours-dlg/log-hours-dlg.component';
+import { ScheduledItem } from 'src/app/models/Monday';
 
 @Component({
   selector: 'app-overview',
@@ -19,6 +21,19 @@ import * as moment from 'moment';
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
+
+  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
+    evt.preventDefault();
+  }
+
+  ShowHoursLog = false;
+  onHoursDlg(item: BoardItem | ScheduledItem) {
+    this.parent.userService.MondayUser$.pipe(take(1)).subscribe((user) => {
+      this.LogHoursDlg.OpenDialog(item, user && user.id ? user: null);
+    })
+    
+  }
 
   initializing = true;
   subscriptions = [];
@@ -171,7 +186,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
           )
       }),
       tap(t => this.Fetching = false),
-      tap(console.log),
+      
       shareReplay(1)
     )
 

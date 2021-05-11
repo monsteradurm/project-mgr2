@@ -296,7 +296,7 @@ mat-checkbox[ng-reflect-model="true"] > label > .mat-checkbox-inner-container > 
 .newlog-select.newlog-select {
   text-align:center;
   margin-left:5px;
-  padding-left:5px;
+  //padding-left:5px;
   text-align:center
 }
 
@@ -419,7 +419,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
     }
 
     .mat-input-element {
-      caret-color: $primary;
+      caret-color: black;
     }
 
     .mat-form-field.mat-focused .mat-form-field-label {
@@ -514,6 +514,26 @@ p-toastitem {
   $success: rgb(0, 152, 118);
   $info: rgb(153, 87, 255);
   $error: rgb(200, 0, 81);
+  $warn: #FF8500;
+  $custom: #2A9BFA;
+  
+  .p-toast-message-custom > div {
+    background: $warn;
+    /* border: solid #000000; */
+    border: solid 2px black;
+    border-width: 2px !important;
+    color: white;
+    border-radius: 10px;
+  }
+
+  .p-toast-message-warn > div {
+    background: $warn;
+    /* border: solid #000000; */
+    border: solid 2px black;
+    border-width: 2px !important;
+    color: white;
+    border-radius: 10px;
+  }
 
   .p-toast-message-success > div {
     background: $success;
@@ -556,7 +576,6 @@ p-toastitem {
   }
 
   .p-toast-message-icon {
-    -webkit-text-stroke: 3px;
     opacity: 0.5;
     color:white !important;
   }
@@ -1102,4 +1121,42 @@ app-itemchart > div > p-chart > div > canvas {
   app-user > div > div > img {
     border-color: black !important;
   }
+  
+}
+
+app-time-entry {
+  app-user > div > div > div.avatar-circle, app-user > div > div > img  {
+    height:37px !important;
+    width: 37px !important;
+    border: solid 1px black !important;
+    box-shadow: 2px 1px 5px 2px rgb(0 0 0 / 20%)
+  }
+
+  app-user > div > div > div.avatar-circle > div {
+    font-weight: bold !important;
+    font-size: 17px !important;
+  }
+
+  app-user > div > div > div.user-displayName {
+    margin-left:15px !important;
+  }
+}
+.mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical), .cdk-keyboard-focused .mat-calendar-body-active > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical), .cdk-program-focused .mat-calendar-body-active > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  background-color: rgb(113 113 113 / 30%);
+}
+.mat-calendar-body-selected {
+  background-color: black;
+  color: white;
+}
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+  color: black;
+  font-weight: bolder;
+  -webkit-text-stroke: 0.25px;
+}
+.mat-select-panel .mat-optgroup-label, .mat-select-panel .mat-option {
+  font-size: inherit;
+  line-height: 2em !important;
+  height: 2em !important;
+  /* font-family: 'DELIUS'; */
 }

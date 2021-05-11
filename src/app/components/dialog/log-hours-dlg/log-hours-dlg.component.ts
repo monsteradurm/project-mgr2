@@ -1,11 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import * as _ from 'underscore';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay, switchMap, take } from 'rxjs/operators';
-import { Board } from 'src/app/models/BoardItem';
-import { ScheduledItem } from 'src/app/models/Monday';
+import { Board, BoardItem, SubItem } from 'src/app/models/BoardItem';
+import { MondayIdentity, ScheduledItem } from 'src/app/models/Monday';
 import { MondayService } from 'src/app/services/monday.service';
+import { TimeEntry } from 'src/app/models/TimeLog';
+import { Dialog } from 'primeng/dialog';
+import { MessageService } from 'primeng/api';
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline', 
           'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
 
@@ -16,79 +19,98 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
 })
 export class LogHoursDlgComponent implements OnInit {
   
-  HourOptions = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-  MinuteOptions = ['00', '15', '30', '45'];
+  Show: boolean = false;
+  Item: BoardItem | ScheduledItem;
+  Entries: TimeEntry[] = [];
+  User: MondayIdentity;
 
-  @Output() visbilityChanged = new EventEmitter<boolean>(false);
-  @Input() Show: boolean = false;
-  
-  Boards$ = this.monday.Boards$;
+  @ViewChild(Dialog, { static: false, read: ElementRef }) DlgContainer;
+  constructor(public monday: MondayService, public messenger: MessageService) { }
 
-  constructor(public monday: MondayService) { }
-  Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
-  Items$ = combineLatest([this.Boards$, this.Columns$]).pipe(
-    switchMap(([boards, c_ids]) => {
-      let b_ids = _.map(boards, b => b.id);
-      return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
-    }),
-    map((items:any[]) => _.map(items, i => new ScheduledItem(i))),
-    shareReplay(1)
-  )
-  ChangeVisibility(state) {
-    console.log("HERE", state)
-    this.visbilityChanged.next(state);
-    this.NewLog = new NewHourLog(this);
+  OpenDialog(item: BoardItem | ScheduledItem, user: MondayIdentity) {
+    if (!user) {
+      this.messenger.add({
+        severity: 'error',
+        summary: 'Invalid "Monday" User',
+        detail: 'Cannot View/Edit Time Entries..'
+      });
+      return;
+    }
+    this.User = user;
+    this.Item = item;
+    this.Show = true;
+
+    this.UpdateEntries();
   }
-  ngOnInit(): void {
+
+  UpdateEntries() {
+    let ids = _.map([this.Item.id].concat(this.Item.subitem_ids), i => i.toString());
+
+
+    this.monday.TimeTracking$(ids).subscribe(
+      (result) => {
+        this.Entries = _.sortBy(result, (r:TimeEntry) => moment(r.date))
+      }
+    )
   }
-  NewLog = new NewHourLog(this);
-}
 
-export class NewHourLog {
-  item_id: string;
-  date: string = moment().format('YYYY-MM-DD');
-  hour: string = '09';
-  minute: string = '00';
-  half: string = 'AM';
+  CloseDialog() {
+    this.Item = null;
+    this.Show = false;
+  }
+  DeleteEntry(index) {
 
-  duration_hours: string = '01';
-  duration_minutes: string = '00';
-  private SelectedBoard = new BehaviorSubject<Board>(null);
-  SelectedBoard$ = this.SelectedBoard.asObservable().pipe(shareReplay(1));
+    let entry = this.Entries[index];
 
-  private SelectedTask = new BehaviorSubject<ScheduledItem>(null);
-  SelectedTask$ = this.SelectedTask.asObservable().pipe(shareReplay(1));
+    if (entry.isNew)
+      this.Entries.splice(index, 1);
 
-  IsRevision: boolean = false;
+    else {
+      this.monday.DeleteTimeEntry$(entry).pipe(take(1)).subscribe(
+        (result:any) => {
+          if (result.delete_update && result.delete_update.id) {
+            this.messenger.add({severity: 'success', summary: 'Removed Time Entry', detail: this.Item.name});
+            this.UpdateEntries();
+          } else {
+            this.messenger.add({severity: 'error', summary: 'Could Not Remove Time Entry', detail: this.Item.name});
+          }
+        }
+      )
+    }
+  }
 
-  monday: MondayService;
-  Boards$: Observable<Board[]>;
-  Items$: Observable<ScheduledItem[]>;
-  SetBoard(b) { this.SelectedBoard.next(b); }
-  SetTask(t) { this.SelectedTask.next(t); }
-  
+  EditEntry(index) {
+    let entry = this.Entries[index];
+    entry.editing = true;
+  }
+
+  AddEntry() {
+    if (_.find(this.Entries, e => e.editing)) {
+      this.messenger.add({
+        severity: 'warn',
+        summary: 'An entry is already being edited',
+        detail: this.Item.name,
+      });
+      return;
+    }
+
+    let entry = new TimeEntry();
+    entry.item = this.Item.id.toString();
+    entry.editing = true;
+    entry.isNew = true;
+    let subitems = this.Item.subitem_ids;
+    
+    if (subitems && subitems.length > 0) {
+      entry.item = subitems[subitems.length - 1].toString();
+    }
+
+    this.Entries.push(entry);
+  }
+
   Validate() {
-    return true;
-  }
-  Submit() { 
-    if (this.Validate())
-      this.monday.AddHoursLog(this); 
-  }
-  parent: LogHoursDlgComponent;
 
-  constructor(parent: LogHoursDlgComponent) {
-    this.parent = parent;
-    this.monday = this.parent.monday;
-    this.Boards$ = this.parent.Boards$.pipe(
-      map(boards => _.filter(boards, b => b.name.indexOf('Subitems') < 0)),
-      take(1)
-    )
+  }
 
-    this.Items$ = combineLatest([this.SelectedBoard$, this.parent.Items$]).pipe(
-      map(([board, items]) => {
-        return _.filter(items, i=> i.board.id == board.id);
-      }),
-      take(1)
-    )
+  ngOnInit(): void {
   }
 }

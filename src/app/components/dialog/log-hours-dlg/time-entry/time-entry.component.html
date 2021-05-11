@@ -1,0 +1,134 @@
+<ng-container *ngIf="Entry?.editing">
+    <div class="time-entry" fxLayout="row" fxLayoutAlign="start center" [style.border-color]="Status?.color">
+        <div fxLayout="column">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <h2 style="margin:0px">I am logging hours for
+                    <span style="font-weight:bold;margin-left:5px">{{Item?.element}}
+                        <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}}),</span>
+                    </span>
+                </h2>
+                <mat-form-field style="width:400px;margin-left:20px;" pmFocusInput [primaryColor]="Status.color">
+                    <mat-select [(ngModel)]="Entry.item" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);font-size: 20px;font-weight: bold;text-align: left;">
+                        <mat-option [value]="Item?.id.toString()">not a revision</mat-option>
+                        <mat-option *ngFor="let s of Item?.subitems" [value]="s.id.toString()">{{s.name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center" style="transform: translateY(-15px);">
+                <div style="margin-right:20px">from</div>
+                <mat-form-field style="max-width:120px" pmFocusInput [primaryColor]="Status.color">
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="Edit.start">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <div style="margin-left:20px;margin-right:10px">at</div>
+                <mat-form-field class="newlog-select" pmFocusInput [primaryColor]="Status.color">
+                    <mat-select [(ngModel)]="Edit.hour" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);">
+                        <mat-option *ngFor="let hr of HourOptions" [value]="hr">{{hr}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <span style="padding-left:10px;padding-right:0px">:</span>
+                <mat-form-field class="newlog-select" pmFocusInput [primaryColor]="Status.color">
+                    <mat-select [(ngModel)]="Edit.minute" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);">
+                        <mat-option *ngFor="let min of MinuteOptions" [value]="min">{{min}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="newlog-select" pmFocusInput [primaryColor]="Status.color"
+                    style="margin-left:10px">
+                    <mat-select [(ngModel)]="Edit.half" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);">
+                        <mat-option value="AM">AM</mat-option>
+                        <mat-option value="AM">PM</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <div style="margin-left:20px;margin-right:10px">for a <span class="highlighted-text">duration</span> of
+                </div>
+
+                <mat-form-field class="newlog-select" pmFocusInput [primaryColor]="Status.color">
+                    <mat-select [(ngModel)]="Edit.duration_hours" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);">
+                        <mat-option *ngFor="let hr of HourOptions" [value]="hr">{{hr}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <div style="margin-left:10px;margin-right:10px"><span class="highlighted-text"
+                        style="margin-right:0px">hours</span>,</div>
+                <mat-form-field class="newlog-select" pmFocusInput [primaryColor]="Status.color">
+                    <mat-select [(ngModel)]="Edit.duration_minutes" class="newlog-select newlog-select-minutes"
+                        style="transform: translateY(3px);">
+                        <mat-option *ngFor="let min of MinuteOptions" [value]="min">{{min}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div style="margin-left:10px"><span class="highlighted-text">minutes</span></div>
+            </div>
+        </div>
+        <div class="btn-container" fxLayout="row" fxLayoutAlign="center center" style="height:100%">
+            <button mat-mini-fab tippyText="Remove Entry" (click)="onDelete()" style="margin-right:10px">
+                <mat-icon class="app-fab-icon-btn app-center-fab-icon" *ngIf="!Entry.isNew">clear</mat-icon>
+                <mat-icon class="app-fab-icon-btn app-center-fab-icon" *ngIf="Entry.isNew">delete</mat-icon>
+            </button>
+            <button mat-mini-fab tippyText="Add Time Entry" (click)="onSubmit()">
+                <mat-icon class="app-fab-icon-btn app-center-fab-icon">check</mat-icon>
+            </button>
+        </div>
+    </div>
+</ng-container>
+<ng-container *ngIf="Entry && !Entry.editing">
+    <div #parentContainer>
+        <div #container class="time-entry" fxLayout="row" fxLayoutAlign="start center"
+            [style.border-color]="Status?.color" *ngIf="Entry"
+            [ngStyle]="{'opacity': parentContainer.clientHeight < 25 ? 0 : 1}">
+            <div fxLayout="column" style="padding-bottom:20px;width:100%"
+                *ngIf="(Entry.user | FindUserFromMondayId$ | async) as User">
+                <div fxLayout="row" fxLayoutAlign="start center" style="min-height:67px;width:100%">
+                    <app-user [User]="User" [CircleOnly]="true" [backgroundColor]="Status.color"
+                        [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="black" textColor="white"
+                        borderStyle="solid" borderWidth="1px"></app-user>
+                    <div fxLayout="column" fxLayoutAlign="center start" style="margin-left:15px;width:100% !important">
+                        <div fxLayout="row" fxLayoutAlign="center start" style="font-weight:bold">
+                            <div *ngIf="User.surname">{{User.surname}}, </div>
+                            <div [ngStyle]="{'margin-left' : User.surname ? '5px' : '0px'}">{{User.givenName}}</div>
+                        </div>
+                        <div fxLayout="row" fxLayoutAlign="center start" style="margin-top:5px">
+                            <div>logged <span style="font-weight:bold">{{Entry.duration}} hours</span></div>
+                            <div style="margin-left:5px">from <span style="font-weight:bold">{{Entry.date | date :
+                                    'medium'}}</span></div>
+                        </div>
+                        <!--
+                        <div fxLayout="row" fxLayoutAlign="center start" style="margin-top:5px">
+                            <div>for <span style="font-weight:bold">{{Item?.element}}
+                                    <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
+                                    <span *ngIf=""></span>
+                                </span>
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                    <div class="entry-task" [style.color]="Status.color">
+                        <ng-container *ngIf="Item?.id.toString() == Entry.item.toString(); else subitem">
+                            Original Task
+                        </ng-container>
+                        <ng-template #subitem>
+                            {{(Entry.item | FindById : Item?.subitems)?.name}}
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-container" fxLayout="row" fxLayoutAlign="center center" style="height:100%"
+                *ngIf="Entry.user | UserCanEdit$ : User | async">
+                <button mat-mini-fab tippyText="Remove Entry" (click)="onDelete()">
+                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">delete</mat-icon>
+                </button>
+                <button mat-mini-fab tippyText="Edit Entry" (click)="onEdit()" style="margin-left:10px">
+                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">edit</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-container>

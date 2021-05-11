@@ -1,6 +1,6 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
-import { BehaviorSubject, combineLatest, empty, forkJoin, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, empty, forkJoin, from, Observable, of } from 'rxjs';
 import { tap, shareReplay, take, switchMap, catchError, map, expand, reduce, retryWhen, delay, retry, flatMap, mergeMap } from 'rxjs/operators';
 import { UserIdentity } from '../models/UserIdentity';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -33,6 +33,7 @@ export class UserService {
   MondayUser$ = this.User$.pipe(
     switchMap(user => this.MondayUsers$.pipe(
       map(users => _.find(users, (u: MondayIdentity) => u.email == user.mail)),
+      catchError(err => EMPTY),
       shareReplay(1)
     ))
   )

@@ -109,7 +109,7 @@ img {
     align-items: flex-start;
     flex-direction: column;
     box-sizing: border-box;
-    /* border-radius: 10px; */
+    border-bottom-right-radius: 10px;
     /* padding: 20px 40px; */
     margin-right: 100px;
     display: flex;
@@ -117,6 +117,8 @@ img {
     border-bottom-style: solid;
     border-bottom-width: 2px;
     border-bottom-color: black;
+    border-right-style: solid;
+    border-right-width: 2px;
     padding-bottom: 30px;
     width: 100%;
 }

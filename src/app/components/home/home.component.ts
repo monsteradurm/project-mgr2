@@ -27,6 +27,8 @@ import tippy from "tippy.js";
 import { Board, BoardItem, Workspace } from 'src/app/models/BoardItem';
 import { SocketService } from 'src/app/services/socket.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -39,7 +41,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild('month', { static: false }) calendarComponent: FullCalendarComponent;
   @ViewChild('list', { static: false }) listComponent: FullCalendarComponent;
   @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
+  @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
+  contextMenuTop;
+  contextMenuLeft;
+  @ViewChild(MatMenu, { static: false }) contextMenu: MatMenu;
+  @ViewChild(MatMenuTrigger, { static: false }) contextMenuTrigger: MatMenuTrigger;
 
   private internalRouteParams = new BehaviorSubject<any>(null);
   private errorMessage = new BehaviorSubject<string>(null);
@@ -107,6 +114,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ) {
     const name = Calendar.name;
   }
+
+  onHoursDlg() {
+    this.LastEvent$.subscribe((last) => {
+      this.Me$.pipe(take(1)).subscribe((user) => {
+        this.LogHoursDlg.OpenDialog(last, user && user.id ? user : null);
+      })
+    })
+  }
+
+
 
   SetTab(t) {
     this.Tab$.pipe(take(1)).subscribe(tab => {
@@ -365,6 +382,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
     shareReplay(1)
   )
 
+  LastEvent$ = this.MyItems$.pipe(
+    map(items => _.find(items, i => i.id.toString() == this.last.id.toString())),
+    switchMap((item: ScheduledItem) => {
+      if (!item)
+        return of(null);
+      else if (!item.subitem_ids || item.subitem_ids.length < 1)
+        return of(item);
+
+      let ids = _.map(item.subitem_ids, i => i.toString());
+      return this.SubItems$.pipe(
+        map(subitems => {
+          item.subitems = _.filter(subitems, i => ids.indexOf(i.id.toString()) > -1);
+          return item;
+        })
+      )
+    }),
+    take(1)
+  )
+
   Events$ = this.MyTimelineItems$.pipe(
     tap((items: any) => {
       this.entry.clear();
@@ -509,9 +545,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     r.setContent(document.getElementById(id).innerHTML);
   }
 
+  last;
   eventDidMount(info) {
+
+    let html = info.el as HTMLElement;
     let props = info.event.extendedProps;
-    console.log(props);
     if (props.type != 'logbtn' && props.type != 'milestone') {
       info.el.setAttribute('data-id', props.tooltipId);
       let t = tippy(info.el, {
@@ -520,9 +558,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
         interactive: true,
         onShow: (r) => this.onShow(r)
       });
+
+      html.addEventListener('contextmenu', (evt) => {
+        this.contextMenuLeft = evt.x;
+        this.contextMenuTop = evt.y;
+        this.last = info.event;
+        this.contextMenuTrigger.openMenu();
+        evt.preventDefault();
+      })
+
       return t;
     }
   }
+
 
   eventContent(r) {
     let t = r.event.extendedProps.type;

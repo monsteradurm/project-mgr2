@@ -12,7 +12,6 @@ export class FindBoardItemByIdPipe  {
   transform(Item: BoardItem, SubItems: SubItem[], Departments: any[], selected: string) {
     if (!selected || Item.id.toString() == selected) return Item;
       
-      console.log(Departments, selected)
       let item =  _.find(SubItems, i => selected == i.id);
       if (item) {
         if (item.task)

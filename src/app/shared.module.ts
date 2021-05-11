@@ -91,6 +91,11 @@ import { SyncUpdateComponent } from './components/syncsketch/sync-update/sync-up
 import { SyncItemComponent } from './components/syncsketch/sync-item/sync-item.component';
 import { MaxCharactersPipe } from './directives/maxCharacters.directive';
 import { FilterMilestonesPipe } from './directives/elements/FilterMilestones.directive'
+import { TimeEntryComponent } from './components/dialog/log-hours-dlg/time-entry/time-entry.component';
+import { pmCalendarDirective } from './directives/material/pmcalendar.directive';
+import { FindUserFromMondayIdentityPipe } from './directives/elements/FindUserFromMondayIdentity.directive';
+import { UserCanEditPipe } from './directives/elements/UserCanEdit.directive';
+import { FindByIdPipe } from './directives/FindById.directive';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -133,7 +138,13 @@ const declarations = [
     SyncItemComponent,
     SyncUpdateComponent,
     MaxCharactersPipe,
-    FilterMilestonesPipe
+    FilterMilestonesPipe,
+    LogHoursDlgComponent,
+    TimeEntryComponent,
+    pmCalendarDirective,
+    FindUserFromMondayIdentityPipe,
+    UserCanEditPipe,
+    FindByIdPipe
   ]
   
 const imports = [

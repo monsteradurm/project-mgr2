@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList, Output, Inject, AfterViewInit, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, OnChanges, ViewChildren, QueryList, Output, Inject, AfterViewInit, HostBinding, HostListener } from '@angular/core';
 import { NavigationMapping } from './navigation-map';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -21,6 +21,10 @@ const _IGNORE_ = '/Box';
 })
 export class NavigationComponent implements OnInit, OnDestroy {
 
+  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
+    evt.preventDefault();
+  }
+  
   @HostBinding('style.display') DisplayNavigation = 'block';
 
   @ViewChildren(ActionOutletDirective) Groups : QueryList<ActionOutletDirective>
