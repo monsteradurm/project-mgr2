@@ -97,6 +97,8 @@ import { FindUserFromMondayIdentityPipe } from './directives/elements/FindUserFr
 import { UserCanEditPipe } from './directives/elements/UserCanEdit.directive';
 import { FindByIdPipe } from './directives/FindById.directive';
 import { LogComponent } from './components/tooltips/log/log.component';
+import { ArtistComponent } from './components/tooltips/artist/artist.component';
+import { AllocationComponent } from './components/tooltips/allocation/allocation.component';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -146,7 +148,9 @@ const declarations = [
     FindUserFromMondayIdentityPipe,
     UserCanEditPipe,
     FindByIdPipe,
-    LogComponent
+    LogComponent,
+    ArtistComponent,
+    AllocationComponent
   ]
   
 const imports = [

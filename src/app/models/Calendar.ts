@@ -20,6 +20,7 @@ export class CalendarItem {
         this.extendedProps.element = i.element;
         this.extendedProps.task = i.task;
         this.extendedProps.artist = _.map(i.artist, d => d.text).join(", ");
+        this.extendedProps.users = _.map(i.artist, d => d.id);
         this.extendedProps.director = _.map(i.director, d => d.text).join(", ");
         this.extendedProps.department = i.department_text.join(', ');
         this.extendedProps.workspace = i.workspace.name;
@@ -66,7 +67,7 @@ export class CalendarProperties {
     type: string = null;
     subitems: SubItemProperties[] = [];
     status: ItemStatus = new ItemStatus();
-
+    users: string[];
     constructor(type:string) {
         this.type = type;
     }
@@ -84,13 +85,13 @@ export class CalendarMilestone extends CalendarItem {
 export class CalendarLog {
     extendedProps: {
         allocation: CalendarProperties
-        user: string;
+        users: string[];
         duration: number;
         type: string;
         tooltipId: number | string;
     } = {
         allocation: null,
-        user: null,
+        users: [],
         duration: null,
         tooltipId: null,
         type: 'time-log',
@@ -102,7 +103,7 @@ export class CalendarLog {
     classNames: string[] = ['log-item'];
     constructor(entry: TimeEntry, allocation: CalendarProperties) {
         this.extendedProps.allocation = allocation;
-        this.extendedProps.user = entry.user;
+        this.extendedProps.users = [entry.user];
         this.start = moment(entry.date).format('YYYY-MM-DD');
         this.end = this.start;
         this.extendedProps.duration = entry.duration;

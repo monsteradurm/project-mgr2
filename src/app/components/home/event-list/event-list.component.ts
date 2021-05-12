@@ -13,6 +13,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { LogComponent } from '../../tooltips/log/log.component';
+import { AllocationComponent } from '../../tooltips/allocation/allocation.component';
+import { ArtistComponent } from '../../tooltips/artist/artist.component';
 
 @Component({
   selector: 'app-event-list',
@@ -30,17 +32,17 @@ export class EventListComponent implements OnInit {
   Logs$ = this.parent.Allocations$.pipe(
     map((allocations: CalendarItem[]) => _.map(allocations, a => a.extendedProps)),
     switchMap((allocations: CalendarProperties[]) => {
-      let ids = _.map(allocations, a=> a.id);
+      let ids = _.map(allocations, a => a.id);
       return this.parent.monday.TimeTracking$(ids).pipe(
-        map((logs:TimeEntry[]) => _.map(logs, 
-          (l:TimeEntry) => {
-            
-            let allocation = _.find(allocations, 
-              (a:CalendarProperties) => a.id.toString() == l.item.toString() ||
+        map((logs: TimeEntry[]) => _.map(logs,
+          (l: TimeEntry) => {
+
+            let allocation = _.find(allocations,
+              (a: CalendarProperties) => a.id.toString() == l.item.toString() ||
                 (a.subitems && _.map(a.subitems, (sub) => sub.id.toString()).indexOf(l.item.toString()) > -1)
-              )
+            )
             return new CalendarLog(l, allocation);
-        }))
+          }))
       )
     }),
   )
@@ -50,9 +52,9 @@ export class EventListComponent implements OnInit {
   }
 
   CreateLogHtml(entry) {
-      let component = this.parent.cfr.resolveComponentFactory(LogComponent);
-      let x = this.parent.entry.createComponent(component);
-      x.instance.Entry = entry;
+    let component = this.parent.cfr.resolveComponentFactory(LogComponent);
+    let x = this.parent.entry.createComponent(component);
+    x.instance.Entry = entry;
   }
 
   ShowLogHtml() {
@@ -61,26 +63,38 @@ export class EventListComponent implements OnInit {
 
   EventDidMount(info) {
     let props = info.event.extendedProps;
-    if (props.type == 'time-log') {
+    if (props.type != 'milestone') {
       let el = info.el;
       this.EventContent(info.event, info.el);
-    }
-    if (props.type != 'milestone')
       this.parent.EventDidMount(info);
+    }
   }
 
   EventContent(event, element: HTMLElement) {
     let t = event.extendedProps.type;
-    if (t == 'allocation')
-      return event.title;
+    let id = event.id;
+    if (t != 'milestone') {
+      let resolver = this.parent.cfr.resolveComponentFactory(ArtistComponent);
+      let x = this.parent.entry.createComponent(resolver);
+      x.instance.Ids = event.extendedProps.users;
 
-    else {
-      let id = event.id;
-      let resolver =this.parent.cfr.resolveComponentFactory(LogComponent);
+      element.children.item(0).firstChild.replaceWith(x.instance.element.nativeElement as HTMLElement);
+    }
+
+    if (t == 'allocation') {
+      let resolver = this.parent.cfr.resolveComponentFactory(AllocationComponent);
+      let x = this.parent.entry.createComponent(resolver);
+      x.instance.Event = event as CalendarItem;
+      x.instance.height = event.extendedProps.users.length * 67;
+      x.instance.primaryColor = event.backgroundColor;
+      let child = element.childNodes.item(2);
+      child.replaceWith(x.instance.element.nativeElement as HTMLElement);
+    }
+    else if (t != 'milestone') {
+      let resolver = this.parent.cfr.resolveComponentFactory(LogComponent);
       let x = this.parent.entry.createComponent(resolver);
       x.instance.Entry = event as CalendarLog;
       let child = element.childNodes.item(2);
-      let first = element.children.item(0).firstChild.replaceWith('');
       child.replaceWith(x.instance.element.nativeElement as HTMLElement);
     }
   }
@@ -89,13 +103,13 @@ export class EventListComponent implements OnInit {
     tap(([allocations, logs, me]) => {
       this.parent.entry.clear();
       let counter = 0;
-      _.forEach(allocations, (i:CalendarItem) => {
+      _.forEach(allocations, (i: CalendarItem) => {
         i.extendedProps.tooltipId = counter;
         this.parent.CreateTooltip(i.extendedProps, i.extendedProps.tooltipId)
         counter += 1;
       })
 
-      _.forEach(logs, (i:CalendarLog) => {
+      _.forEach(logs, (i: CalendarLog) => {
         i.extendedProps.tooltipId = counter;
         this.parent.CreateTooltip(i.extendedProps.allocation, i.extendedProps.tooltipId)
         //this.CreateLogHtml(i);
@@ -119,8 +133,8 @@ export class EventListComponent implements OnInit {
 
   DayListOptions$ = this.WeekListOptions$.pipe(
     map(options => {
-        options.initialView = 'listDay';
-        return options;
+      options.initialView = 'listDay';
+      return options;
     })
   )
 

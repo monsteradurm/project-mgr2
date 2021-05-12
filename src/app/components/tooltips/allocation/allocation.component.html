@@ -1,0 +1,30 @@
+<td fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="width:100%;border:none" [style.height.px]="height">
+    <div fxLayout="row" fxLayoutAlign="space-between center" style="width:100%">
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <div fxLayout="column" fxLayoutAlign="center start">
+                <div style="font-weight:bold">
+                    {{Event.extendedProps.element}}
+                </div>
+                <div>
+                    {{Event.extendedProps.task}}
+                    <ng-container *ngIf="Event.extendedProps.subitems.length > 0">
+                        <ng-container
+                            *ngIf="Event.extendedProps.subitems[Event.extendedProps.subitems.length - 1] as subitem">
+                            <span>
+                                - {{subitem.name}}
+                            </span>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="center end" style="text-align:right;">
+            <div style="font-weight:bold">
+                {{Event.extendedProps.workspace}}
+            </div>
+            <div>
+                {{Event.extendedProps.board}}
+            </div>
+        </div>
+    </div>
+</td>

@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutAlign="start center" style="margin-left:-16px;height:35px">
-    <ng-container *ngIf="(Entry.extendedProps.user | FindUserFromMondayId$ | async) as User">
+    <ng-container *ngIf="(Entry.extendedProps.users[0] | FindUserFromMondayId$ | async) as User">
         <app-user [User]="User" [backgroundColor]="Entry.backgroundColor" [CircleOnly]="true"
             [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="black" textColor="black"
             borderStyle="solid" borderWidth="1px"></app-user>

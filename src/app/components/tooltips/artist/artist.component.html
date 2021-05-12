@@ -1,0 +1,17 @@
+<td fxLayout="row" fxLayoutAlign="start center" style="border:none;">
+    <ng-container *ngIf="type == 'Monday'">
+        <ng-container *ngFor="let Id of Ids">
+            <ng-container *ngIf="(Id | FindUserFromMondayId$ | async) as User">
+                <app-user [User]="User" backgroundColor="rgb(42, 155, 250)" [CircleOnly]="true"
+                    [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="rgb(42, 155, 250)" textColor="black"
+                    borderStyle="solid" borderWidth="2px" style="margin-right:10px"></app-user>
+                <div *ngIf="User.surname" style="margin-left:5px">
+                    {{User.surname}}, 
+                </div>
+                <div *ngIf="User.givenName" style="margin-left:5px">
+                    {{User.givenName}}
+                </div>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</td>
