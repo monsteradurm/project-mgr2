@@ -1,17 +1,14 @@
 <ng-container #tooltipCreator></ng-container>
 
-<span #contextMenuTrigger
-[matMenuTriggerFor]="ItemContextMenu"
-style="position:absolute !important"
-[style.left.px]="contextMenuLeft"
-[style.top.px]="contextMenuTop"></span>
+
+<span #contextMenuTrigger [matMenuTriggerFor]="ItemContextMenu" style="position:absolute !important"
+  [style.left.px]="contextMenuLeft" [style.top.px]="contextMenuTop"></span>
 
 <mat-menu #ItemContextMenu="matMenu" yPosition="below">
   <ng-template matMenuContent>
-      <button mat-menu-item (click)="onHoursDlg()">Time Logging</button>
+    <button mat-menu-item (click)="onHoursDlg()">Time Logging</button>
   </ng-template>
 </mat-menu>
-
 
 <app-log-hours-dlg></app-log-hours-dlg>
 
@@ -67,17 +64,13 @@ style="position:absolute !important"
 
           <ng-container *ngSwitchCase="'Schedule'">
             <ng-container *ngIf="(ViewMode$ | async) as ViewMode">
-              <full-calendar *ngIf="ViewMode == 'Month'" [plugins]="calendarPlugins" [weekends]="false"
-                [options]="Options$ | async">
-              </full-calendar>
 
-              <full-calendar *ngIf="ViewMode == 'Week'" [plugins]="listPlugin" [weekends]="false"
-                [options]="WeekListOptions$ | async">
-              </full-calendar>
-
-              <full-calendar *ngIf="ViewMode == 'Day'" [plugins]="listPlugin" [weekends]="false"
-                [options]="DayListOptions$ | async">
-              </full-calendar>
+              <ng-container *ngIf="ViewMode == 'Month'; else eventList">
+                <app-calendar></app-calendar>
+              </ng-container>
+              <ng-template #eventList>
+                <app-event-list [ViewMode]="ViewMode"></app-event-list>
+              </ng-template>
             </ng-container>
 
           </ng-container>

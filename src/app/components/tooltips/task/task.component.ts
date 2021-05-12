@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CalendarItem, CalendarProperties } from 'src/app/models/Calendar';
 import { ScheduledItem } from 'src/app/models/Monday';
 import * as _ from 'underscore';
 
@@ -10,15 +11,12 @@ import * as _ from 'underscore';
 export class TaskTooltipComponent implements OnInit {
 
   constructor() { }
-  private _Item: ScheduledItem;
-  Department: string;
-  Director: string;
-  Artist: string;
-  @Input() set Item(s: ScheduledItem) {
+  private _Item: any;
+  tooltipId: string; 
+  type: string = 'allocation';
+  
+  @Input() set Item(s: CalendarProperties) {
     this._Item = s;
-    this.Artist = _.map(this._Item.artist, d=> d.text).join(", ");
-    this.Department = _.map(this._Item.department, d=> d.text).join(", ");
-    this.Director = _.map(this._Item.director, d=> d.text).join(", ");
   }
 
   get Item() { return this._Item; }

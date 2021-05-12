@@ -43,10 +43,13 @@ import { ActionOutletModule } from '@ng-action-outlet/core';
 import { ActionMatModule, ICON_TYPE } from '@ng-action-outlet/material';
 
 //fullcalendar
-import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { Calendar } from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin
-import interactionPlugin from '@fullcalendar/interaction'; // a plugin
+import resourceTimelinePlugin from '@fullcalendar/list';
 
 //primeng
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -79,11 +82,15 @@ import { KanbanBoardComponent } from './components/home/kanban-board/kanban-boar
 import {ChartModule} from 'primeng/chart';
 import { ItemchartComponent } from './components/home/itemchart/itemchart.component';
 import {APP_BASE_HREF} from '@angular/common';
+import { CalendarComponent } from './components/home/calendar/calendar.component';
+import { EventListComponent } from './components/home/event-list/event-list.component';
+
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
-FullCalendarModule.registerPlugins([ // register FullCalendar plugins
+FullCalendarModule.registerPlugins([
   dayGridPlugin,
   timeGridPlugin,
+  listPlugin,
   interactionPlugin
 ]);
 
@@ -144,10 +151,13 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     GalleryComponent,
     KanbanBoardItemComponent,
     KanbanBoardComponent,
-    ItemchartComponent
+    ItemchartComponent,
+    CalendarComponent,
+    EventListComponent
   ],
 
   imports: [
+    FullCalendarModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,

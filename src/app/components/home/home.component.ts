@@ -13,14 +13,9 @@ import { NavigationService } from 'src/app/services/navigation.service';
 import { UserService } from 'src/app/services/user.service';
 import * as _ from 'underscore';
 
-import { Calendar, compareByFieldSpec } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 
 import { ActionGroup, ActionOutletFactory } from '@ng-action-outlet/core';
-import { FullCalendarComponent } from '@fullcalendar/angular';
 import { TaskTooltipComponent } from './../tooltips/task/task.component';
 
 import tippy from "tippy.js";
@@ -29,6 +24,7 @@ import { SocketService } from 'src/app/services/socket.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
+import { CalendarItem, CalendarMilestone } from 'src/app/models/Calendar';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -38,15 +34,16 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('month', { static: false }) calendarComponent: FullCalendarComponent;
-  @ViewChild('list', { static: false }) listComponent: FullCalendarComponent;
-  @ViewChild('tooltipCreator', { read: ViewContainerRef }) entry: ViewContainerRef;
-  @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
-  @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
+
   contextMenuTop;
   contextMenuLeft;
   @ViewChild(MatMenu, { static: false }) contextMenu: MatMenu;
   @ViewChild(MatMenuTrigger, { static: false }) contextMenuTrigger: MatMenuTrigger;
+  @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
+
+  @ViewChild('tooltipCreator', { read: ViewContainerRef, static: false }) entry: ViewContainerRef;
+  @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
+
 
   private internalRouteParams = new BehaviorSubject<any>(null);
   private errorMessage = new BehaviorSubject<string>(null);
@@ -59,8 +56,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private tab = new BehaviorSubject<string>('Schedule')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
 
-  calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
-  listPlugin = [listPlugin]
   startDate = new BehaviorSubject<moment.Moment>(moment().startOf('week'));
   StartDate$ = this.startDate.asObservable().pipe(shareReplay(1));
 
@@ -103,27 +98,27 @@ export class HomeComponent implements OnInit, AfterViewInit {
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     )
 
-  constructor(
-    private actionOutlet: ActionOutletFactory,
-    private navigation: NavigationService,
-    private cfr: ComponentFactoryResolver,
-    public monday: MondayService,
-    public projectService: ProjectService,
-    private socket: SocketService,
-    private UserService: UserService,
-  ) {
-    const name = Calendar.name;
-  }
-
   onHoursDlg() {
-    this.LastEvent$.subscribe((last) => {
+    this.LastEvent$.subscribe((last: ScheduledItem) => {
       this.Me$.pipe(take(1)).subscribe((user) => {
+        console.log(last);
         this.LogHoursDlg.OpenDialog(last, user && user.id ? user : null);
       })
     })
   }
 
+  constructor(
 
+    public cfr: ComponentFactoryResolver,
+    private actionOutlet: ActionOutletFactory,
+    private navigation: NavigationService,
+    public monday: MondayService,
+    public projectService: ProjectService,
+    private socket: SocketService,
+    private UserService: UserService,
+  ) {
+
+  }
 
   SetTab(t) {
     this.Tab$.pipe(take(1)).subscribe(tab => {
@@ -171,8 +166,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       menu.setTitle(selected);
       menu.removeChildren();
       return this.MyUsers$.pipe(
-        map(users => ['All Users'].concat(users)),
-        map(users => users.forEach(u => menu.createButton().setTitle(u)
+        map((users:string[]) => ['All Users'].concat(users)),
+        map((users:string[]) => users.forEach(u => menu.createButton().setTitle(u)
           .fire$.subscribe(a => this.selectedUser.next(u))
         ))
       )
@@ -188,8 +183,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       menu.setTitle(selected);
       menu.removeChildren();
       return this.MyProjects$.pipe(
-        map(projects => ['All Projects'].concat(projects)),
-        map(projects => projects.forEach(p =>
+        map((projects:any[]) => ['All Projects'].concat(projects)),
+        map((projects:any[]) => projects.forEach(p =>
           menu.createButton().setTitle(p)
             .fire$.subscribe(a => this.selectedProject.next(p))))
       )
@@ -202,6 +197,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   Boards$ = this.monday.Boards$.pipe(shareReplay(1));
 
   User$ = this.UserService.User$;
+  
   Items$ = combineLatest([this.Boards$, this.Columns$, this.User$]).pipe(
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
@@ -265,6 +261,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
         return filtered;
       }),
+      switchMap(items => this.SubItems$.pipe(
+        map(subitems => {
+          _.forEach(items, (i) => {
+            let ids = _.map(i.subitem_ids, (s) => s.toString());
+            if (ids.length < 1)
+              return;
+            
+            i.subitems = _.filter(subitems, sub => ids.indexOf(sub.id.toString()) > -1);
+          });
+  
+          return items;
+        })
+      )),
       shareReplay(1)
     )
 
@@ -356,14 +365,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
     map(nestedIds => _.map(nestedIds, ids => ids && ids.length > 0 ?
       ids[ids.length - 1] : [])),
     map(nested => _.flatten(nested)),
-    switchMap(ids => this.monday.SubItems$(ids)),
+    switchMap((ids:string[]) => this.monday.SubItems$(ids)),
     shareReplay(1)
   )
 
   RequiresReview$ = this.MyFilteredItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
     shareReplay(2),
-    tap(console.log)
   )
 
   RequiresAssistance$ = this.MyFilteredItems$.pipe(
@@ -377,110 +385,72 @@ export class HomeComponent implements OnInit, AfterViewInit {
     shareReplay(2)
   )
 
-  LoggedHours$ = this.Items$.pipe(
-    map(items => _.filter(items, i => i.timetracking)),
+
+  CreateTooltip(i, index) {
+    let component = this.cfr.resolveComponentFactory(TaskTooltipComponent);
+    let x = this.entry.createComponent(component);
+    x.instance.tooltipId = index;
+    x.instance.Item = i;
+  }
+
+  findElement(id) {
+    return document.getElementById(id);
+  }
+
+  onShowTooltip(r) {
+    let id = r.reference.getAttribute('data-id');
+    r.setContent(this.findElement(id).innerHTML);
+  }
+
+  AllocatedContent(r) {
+    let t = r.event.extendedProps.type;
+    if (t == 'allocation')
+      return r.event.title;
+  }
+
+  CreateTippy(info) {
+    let props = info.event.extendedProps;
+    info.el.setAttribute('data-id', props.tooltipId);
+    let t = tippy(info.el, {
+      content: "",
+      placement: 'auto',
+      allowHTML: true,
+      interactive: true,
+      onShow: (r) => this.onShowTooltip(r)
+    });
+  }
+  EventDidMount(info) {
+    let t = this.CreateTippy(info);
+
+    info.el.addEventListener('contextmenu', (evt) => {
+      this.contextMenuLeft = evt.x;
+      this.contextMenuTop = evt.y;
+      this.last = info.event;
+      this.contextMenuTrigger.openMenu();
+      evt.preventDefault();
+    })
+    return t;
+  }
+
+  Allocations$ = this.MyTimelineItems$.pipe(
+    map(items => _.filter(items, i => !i.is_milestone())),
+    map(items => _.map(items, i => new CalendarItem(i))),
+  )
+
+  Milestones$ = this.MyTimelineItems$.pipe(
+    map(items => _.filter(items, i => !i.is_milestone())),
+    map(items => _.map(items, i => new CalendarMilestone(i))),
     shareReplay(1)
   )
 
+  last;
   LastEvent$ = this.MyItems$.pipe(
-    map(items => _.find(items, i => i.id.toString() == this.last.id.toString())),
-    switchMap((item: ScheduledItem) => {
-      if (!item)
-        return of(null);
-      else if (!item.subitem_ids || item.subitem_ids.length < 1)
-        return of(item);
-
-      let ids = _.map(item.subitem_ids, i => i.toString());
-      return this.SubItems$.pipe(
-        map(subitems => {
-          item.subitems = _.filter(subitems, i => ids.indexOf(i.id.toString()) > -1);
-          return item;
-        })
-      )
+    map(items => {
+      let id = this.last.extendedProps.type == 'time-log' ?
+        this.last.extendedProps.allocation.id.toString() : this.last.id.toString();
+      return _.find(items, i => i.id.toString() == id)
     }),
     take(1)
-  )
-
-  Events$ = this.MyTimelineItems$.pipe(
-    tap((items: any) => {
-      this.entry.clear();
-      _.forEach(items, i => this.CreateToolTipComponent(i))
-    }),
-    map((items: ScheduledItem[]) => {
-      let result = [];
-      let counter = 0;
-      _.forEach(items, (i: ScheduledItem) => {
-        let color = this.GetStatusColor(i);
-        let ismilestone = i.is_milestone();
-
-        if (!ismilestone) {
-          result.push({
-            extendedProps: { tooltipId: i.id, type: 'allocation' },
-            id: i.id,
-            title: i.itemcode && i.itemcode.text ? i.itemcode.text + ', ' + i.name : i.name
-              + ' (' + this.GetStatusText(i) + ')',
-            start: i.timeline.value.from,
-            end: i.timeline.value.to,
-            backgroundColor: color,
-            background: i.is_milestone() ? 'background' : null
-          });
-
-          if (i.timetracking) {
-            let values = i.timetracking['additional_value'];
-            if (values && values.length > 0) {
-              _.forEach(values, t => {
-                let started = moment(t.started_at);
-                let finished = moment(t.ended_at);
-                let time = finished.diff(started, 'minutes');
-                let tracked = time + ' minutes';
-
-                if (time >= 60) {
-                  time = time / 60;
-                  tracked = time + ' hours';
-                }
-
-                result.push({
-                  extendedProps: { tooltipId: i.id, type: 'timetracking' },
-                  id: t.id,
-                  backgroundColor: color,
-                  start: t.started_at,
-                  end: t.ended_at,
-                  title: `Logged ${tracked}`,
-                  display: 'list-item',
-                  classNames: ['log-item']
-                });
-              })
-
-            }
-
-
-          }
-        }
-        else {
-          result.push({
-            extendedProps: { tooltipId: i.id, type: 'milestone' },
-            id: i.id,
-            start: i.timeline.value.from,
-            end: i.timeline.value.to,
-            title: i.name,
-            display: 'background',
-            classNames: ['milestone-item']
-          });
-        }
-        counter += 1;
-      })
-      /*
-      _.forEach(this.GetLogDateArray(), (d) =>  { 
-        result.push({
-          extendedProps: { tooltipId: d, type: 'logbtn' },
-          start: d,
-          end: d,
-          classNames: ['log-hours-container']
-        })
-      })*/
-      return result;
-    }),
-    shareReplay(1)
   )
 
   GetLogDateArray() {
@@ -497,132 +467,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     return days;
   }
-  CreateToolTipComponent(i) {
-    let component = this.cfr.resolveComponentFactory(TaskTooltipComponent);
-    //component.inputs.
-    //this.entry.clear(); 
-    let x = this.entry.createComponent(component);
-    x.instance.Item = i;
-    return `<div class="tooltip">HERE</div>`
-  }
-
-  GetStatusText(i) {
-    if (i.status && i.status.text)
-      return i.status.text;
-    return 'Not Started';
-  }
-
-  GetStatusColor(i) {
-    if (i.status && i.status.additional_info)
-      return i.status.additional_info.color;
-    return '#000'
-  }
-
-  WeekListOptions$ = this.Events$.pipe(
-    map(allocations =>
-    ({
-      plugins: [listPlugin],
-      events: allocations,
-      initialView: 'listWeek',
-      eventDidMount: (r) => this.eventDidMount(r)
-    })
-    )
-  )
-
-  DayListOptions$ = this.Events$.pipe(
-    map(allocations =>
-    ({
-      plugins: [listPlugin],
-      events: allocations,
-      initialView: 'listDay',
-      eventDidMount: (r) => this.eventDidMount(r)
-    })
-    )
-  )
-
-  onShow(r) {
-    let id = r.reference.getAttribute('data-id');
-    r.setContent(document.getElementById(id).innerHTML);
-  }
-
-  last;
-  eventDidMount(info) {
-
-    let html = info.el as HTMLElement;
-    let props = info.event.extendedProps;
-    if (props.type != 'logbtn' && props.type != 'milestone') {
-      info.el.setAttribute('data-id', props.tooltipId);
-      let t = tippy(info.el, {
-        content: "",
-        allowHTML: true,
-        interactive: true,
-        onShow: (r) => this.onShow(r)
-      });
-
-      html.addEventListener('contextmenu', (evt) => {
-        this.contextMenuLeft = evt.x;
-        this.contextMenuTop = evt.y;
-        this.last = info.event;
-        this.contextMenuTrigger.openMenu();
-        evt.preventDefault();
-      })
-
-      return t;
-    }
-  }
-
-
-  eventContent(r) {
-    let t = r.event.extendedProps.type;
-
-    if (t == 'allocation')
-      return r.event.title; //{ html: '<i>some html</i>' }
-    else if (t == 'milestone') {
-      let icon = `<mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" 
-        aria-hidden="true" data-mat-icon-type="font" style=" font-size: 22px;
-        line-height: 22px;margin-top:3px">priority_high</mat-icon>`
-      let html = `${icon} <span style="margin-left: 2px;vertical-align:super;font-weight:bold">${r.event.title}</span>`
-      return { html }
-    }
-
-    let icon = `<mat-icon role="img" class="mat-icon notranslate material-icons mat-icon-no-color" 
-        aria-hidden="true" data-mat-icon-type="font" style="    font-size: 18px;
-        line-height: 25px;">schedule</mat-icon>`
-    let html = `${icon} <span style="margin-left: 5px">${r.event.title}</span>`
-    return { html };
-  }
-
-  Options$ = combineLatest([this.ViewMode$, this.Events$]).pipe(
-    map(([viewMode, allocations]) => ({
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-      initialView: this.ViewModeOptions[viewMode],
-      events: allocations,
-      eventDidMount: (r) => this.eventDidMount(r),
-      eventContent: (r) => this.eventContent(r)
-    })
-    ),
-  )
-
-  AddTippy(evt, text) {
-    //console.log(evt);
-  }
 
   ViewModeChange(v) {
     this.ViewMode$.pipe(take(1)).subscribe(current => {
       if (current != v && v) {
         this.viewMode.next(v);
-        /*
-        if (v == 'Month') {
-          let calendarApi = this.calendarComponent.getApi();
-          calendarApi.changeView(this.ViewModeOptions[v]);
-        }
-         else {
-          let listApi = this.listComponent.getApi();
-          listApi.changeView(this.ViewModeOptions[v]);
-         } */
       }
     });
   }
+
   primaryColor: string;
   subscriptions = [];
 
@@ -634,14 +487,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   WorkspacesMenu$ = of(null);
 
   ngAfterViewInit() {
-    ;
-  }
-
-  OnVisibilityChange(state) {
-    //console.log(state);
-    this.showHoursDlg = state;
-  }
-  onCloseHoursDlg() {
   }
 
   ngOnInit(): void {

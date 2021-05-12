@@ -1,15 +1,26 @@
 <div #tooltipConcealer style="display:none">
-        <div [id]="Item.id">
-            <div class="tooltip-container">
-                <div fxLayout="row" fxLayoutAlign="space-between center" styl="border-bottom:solid 1px black">
-                    <div *ngIf="Item.workspace">{{Item.workspace.name}}, {{Item.board.name}}, {{Item.group.title}}</div>
-                    <div style="margin-left:35px">{{Department }}</div>
-                </div>
-                <div style="font-size:13px;margin-top:5px;">{{Item.name}}</div>
-                <div fxLayout="column" fxLayoutAlign="end end" style="margin-top:5px">
-                    <div>Assigned: {{Artist}}, {{Item.timeline.text}}</div>
-                    <div *ngIf="Director">Reviewing: {{Director}}</div>
+    <div [id]="tooltipId">
+        <div class="tooltip-container">
+            <div fxLayout="row" fxLayoutAlign="space-between center" styl="border-bottom:solid 1px black">
+                <div *ngIf="Item.workspace">{{Item.workspace}}, {{Item.board}}, {{Item.group}}</div>
+                <div style="margin-left:35px;font-weight:bold">{{Item.department }}</div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="space-between space-between" style="margin-top:5px;width:100%">
+                <div style="font-size:13px;float:left;font-weight:bold">{{Item.element}} / {{Item.task}}</div>
+
+                <div fxLayout="column" style="float:right;">
+                    <div style="width:100%;text-align:right">{{Item.timeline}}</div>
+                    <div fxLayout="row" fxLayoutAlgn="end center" *ngIf="Item.artist">
+                        <div class="tip-attribute">Assigned:</div>
+                        <div class="tip-value">{{Item.artist}}</div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlgn="end center" *ngIf="Item.director">
+                        <div class="tip-attribute">Reviewing:</div>
+                        <div class="tip-value">{{Item.director}}</div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 </div>

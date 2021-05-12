@@ -1160,3 +1160,11 @@ app-time-entry {
   height: 2em !important;
   /* font-family: 'DELIUS'; */
 }
+
+app-log {
+  app-user {
+    user-displayName {
+      margin-left: 5px !important;
+    }
+  }
+}

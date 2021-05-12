@@ -2,6 +2,7 @@ import { Pipe } from '@angular/core';
 import * as _ from 'underscore';
 import { Observable, combineLatest } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
+import { ItemStatus } from 'src/app/models/Calendar';
 
 @Pipe({
   name: 'GetTaskStatus'
@@ -9,9 +10,14 @@ import { tap, map } from 'rxjs/operators';
 
 export class GetTaskStatusDirective  {
   transform(status: any) {
-    if (!status || !status.additional_info)
-        return { text: 'Not Started', color: 'black'}
+    let result = new ItemStatus();
 
-    return { text: status.text, color: status.additional_info.color}
+    if (!status || !status.additional_info)
+        return result;
+
+    result.text = status.text;
+    result.color = status.additional_info.color;
+
+    return result;
   }
 }

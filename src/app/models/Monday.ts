@@ -55,9 +55,9 @@ export class ScheduledItem {
         id: string,
         name: string
     }
-    artist: ColumnValues;
+    artist: ColumnValues[];
     timetracking: ColumnValues;
-    director: ColumnValues;
+    director: ColumnValues[];
     status: ColumnValues;
     timeline: ColumnValues;
     department: ColumnValues;

@@ -1,0 +1,14 @@
+<div fxLayout="row" fxLayoutAlign="start center" style="margin-left:-16px;height:35px">
+    <ng-container *ngIf="(Entry.extendedProps.user | FindUserFromMondayId$ | async) as User">
+        <app-user [User]="User" [backgroundColor]="Entry.backgroundColor" [CircleOnly]="true"
+            [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="black" textColor="black"
+            borderStyle="solid" borderWidth="1px"></app-user>
+
+        <div style="margin-left:7px;font-weight:bold" *ngIf="User.givenName">{{User.givenName}}</div>
+        <div style="margin-left:5px;font-weight:bold" *ngIf="User.surname">{{User.surname}}</div>
+        <div style="margin-left:5px">
+            Logged
+        </div>
+        <div style="margin-left:5px;">{{Entry.extendedProps.duration}} Hours</div>
+    </ng-container>
+</div>

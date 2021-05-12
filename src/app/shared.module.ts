@@ -96,6 +96,7 @@ import { pmCalendarDirective } from './directives/material/pmcalendar.directive'
 import { FindUserFromMondayIdentityPipe } from './directives/elements/FindUserFromMondayIdentity.directive';
 import { UserCanEditPipe } from './directives/elements/UserCanEdit.directive';
 import { FindByIdPipe } from './directives/FindById.directive';
+import { LogComponent } from './components/tooltips/log/log.component';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -144,7 +145,8 @@ const declarations = [
     pmCalendarDirective,
     FindUserFromMondayIdentityPipe,
     UserCanEditPipe,
-    FindByIdPipe
+    FindByIdPipe,
+    LogComponent
   ]
   
 const imports = [
@@ -181,7 +183,6 @@ const imports = [
     BadgeModule,
     FileUploadModule,
     ResizeModule, 
-    FullCalendarModule,
 
     SwappingSquaresSpinnerModule,
     ScalingSquaresSpinnerModule,

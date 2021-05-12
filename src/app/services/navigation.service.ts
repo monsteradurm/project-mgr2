@@ -29,7 +29,9 @@ export class NavigationService {
   SelectedTitle$ = this.SelectedTitle.asObservable().pipe(shareReplay(1))
 
   Projects$ = this.monday.Projects$.pipe(
-    map(projects => _.filter(projects, p=> p.name.indexOf('PM2') < 0)),
+    map(projects => _.filter(projects, p=> 
+      p.name.indexOf('PM2') < 0 && p.name[0] != '_')),
+
     shareReplay(1)
   )
 
@@ -40,7 +42,7 @@ export class NavigationService {
   
   Component: NavigationComponent;
   AppComponent: AppComponent;
-  
+
   NavigationMenu$ = this.monday.Pages$.pipe(
      map(pages => {
         if (!pages)
