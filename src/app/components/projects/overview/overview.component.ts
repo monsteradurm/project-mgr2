@@ -14,6 +14,7 @@ import { OverviewSubitemComponent } from './overview-subitem/overview-subitem.co
 import * as moment from 'moment';
 import { LogHoursDlgComponent } from '../../dialog/log-hours-dlg/log-hours-dlg.component';
 import { ScheduledItem } from 'src/app/models/Monday';
+import { ViewTaskDlgComponent } from '../../dialog/view-task-dlg/view-task-dlg.component';
 
 @Component({
   selector: 'app-overview',
@@ -22,6 +23,7 @@ import { ScheduledItem } from 'src/app/models/Monday';
 })
 export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
+  @ViewChild(ViewTaskDlgComponent) ViewTaskDlg: ViewTaskDlgComponent;
 
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     evt.preventDefault();
@@ -64,9 +66,6 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private sortBy = new BehaviorSubject<string>('Name');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
-
-  private selectedElement = new BehaviorSubject<BoardItem>(null);
-  SelectedElement$ = this.selectedElement.asObservable().pipe(shareReplay(1));
 
   SortByOptions = ['Name', 'Item Code', 'Status', 'Artist', 'Director', 'Caption', 'Start', 'Finish'];
 
@@ -122,25 +121,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.changeDetector.detectChanges();
   }
 
-  onViewTaskClosed() {
-    this.selectedElement.next(null);
-  }
-
   SetReverseSorting() {
     this.ReverseSorting$.pipe(take(1)).subscribe(state => this.reverseSorting.next(!state));
   }
 
   onSelectItem(item) {
-    this.SelectedElement$.pipe(take(1)).subscribe(el => {
-      if (el && el.id && item && item.id && el.id != item.id) {
-        this.selectedElement.next(item);
-      }
-      else if (!el && item && item.id) {
-        this.selectedElement.next(item);
-      }
-      else if (el && !item) {
-        this.selectedElement.next(null);
-      }
+    this.User$.pipe(take(1)).subscribe((user) => {
+      this.ViewTaskDlg.OpenDialog(item, user)
     })
   }
 

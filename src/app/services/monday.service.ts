@@ -251,6 +251,26 @@ export class MondayService {
     map(result => result['boards']),
     take(1))
 
+  GetTags$(boardId: string) {
+    let query = `boards(ids:${boardId}){
+        items {
+          id
+          column_values(ids:"tags") {
+            id
+            text
+          }
+        }
+      }`
+
+    return this.Query$(query).pipe(
+      map((data: any) => data && data.boards && data.boards.length > 0 ? data.boards[0] : null),
+      map(board => board && board.items ? board.items : []),
+      map(items => _.flatten(_.map(items, (i) => i.column_values))),
+      map(values => _.uniq(values, (v) => v.text)),
+      take(1)
+    )
+  }
+
   Boards$ = this.Query$(`boards(state:active, limit:200) 
   { id, name, 
     columns {

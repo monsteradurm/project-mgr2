@@ -26,6 +26,7 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
 import { CalendarItem, CalendarMilestone, SubItemProperties } from 'src/app/models/Calendar';
 import { TimeEntry } from 'src/app/models/TimeLog';
+import { ViewTaskDlgComponent } from '../dialog/view-task-dlg/view-task-dlg.component';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -41,6 +42,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenu, { static: false }) contextMenu: MatMenu;
   @ViewChild(MatMenuTrigger, { static: false }) contextMenuTrigger: MatMenuTrigger;
   @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
+  @ViewChild(ViewTaskDlgComponent) ViewTaskDlg: ViewTaskDlgComponent;
 
   @ViewChild('tooltipCreator', { read: ViewContainerRef, static: false }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
@@ -420,6 +422,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       onShow: (r) => this.onShowTooltip(r)
     });
   }
+
   EventDidMount(info) {
     let t = this.CreateTippy(info);
 
@@ -432,7 +435,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     })
     return t;
   }
-
 
   Allocations$ = this.MyTimelineItems$.pipe(
     map(items => _.filter(items, i => !i.is_milestone())),

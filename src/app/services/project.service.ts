@@ -7,6 +7,7 @@ import { MondayService } from './monday.service';
 import { SocketService } from './socket.service';
 import { UserService } from './user.service';
 import * as _ from 'underscore';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,20 @@ export class ProjectService {
     return true;
   }
 
-  Boards$ = this.monday.Boards$;
+  MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
+
+  GetProjectSettings$(workspace_id) {
+      return this.MinBoards$.pipe(
+      switchMap(boards => {
+        let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id.toString() == workspace_id.toString());
+        if (!board) return of(null)
+        return this.monday.ProjectSettings$(board.id)
+      }),
+      take(1)
+    )
+  }
+
+  Boards$ : Observable<Board> = this.monday.Boards$.pipe(shareReplay(1));
   GetStatusOptions$(boardid) {
     return this.Boards$.pipe(
       map(boards => _.find(boards, b => b.id == boardid)),

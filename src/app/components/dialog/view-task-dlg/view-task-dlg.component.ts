@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActionButton, ActionGroup, ActionOutletFactory } from '@ng-action-outlet/core';
-import { BehaviorSubject, combineLatest, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of } from 'rxjs';
 import { catchError, delay, map, shareReplay, skipUntil, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 import { Board, BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
@@ -27,13 +27,13 @@ import { ProjectService } from 'src/app/services/project.service';
   styleUrls: ['./view-task-dlg.component.scss']
 })
 export class ViewTaskDlgComponent implements OnInit {
-  Show: boolean = true;
+  Show: boolean = false;
   contextMenuTop;
   contextMenuLeft;
-  @ViewChild(MatMenu, {static:false}) statusMenu:MatMenu;
-  @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
+  @ViewChild(MatMenu, { static: false }) statusMenu: MatMenu;
+  @ViewChild(MatMenuTrigger, { static: false }) contextMenuTrigger: MatMenuTrigger;
 
-  @ViewChild('fileInput') fileInput: FileUpload; 
+  @ViewChild('fileInput') fileInput: FileUpload;
   @HostListener('window:resize', ['$event']) onWindowResize() {
     this.onResize(null);
   }
@@ -51,11 +51,20 @@ export class ViewTaskDlgComponent implements OnInit {
     this.TaskHeight = this.Height - 40;
   }
 
-
+  _Item;
   @Output() Height;
-  @Output() onClose = new EventEmitter<boolean>(false);
-  @Input() primaryColor;
   @ViewChild(Dialog, { static: false, read: ElementRef }) DlgContainer;
+
+  //REQUIRED INPUTS
+  //Item
+  User: UserIdentity;
+
+  OpenDialog(Item: BoardItem, User: UserIdentity) {
+    this.Item = Item;
+    this.User = User;
+    this.Show = true;
+  }
+
 
   constructor(private monday: MondayService,
     private el: ElementRef,
@@ -68,45 +77,35 @@ export class ViewTaskDlgComponent implements OnInit {
     private actionOutlet: ActionOutletFactory) { }
 
   item = new BehaviorSubject<BoardItem>(null);
-  projectReference = new BehaviorSubject<string>(null);
 
   private refreshView = new EventEmitter<boolean>(true);
   ViewMenu;
 
   RefreshView$ = this.refreshView.asObservable().pipe(shareReplay(1))
   Item$ = this.item.asObservable().pipe(shareReplay(1))
-  ProjectReference$ = this.projectReference.asObservable().pipe(shareReplay(1))
+  
 
   SelectedSubItem;
-
-  
-  @Input() SyncBoard: any;
-  @Input() User: UserIdentity;
-
-  _Item;
-
   SyncReview$ = this.Item$.pipe(
-    switchMap(Item => Item ? 
-      this.syncSketch.FindReview$(Item.board.id, Item.group.title, Item.element)  :
-      of (null)),
+    switchMap(Item => Item ?
+      this.syncSketch.FindReview$(Item.board.id, Item.group.title, Item.element) :
+      of(null)),
+    switchMap(review => {
+      if (review)
+        return of(review);
+      
+      let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
+      return this.SyncBoard$.pipe(
+        switchMap((project:any) => this.syncSketch.CreateReview(project.id, name))
+      )
+    }),
     shareReplay(1)
   )
 
-  @Input() set Item(s: BoardItem) {
+  set Item(s: BoardItem) {
     this._Item = s;
     this.item.next(s);
   }
-
-  @Input() set ProjectReference(s: string) {
-    this.projectReference.next(s);
-    this.onResize(null);
-  }
-
-  Closing() {
-    this.onClose.next(true);
-  }
-
-  @Input() Departments: any[]
 
   get Item() { return this._Item; }
 
@@ -167,9 +166,9 @@ export class ViewTaskDlgComponent implements OnInit {
       }
     })
   }
-Refresh() {
-  this.UpdateItem();
-}
+  Refresh() {
+    this.UpdateItem();
+  }
 
   AddReview(type: "Internal" | "Client") {
     let id = this.Item.id;
@@ -215,23 +214,23 @@ Refresh() {
     else
       setSelected = this.Item.id;
 
-    
+
     this.SyncReview$.pipe(
       switchMap(review => this.syncSketch.Items$(review.id)),
       map(items => _.filter(items, i => i.name.indexOf(subitem.name > -1))),
-      switchMap(items => items.length > 0 ? 
+      switchMap(items => items.length > 0 ?
         this.syncSketch.RemoveItems$(_.map(items, i => i.id))
-        : of(null)), 
+        : of(null)),
       switchMap(() => this.monday.DeleteBoardItem$(subitem.id)),
-    catchError(err => {
-      this.messager.add({
-        severity: 'error',
-        summary: 'Could Not Delete Review',
-        life: 3000,
-        detail: this.Item.name,
+      catchError(err => {
+        this.messager.add({
+          severity: 'error',
+          summary: 'Could Not Delete Review',
+          life: 3000,
+          detail: this.Item.name,
+        })
+        return of(null);
       })
-      return of(null);
-    })
     ).pipe(take(1)).subscribe(
       (result: any) => {
         if (result.delete_item && result.delete_item.id) {
@@ -261,7 +260,8 @@ Refresh() {
 
   StatusOptions$ = this.Item$.pipe(
     map(item => item.board.id),
-    switchMap(boardid => this.projectService.GetStatusOptions$(boardid))
+    switchMap(boardid => this.projectService.GetStatusOptions$(boardid)),
+    catchError(err => EMPTY)
   )
 
   EditStatus() {
@@ -280,15 +280,14 @@ Refresh() {
   Upload$(review, subitem, file, description) {
     let url = this.syncSketch.UploadURL(review.id);
     this.fileInput.showUploadButton = false;
-    this.messager.add( {
+    this.messager.add({
       severity: 'info',
       detail: subitem.name,
       summary: 'Uploading Content..',
     });
-    
+
     return of(this.User).pipe(
       switchMap(user => {
-        console.log(user);
         let data = new FormData();
         data.append('artist', user.displayName);
         data.append('reviewFile', file, file.name);
@@ -319,20 +318,60 @@ Refresh() {
     )
   }
 
+  Board$ = this.Item$.pipe(
+    switchMap(item =>
+      this.projectService.Boards$.pipe(
+        map(boards => _.find(boards, b => b.id == item.board.id))
+      )
+    ),
+    shareReplay(1)
+  )
+
+  Settings$ = this.Item$.pipe(
+    map(item => item.workspace.id),
+    switchMap(workspaceId => this.projectService.GetProjectSettings$(workspaceId)),
+    shareReplay(1)
+  )
+
+  Departments$ = this.Board$.pipe(
+    switchMap(board => board ? this.monday.GetTags$(board.id) : [])  
+  )
+
+  ProjectReference$ = this.Settings$.pipe(
+    map(
+      settings => {
+        if (!settings || !settings['Box Folders'])
+          return null;
+
+        let ref =  _.find(settings['Box Folders'], s => s.name == 'Reference');
+
+        if (!ref || !ref.column_values || ref.column_values.length < 1) return null;
+        return ref.column_values[0].text;
+      }
+    )
+  )
+
+  SyncBoard$ = this.Board$.pipe(
+    switchMap(board => this.syncSketch.Project$(board).pipe(
+      switchMap(syncBoard => syncBoard ? of(syncBoard) :
+        this.syncSketch.CreateProject(board.selection))
+      )
+    ),
+    shareReplay(1)
+  )
+
   handleUploads(event, subitem) {
     let project = this.Item.workspace.name + ', ' + this.Item.board.name;
     let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
     let file = event.files[0];
     let description = name + '\n' + this.Item.department_text + '\n' +
-       this.Item.task + '\n' + subitem.name;
+      this.Item.task + '\n' + subitem.name;
 
     this.SyncReview$.pipe(
       switchMap(review => {
-        return of(null)
+        return this.SyncBoard$
           .pipe(
-            switchMap(() => this.SyncBoard ? of(this.SyncBoard) :
-              this.syncSketch.CreateProject(project)),
-            switchMap((project) => review ? of(review) :
+            switchMap((project: any) => review ? of(review) :
               this.syncSketch.CreateReview(project.id, name))
           )
       }),
@@ -342,7 +381,7 @@ Refresh() {
         skipWhile(result => !result),
         switchMap(() => this.syncSketch.Items$(review.id)),
         map((items) => _.find(items, i => i.name + i.extension == file.name)),
-        switchMap(item => this.syncSketch.RenameItem$(item.id, 
+        switchMap(item => this.syncSketch.RenameItem$(item.id,
           subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name)
         )
       ).subscribe(result => {

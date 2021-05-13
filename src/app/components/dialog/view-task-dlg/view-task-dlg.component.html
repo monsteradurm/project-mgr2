@@ -1,246 +1,256 @@
-
 <p-toast></p-toast>
 
 <mat-menu #statusMenu="matMenu">
-    <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
-    [style.background]="s.color" style.color="white !important"
-    (click)= "onSetStatus(s)">{{s.label}}</button>
+    <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)" [style.background]="s.color"
+        style.color="white !important" (click)="onSetStatus(s)">{{s.label}}</button>
 </mat-menu>
 
 <p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
-    (onResizeEnd)="onResize($event)" (onResizeInit)="onResize($event)" (onShow)="onResize($event)" (onHide)="Closing()"
+    (onResizeEnd)="onResize($event)" (onResizeInit)="onResize($event)" (onShow)="onResize($event)"
     [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px'}" *ngIf="Item">
 
     <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
 
-        <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%" fxLayout="column">
-            <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header no-select"
-                [style.background-color]="Status.color">
-                <ng-container *actionOutlet="ViewMenu$ | async"></ng-container>
-                <h2 class="dialog-header view-task-header" style="color:white !important;margin-left:50px">
-                    {{Item?.element}}
-                    <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
-                </h2>
-                <h2 class="dialog-status-header" 
-                    style="color:white !important;cursor:pointer;border-bottom:solid 2px white;    height: 32px;
-                    margin-bottom: 20px;" 
-                    (dblclick)="EditStatus()"  [matMenuTriggerFor]="statusMenu">
-                    {{Status.text}}
-                    <mat-icon style="color:white !important; font-size:30px;height:30px;vertical-align:middle;padding:0px">arrow_drop_down</mat-icon>
-                </h2>
-                
-            </div>
-            <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
-                <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">
-                    <div class="view-task-scroll" [style.height.px]="TaskHeight">
-                        <div class="task-btn-container" fxLayout="column">
+        <ng-container *ngIf="(Departments$ | async) as Departments">
+            <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%"
+                fxLayout="column">
+                <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header no-select"
+                    [style.background-color]="Status.color">
+                    <ng-container *actionOutlet="ViewMenu$ | async"></ng-container>
+                    <h2 class="dialog-header view-task-header" style="color:white !important;margin-left:50px">
+                        {{Item?.element}}
+                        <span *ngIf="Item?.department">({{Item?.department | ArrayToStr : 'text'}})</span>
+                    </h2>
+                    <h2 class="dialog-status-header" style="color:white !important;cursor:pointer;border-bottom:solid 2px white;    height: 32px;
+                    margin-bottom: 20px;" (dblclick)="EditStatus()" [matMenuTriggerFor]="statusMenu">
+                        {{Status.text}}
+                        <mat-icon
+                            style="color:white !important; font-size:30px;height:30px;vertical-align:middle;padding:0px">
+                            arrow_drop_down</mat-icon>
+                    </h2>
 
-                            <button mat-fab tippyText="Delete SubItem" *ngIf="View.type == 'revision'"
-                                (click)="DeleteSubItem(View)" style="margin-bottom:10px">
-                                <mat-icon class="app-fab-icon-btn app-center-fab-icon">delete</mat-icon>
-                            </button>
+                </div>
+                <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
+                    <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">
+                        <div class="view-task-scroll" [style.height.px]="TaskHeight">
+                            <div class="task-btn-container" fxLayout="column">
 
-                            <button mat-fab tippyText="Refresh"
-                                (click)="Refresh()">
-                                <mat-icon class="app-fab-icon-btn app-center-fab-icon">refresh</mat-icon>
-                            </button>
-                        </div>
+                                <button mat-fab tippyText="Delete SubItem" *ngIf="View.type == 'revision'"
+                                    (click)="DeleteSubItem(View)" style="margin-bottom:10px">
+                                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">delete</mat-icon>
+                                </button>
 
-                        <table #taskTable style="height:100%;width:100%">
-                            <tr>
-                                <td #tableColumn style="position:relative">
-                                    <div style="box-shadow:0px 0px 15px 0px rgb(0 0 0 / 25%);position:fixed;height:100%;top:0px;
+                                <button mat-fab tippyText="Refresh" (click)="Refresh()">
+                                    <mat-icon class="app-fab-icon-btn app-center-fab-icon">refresh</mat-icon>
+                                </button>
+                            </div>
+
+                            <table #taskTable style="height:100%;width:100%">
+                                <tr>
+                                    <td #tableColumn style="position:relative">
+                                        <div style="box-shadow:0px 0px 15px 0px rgb(0 0 0 / 25%);position:fixed;height:100%;top:0px;
                                     z-index:0" [style.width.px]="tableColumn.clientWidth"></div>
 
-                                    <mat-toolbar fxLayout="column" fxLayoutAlign="stretch stretch"
-                                        class="side-dlg-toolbar">
+                                        <mat-toolbar fxLayout="column" fxLayoutAlign="stretch stretch"
+                                            class="side-dlg-toolbar">
 
-                                        <div class="side-btn-header no-select" style="padding-top:0px !important"
-                                            [style.color]="Status.color">Task</div>
-                                        <button mat-flat-button (click)="SelectedSubItem = Item.id"
-                                            [ngClass]="{'side-btn-active' : View.id == Item.id}"> {{Item.task}}
-                                            <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : Item.id == View.id, 
+                                            <div class="side-btn-header no-select" style="padding-top:0px !important"
+                                                [style.color]="Status.color">Task</div>
+                                            <button mat-flat-button (click)="SelectedSubItem = Item.id"
+                                                [ngClass]="{'side-btn-active' : View.id == Item.id}"> {{Item.task}}
+                                                <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : Item.id == View.id, 
                                         'side-btn-inactive' : Item.id != View.id }"></div>
-                                        </button>
+                                            </button>
 
-                                        <div class="side-btn-header no-select" [style.color]="Status.color">Reference
-                                        </div>
+                                            <div class="side-btn-header no-select" [style.color]="Status.color">
+                                                Reference
+                                            </div>
 
-                                        <ng-container *ngFor="let d of Departments">
-                                            <button mat-flat-button (click)="onReferenceSelected(d)"
-                                                [ngClass]="{'side-btn-active' : View.id == d.id}"> {{d.text}}
-                                                <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : View.id == d.id, 
+                                            <ng-container *ngFor="let d of Departments">
+                                                <button mat-flat-button (click)="onReferenceSelected(d)"
+                                                    [ngClass]="{'side-btn-active' : View.id == d.id}"> {{d.text}}
+                                                    <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : View.id == d.id, 
                                                     'side-btn-inactive' : d.id != View.id }"></div>
-                                            </button>
-                                        </ng-container>
-
-                                        <div class="side-btn-header no-select" [style.color]="Status.color">Reviews
-                                        </div>
-                                        <ng-container *ngFor="let subitem of SubItems">
-                                            <button mat-flat-button (click)="SelectedSubItem = subitem.id"
-                                                [ngClass]="{'side-btn-active' : View.id == subitem.id}">
-                                                {{subitem.name}}
-                                                <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : subitem?.id == View.id, 
-                                                'side-btn-inactive' : subitem?.id != View.id }"></div>
-                                            </button>
-                                        </ng-container>
-                                        <button mat-flat-button disabled class="side-btn-inactive"
-                                            *ngIf="!SubItems || SubItems.length < 1">
-                                            <div class="side-btn-inactive no-select" style="font-style:italic">
-                                                No Reviews</div>
-                                        </button>
-
-                                    </mat-toolbar>
-                                </td>
-                                <td style="width:100%;position:relative;">
-                                    <div fxLayout="row" fxLayoutAlign="space-between start"
-                                        style="position: absolute;top: 0px;width:100%">
-                                        <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%;padding:20px 30px;margin-bottom:50px;margin-right:20px;
-                                            position:relative">
-                                            <ng-container
-                                                *ngIf="View.type == 'task' || View.type == 'revision'; else boxFolder">
-                                                <!-- TASK -->
-                                                <h3 class="view-syncitem-header" [style.border-color]="Status.color">
-                                                    {{View.task}}</h3>
-                                                <div style="position:relative;width:100%;"
-                                                    [style.height.px]="FetchHeight" fxLayout="column"
-                                                    fxLayoutAlign="start start">
-                                                    <ng-container *ngIf="View.type == 'task'">
-                                                        <h4 style="margin-bottom:5px" [style.color]="Status.color">
-                                                            Description</h4>
-                                                        <div style="margin-left:30px;margin-bottom:20px">
-                                                            <div style="font-style:italic; color:gray"
-                                                                *ngIf="View.description?.text; else noDescription">
-                                                                {{View.description?.text}}</div>
-                                                            <ng-template #noDescription>
-                                                                <div style="font-style:italic; color:gray">No
-                                                                    Description.
-                                                                </div>
-                                                            </ng-template>
-                                                        </div>
-                                                    </ng-container>
-
-                                                    <!-- Revision Item -->
-                                                    <ng-container *ngIf="View.type == 'revision'">
-                                                        <!---->
-                                                        <ng-container
-                                                            *ngIf="(SyncReview$ | FindSyncItem$ : View | async) as SyncItem; else fetchingItems">
-                                                            <app-sync-item *ngIf="SyncItem != 'NO ITEM'" [item]="SyncItem" [Status]="Status"></app-sync-item>
-                                                            <ng-container *ngIf="SyncItem == 'NO ITEM'">
-                                                                <h3 style="color:#aaa">No Items have been uploaded to
-                                                                    syncSketch.
-                                                                </h3>
-                                                            
-                                                                <div fxLayout="row" fxLayoutAlign="center center" style="width:100%; height:100%">
-                                                                    <p-fileUpload #fileInput name="myfile[]" fileLimit="true" [url]="UploadURL$ | async" customUpload=true
-                                                                        (uploadHandler)="handleUploads($event, View)" withCredentials=true></p-fileUpload>
-                                                                </div>
-                                                            </ng-container>
-                                                        </ng-container>
-                                                    </ng-container>
-                                                </div>
-                                                <div style="height:100px"></div>
+                                                </button>
                                             </ng-container>
 
-                                            <ng-template #boxFolder>
-                                                <h3 class="view-syncitem-header" [style.border-color]="Status.color">
-                                                    {{View.text}} Reference</h3>
+                                            <div class="side-btn-header no-select" [style.color]="Status.color">Reviews
+                                            </div>
+                                            <ng-container *ngFor="let subitem of SubItems">
+                                                <button mat-flat-button (click)="SelectedSubItem = subitem.id"
+                                                    [ngClass]="{'side-btn-active' : View.id == subitem.id}">
+                                                    {{subitem.name}}
+                                                    <div [style.background]="Status.color" [ngClass]="{ 'side-btn-active' : subitem?.id == View.id, 
+                                                'side-btn-inactive' : subitem?.id != View.id }"></div>
+                                                </button>
+                                            </ng-container>
+                                            <button mat-flat-button disabled class="side-btn-inactive"
+                                                *ngIf="!SubItems || SubItems.length < 1">
+                                                <div class="side-btn-inactive no-select" style="font-style:italic">
+                                                    No Reviews</div>
+                                            </button>
 
+                                        </mat-toolbar>
+                                    </td>
+                                    <td style="width:100%;position:relative;">
+                                        <div fxLayout="row" fxLayoutAlign="space-between start"
+                                            style="position: absolute;top: 0px;width:100%">
+                                            <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%;padding:20px 30px;margin-bottom:50px;margin-right:20px;
+                                            position:relative">
                                                 <ng-container
-                                                    *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
-                                                    <app-reference style="position:relative;width:100%"
-                                                        [Height]="Height" [Root]="ReferenceFolder"
-                                                        [primaryColor]="Status.color">
-                                                    </app-reference>
+                                                    *ngIf="View.type == 'task' || View.type == 'revision'; else boxFolder">
+                                                    <!-- TASK -->
+                                                    <h3 class="view-syncitem-header"
+                                                        [style.border-color]="Status.color">
+                                                        {{View.task}}</h3>
+                                                    <div style="position:relative;width:100%;"
+                                                        [style.height.px]="FetchHeight" fxLayout="column"
+                                                        fxLayoutAlign="start start">
+                                                        <ng-container *ngIf="View.type == 'task'">
+                                                            <h4 style="margin-bottom:5px" [style.color]="Status.color">
+                                                                Description</h4>
+                                                            <div style="margin-left:30px;margin-bottom:20px">
+                                                                <div style="font-style:italic; color:gray"
+                                                                    *ngIf="View.description?.text; else noDescription">
+                                                                    {{View.description?.text}}</div>
+                                                                <ng-template #noDescription>
+                                                                    <div style="font-style:italic; color:gray">No
+                                                                        Description.
+                                                                    </div>
+                                                                </ng-template>
+                                                            </div>
+                                                        </ng-container>
+
+                                                        <!-- Revision Item -->
+                                                        <ng-container *ngIf="View.type == 'revision'">
+                                                            <!---->
+                                                            <ng-container
+                                                                *ngIf="(SyncReview$ | FindSyncItem$ : View | async) as SyncItem; else fetchingItems">
+                                                                <app-sync-item *ngIf="SyncItem != 'NO ITEM'"
+                                                                    [item]="SyncItem" [Status]="Status"></app-sync-item>
+                                                                <ng-container *ngIf="SyncItem == 'NO ITEM'">
+                                                                    <h3 style="color:#aaa">No Items have been uploaded
+                                                                        to
+                                                                        syncSketch.
+                                                                    </h3>
+
+                                                                    <div fxLayout="row" fxLayoutAlign="center center"
+                                                                        style="width:100%; height:100%">
+                                                                        <p-fileUpload #fileInput name="myfile[]"
+                                                                            fileLimit="true" [url]="UploadURL$ | async"
+                                                                            customUpload=true
+                                                                            (uploadHandler)="handleUploads($event, View)"
+                                                                            withCredentials=true></p-fileUpload>
+                                                                    </div>
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                    </div>
+                                                    <div style="height:100px"></div>
                                                 </ng-container>
-                                                <ng-template #fetchingBox>
+
+                                                <ng-template #boxFolder>
+                                                    <h3 class="view-syncitem-header"
+                                                        [style.border-color]="Status.color">
+                                                        {{View.text}} Reference</h3>
+
+                                                    <ng-container
+                                                        *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
+                                                        <app-reference style="position:relative;width:100%"
+                                                            [Height]="Height" [Root]="ReferenceFolder"
+                                                            [primaryColor]="Status.color">
+                                                        </app-reference>
+                                                    </ng-container>
+                                                    <ng-template #fetchingBox>
+                                                        <div fxLayout="column" fxLayoutAlign="center center"
+                                                            style="width:100%;height:100%">
+                                                            <app-swapping-squares-spinner [animationDuration]="1000"
+                                                                [size]="120" [color]="Status.color"
+                                                                style="opacity:0.15;">
+                                                            </app-swapping-squares-spinner>
+                                                            <h3 [style.color]="Status.color" style="margin-top:30px">
+                                                                Fetching
+                                                                {{View.text}} Reference from Box...</h3>
+                                                        </div>
+                                                    </ng-template>
+                                                </ng-template>
+
+                                                <ng-template #fetchingItems>
                                                     <div fxLayout="column" fxLayoutAlign="center center"
-                                                        style="width:100%;height:100%">
+                                                        style="width:100%;height:100%;">
+
                                                         <app-swapping-squares-spinner [animationDuration]="1000"
                                                             [size]="120" [color]="Status.color" style="opacity:0.15;">
                                                         </app-swapping-squares-spinner>
                                                         <h3 [style.color]="Status.color" style="margin-top:30px">
                                                             Fetching
-                                                            {{View.text}} Reference from Box...</h3>
+                                                            Items
+                                                            from SyncSketch...</h3>
                                                     </div>
                                                 </ng-template>
-                                            </ng-template>
-
-                                            <ng-template #fetchingItems>
-                                                <div fxLayout="column" fxLayoutAlign="center center"
-                                                    style="width:100%;height:100%;">
-
-                                                    <app-swapping-squares-spinner [animationDuration]="1000"
-                                                        [size]="120" [color]="Status.color" style="opacity:0.15;">
-                                                    </app-swapping-squares-spinner>
-                                                    <h3 [style.color]="Status.color" style="margin-top:30px">Fetching
-                                                        Items
-                                                        from SyncSketch...</h3>
-                                                </div>
-                                            </ng-template>
-                                        </div>
-                                        <div fxLayout="column" fxLayoutAlign="start start" style="margin-top:30px;min-width:250px;
+                                            </div>
+                                            <div fxLayout="column" fxLayoutAlign="start start" style="margin-top:30px;min-width:250px;
                                             max-width:250px;width:250px;"
-                                            *ngIf="View.type == 'revision' || View.type == 'task'">
+                                                *ngIf="View.type == 'revision' || View.type == 'task'">
 
-                                            <div>
-                                                <h4 style="margin-bottom:5px;margin-top:10px"
-                                                    [style.color]="Status.color">
-                                                    Scheduled</h4>
-                                                <div style="margin-left:30px">
-                                                    <div style="font-style:italic; color:gray"
-                                                        *ngIf="View.timeline; else noTimeline">
-                                                        {{View.timeline?.text}}</div>
-                                                    <ng-template #noTimeline>
-                                                        <div style="font-style:italic; color:gray">No Schedule.
+                                                <div>
+                                                    <h4 style="margin-bottom:5px;margin-top:10px"
+                                                        [style.color]="Status.color">
+                                                        Scheduled</h4>
+                                                    <div style="margin-left:30px">
+                                                        <div style="font-style:italic; color:gray"
+                                                            *ngIf="View.timeline; else noTimeline">
+                                                            {{View.timeline?.text}}</div>
+                                                        <ng-template #noTimeline>
+                                                            <div style="font-style:italic; color:gray">No Schedule.
+                                                            </div>
+                                                        </ng-template>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h4 style="margin-bottom:5px;margin-top:10px"
+                                                        [style.color]="Status.color">Director</h4>
+                                                    <div style="margin-left:30px">
+                                                        <div style="font-style:italic; color:gray"
+                                                            *ngIf="(Item.director | EitherOrValue : View.director | ArrayToStr : 'text') as Director; else noDirector">
+                                                            {{Director}}</div>
+                                                        <ng-template #noDirector>
+                                                            <div style="font-style:italic; color:gray">No
+                                                                Director Assigned.</div>
+                                                        </ng-template>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h4 style="margin-bottom:5px; margin-top:10px"
+                                                        [style.color]="Status.color">Artist</h4>
+                                                    <div style="margin-left:30px">
+                                                        <div style="font-style:italic; color:gray"
+                                                            *ngIf="(Item.artist | EitherOrValue : View.artist | ArrayToStr : 'text') as Artist; else noArtist">
+                                                            {{Artist}}</div>
+                                                    </div>
+                                                    <ng-template #noArtist>
+                                                        <div style="font-style:italic; color:gray">No Artist
+                                                            Assigned.
                                                         </div>
                                                     </ng-template>
                                                 </div>
-                                            </div>
 
-                                            <div>
-                                                <h4 style="margin-bottom:5px;margin-top:10px"
-                                                    [style.color]="Status.color">Director</h4>
-                                                <div style="margin-left:30px">
-                                                    <div style="font-style:italic; color:gray"
-                                                        *ngIf="(Item.director | EitherOrValue : View.director | ArrayToStr : 'text') as Director; else noDirector">
-                                                        {{Director}}</div>
-                                                    <ng-template #noDirector>
-                                                        <div style="font-style:italic; color:gray">No
-                                                            Director Assigned.</div>
-                                                    </ng-template>
-                                                </div>
                                             </div>
-
-                                            <div>
-                                                <h4 style="margin-bottom:5px; margin-top:10px"
-                                                    [style.color]="Status.color">Artist</h4>
-                                                <div style="margin-left:30px">
-                                                    <div style="font-style:italic; color:gray"
-                                                        *ngIf="(Item.artist | EitherOrValue : View.artist | ArrayToStr : 'text') as Artist; else noArtist">
-                                                        {{Artist}}</div>
-                                                </div>
-                                                <ng-template #noArtist>
-                                                    <div style="font-style:italic; color:gray">No Artist
-                                                        Assigned.
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-
                                         </div>
-                                    </div>
 
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </ng-container>
                 </ng-container>
-            </ng-container>
 
-            <!--
+                <!--
                     </p-scrollPanel>
                     -->
-        </div>
-
+            </div>
+        </ng-container>
     </ng-container>
 </p-dialog>
