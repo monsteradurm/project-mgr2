@@ -68,6 +68,7 @@ export class CalendarProperties {
     subitems: SubItemProperties[] = [];
     status: ItemStatus = new ItemStatus();
     users: string[];
+    logs: TimeEntry[] = [];
     constructor(type:string) {
         this.type = type;
     }

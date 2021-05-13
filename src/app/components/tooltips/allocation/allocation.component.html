@@ -1,30 +1,63 @@
-<td fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="width:100%;border:none" [style.height.px]="height">
-    <div fxLayout="row" fxLayoutAlign="space-between center" style="width:100%">
-        <div fxLayout="row" fxLayoutAlign="start center">
-            <div fxLayout="column" fxLayoutAlign="center start">
+<td fxLayout="column" fxLayoutAlign="center start" style="width:100%;border:none;border-left:solid 2px;" 
+[style.border-left-color]="Event.backgroundColor"
+[style.height.px]="Height$ | async">
+
+    <div fxLayout="row" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="width:100%">
+        <div fxLayout="row" fxLayoutAlign="space-between center" style="width:100%">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="column" fxLayoutAlign="center start">
+                    <div style="font-weight:bold">
+                        {{Event.extendedProps.element}}
+                    </div>
+                    <div>
+                        {{Event.extendedProps.task}}
+                        <ng-container *ngIf="Event.extendedProps.subitems.length > 0">
+                            <ng-container
+                                *ngIf="Event.extendedProps.subitems[Event.extendedProps.subitems.length - 1] as subitem">
+                                <span>
+                                    - {{subitem.name}}
+                                </span>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="center end" style="text-align:right;">
                 <div style="font-weight:bold">
-                    {{Event.extendedProps.element}}
+                    {{Event.extendedProps.workspace}}
                 </div>
                 <div>
-                    {{Event.extendedProps.task}}
-                    <ng-container *ngIf="Event.extendedProps.subitems.length > 0">
-                        <ng-container
-                            *ngIf="Event.extendedProps.subitems[Event.extendedProps.subitems.length - 1] as subitem">
-                            <span>
-                                - {{subitem.name}}
-                            </span>
-                        </ng-container>
+                    {{Event.extendedProps.board}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-container *ngIf="(Logs$ | async) as Logs">
+        <div *ngIf="Logs.length > 0" style="width:100%">
+            <div style="margin-top:5px;padding-top:5px;width:100%;border-top:solid 2px"
+                [style.border-top-color]="Event.backgroundColor">
+                <div *ngFor="let log of Logs">
+                    <ng-container *ngIf="(log.user | FindUserFromMondayId$ | async) as User">
+                        <div fxLayout="row" fxLayoutAlign="start center">
+                            <app-user [User]="User" backgroundColor="rgb(42, 155, 250)" [CircleOnly]="true"
+                                [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="rgb(42, 155, 250)"
+                                textColor="white" borderStyle="solid" borderWidth="2px" style="margin-right:10px">
+                            </app-user>
+                            <div *ngIf="User.surname" style="margin-left:5px">
+                                {{User.surname}},
+                            </div>
+                            <div *ngIf="User.givenName" style="margin-left:5px">
+                                {{User.givenName}}
+                            </div>
+                            <div style="margin-left:10px">
+                                Logged</div>
+
+                            <div style="margin-left:10px">
+                                {{log.duration}} Hours</div>
+                        </div>
                     </ng-container>
                 </div>
             </div>
         </div>
-        <div fxLayout="column" fxLayoutAlign="center end" style="text-align:right;">
-            <div style="font-weight:bold">
-                {{Event.extendedProps.workspace}}
-            </div>
-            <div>
-                {{Event.extendedProps.board}}
-            </div>
-        </div>
-    </div>
+    </ng-container>
 </td>

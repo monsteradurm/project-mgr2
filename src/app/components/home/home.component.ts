@@ -24,7 +24,8 @@ import { SocketService } from 'src/app/services/socket.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
-import { CalendarItem, CalendarMilestone } from 'src/app/models/Calendar';
+import { CalendarItem, CalendarMilestone, SubItemProperties } from 'src/app/models/Calendar';
+import { TimeEntry } from 'src/app/models/TimeLog';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -166,8 +167,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       menu.setTitle(selected);
       menu.removeChildren();
       return this.MyUsers$.pipe(
-        map((users:string[]) => ['All Users'].concat(users)),
-        map((users:string[]) => users.forEach(u => menu.createButton().setTitle(u)
+        map((users: string[]) => ['All Users'].concat(users)),
+        map((users: string[]) => users.forEach(u => menu.createButton().setTitle(u)
           .fire$.subscribe(a => this.selectedUser.next(u))
         ))
       )
@@ -183,8 +184,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       menu.setTitle(selected);
       menu.removeChildren();
       return this.MyProjects$.pipe(
-        map((projects:any[]) => ['All Projects'].concat(projects)),
-        map((projects:any[]) => projects.forEach(p =>
+        map((projects: any[]) => ['All Projects'].concat(projects)),
+        map((projects: any[]) => projects.forEach(p =>
           menu.createButton().setTitle(p)
             .fire$.subscribe(a => this.selectedProject.next(p))))
       )
@@ -197,7 +198,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   Boards$ = this.monday.Boards$.pipe(shareReplay(1));
 
   User$ = this.UserService.User$;
-  
+
   Items$ = combineLatest([this.Boards$, this.Columns$, this.User$]).pipe(
     switchMap(([boards, c_ids]) => {
       let b_ids = _.map(boards, b => b.id);
@@ -267,10 +268,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
             let ids = _.map(i.subitem_ids, (s) => s.toString());
             if (ids.length < 1)
               return;
-            
+
             i.subitems = _.filter(subitems, sub => ids.indexOf(sub.id.toString()) > -1);
           });
-  
+
           return items;
         })
       )),
@@ -365,7 +366,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     map(nestedIds => _.map(nestedIds, ids => ids && ids.length > 0 ?
       ids[ids.length - 1] : [])),
     map(nested => _.flatten(nested)),
-    switchMap((ids:string[]) => this.monday.SubItems$(ids)),
+    switchMap((ids: string[]) => this.monday.SubItems$(ids)),
     shareReplay(1)
   )
 
@@ -432,9 +433,37 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return t;
   }
 
+
   Allocations$ = this.MyTimelineItems$.pipe(
     map(items => _.filter(items, i => !i.is_milestone())),
     map(items => _.map(items, i => new CalendarItem(i))),
+    switchMap(allocations => {
+
+      let ids = _.map(allocations, (a: CalendarItem) => a.id.toString());
+      ids = ids.concat(
+        _.flatten(
+          _.map(allocations, a => a.extendedProps.subitems.length > 0 ?
+            _.map(a.extendedProps.subitems, s => s.id.toString()) : [])
+        )
+      )
+      return this.monday.TimeTracking$(ids).pipe(
+        map((logs: TimeEntry[]) => {
+          _.forEach(allocations, (item: CalendarItem) => {
+            if (item.extendedProps.subitems.length < 1)
+              return;
+
+            let subitem_ids = _.map(item.extendedProps.subitems,
+              (i: SubItemProperties) => i.id.toString());
+
+            item.extendedProps.logs =
+              _.filter(logs, (l: TimeEntry) => l.item == item.id.toString() ||
+                subitem_ids.indexOf(l.item) > -1)
+          });
+
+          return allocations;
+        })
+      )
+    })
   )
 
   Milestones$ = this.MyTimelineItems$.pipe(

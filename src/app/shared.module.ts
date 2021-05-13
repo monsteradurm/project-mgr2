@@ -99,6 +99,7 @@ import { FindByIdPipe } from './directives/FindById.directive';
 import { LogComponent } from './components/tooltips/log/log.component';
 import { ArtistComponent } from './components/tooltips/artist/artist.component';
 import { AllocationComponent } from './components/tooltips/allocation/allocation.component';
+import { FilterLogsByDatePipe } from './directives/elements/FilterLogByDate.directive';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -150,7 +151,8 @@ const declarations = [
     FindByIdPipe,
     LogComponent,
     ArtistComponent,
-    AllocationComponent
+    AllocationComponent,
+    FilterLogsByDatePipe
   ]
   
 const imports = [

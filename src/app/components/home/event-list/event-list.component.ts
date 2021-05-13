@@ -29,24 +29,6 @@ export class EventListComponent implements OnInit {
   _ViewMode = new BehaviorSubject<string>(null);
   ViewMode$ = this._ViewMode.asObservable().pipe(shareReplay(1));
 
-  Logs$ = this.parent.Allocations$.pipe(
-    map((allocations: CalendarItem[]) => _.map(allocations, a => a.extendedProps)),
-    switchMap((allocations: CalendarProperties[]) => {
-      let ids = _.map(allocations, a => a.id);
-      return this.parent.monday.TimeTracking$(ids).pipe(
-        map((logs: TimeEntry[]) => _.map(logs,
-          (l: TimeEntry) => {
-
-            let allocation = _.find(allocations,
-              (a: CalendarProperties) => a.id.toString() == l.item.toString() ||
-                (a.subitems && _.map(a.subitems, (sub) => sub.id.toString()).indexOf(l.item.toString()) > -1)
-            )
-            return new CalendarLog(l, allocation);
-          }))
-      )
-    }),
-  )
-
   LogDidMount(info) {
     console.log("LLOG DID MOUNT")
   }
@@ -70,14 +52,26 @@ export class EventListComponent implements OnInit {
     }
   }
 
-  EventContent(event, element: HTMLElement) {
+  findDateElement(el: Element) : Element{
+    let sibling = el.previousElementSibling;
+
+    if (sibling.classList.contains('fc-list-day'))
+      return sibling;
+    
+    return this.findDateElement(sibling);
+  }
+
+  EventContent(event, element: Element) {
+
     let t = event.extendedProps.type;
     let id = event.id;
+
+    let date = this.findDateElement(element).getAttribute('data-date');
+
     if (t != 'milestone') {
       let resolver = this.parent.cfr.resolveComponentFactory(ArtistComponent);
       let x = this.parent.entry.createComponent(resolver);
       x.instance.Ids = event.extendedProps.users;
-
       element.children.item(0).firstChild.replaceWith(x.instance.element.nativeElement as HTMLElement);
     }
 
@@ -85,9 +79,10 @@ export class EventListComponent implements OnInit {
       let resolver = this.parent.cfr.resolveComponentFactory(AllocationComponent);
       let x = this.parent.entry.createComponent(resolver);
       x.instance.Event = event as CalendarItem;
-      x.instance.height = event.extendedProps.users.length * 67;
-      x.instance.primaryColor = event.backgroundColor;
-      let child = element.childNodes.item(2);
+      x.instance.height = 67 + ((event.extendedProps.users.length - 1) * 49);
+      x.instance.primaryColor = event.backgroundColor; 
+      x.instance.date = moment(date, 'YYYY-MM-DD');
+      let child = element.childNodes.item(2).firstChild;
       child.replaceWith(x.instance.element.nativeElement as HTMLElement);
     }
     else if (t != 'milestone') {
@@ -99,8 +94,8 @@ export class EventListComponent implements OnInit {
     }
   }
 
-  Events$ = combineLatest([this.parent.Allocations$, this.Logs$, this.parent.Me$]).pipe(
-    tap(([allocations, logs, me]) => {
+  Events$ = this.parent.Allocations$.pipe(
+    map(allocations => {
       this.parent.entry.clear();
       let counter = 0;
       _.forEach(allocations, (i: CalendarItem) => {
@@ -108,15 +103,8 @@ export class EventListComponent implements OnInit {
         this.parent.CreateTooltip(i.extendedProps, i.extendedProps.tooltipId)
         counter += 1;
       })
-
-      _.forEach(logs, (i: CalendarLog) => {
-        i.extendedProps.tooltipId = counter;
-        this.parent.CreateTooltip(i.extendedProps.allocation, i.extendedProps.tooltipId)
-        //this.CreateLogHtml(i);
-        counter += 1;
-      })
+      return allocations;
     }),
-    map(([allocations, logs]) => allocations.concat(logs)),
   )
 
 

@@ -17,6 +17,7 @@ export class TaskTooltipComponent implements OnInit {
   
   @Input() set Item(s: CalendarProperties) {
     this._Item = s;
+    console.log(s);
   }
 
   get Item() { return this._Item; }
