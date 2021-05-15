@@ -74,19 +74,6 @@ export class MondayService {
     return this.Mutate$(m).pipe(take(1));
   }
 
-  SetTimeTracking$(val: any) {
-    /*
-    let key = log.item + '_timetracking';
-    console.log(log.stringify().length, log.stringify())
-    return from(monday.storage.instance.setItem(key, log.stringify()))
-    .pipe(
-      tap(console.log),
-      map(result => result ? result.toString() : null),
-      take(1)
-      );
-      */
-  }
-
   MondayUsers$ = this.Query$(
     `users { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
   ).pipe(

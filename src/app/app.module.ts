@@ -84,6 +84,7 @@ import { ItemchartComponent } from './components/home/itemchart/itemchart.compon
 import {APP_BASE_HREF} from '@angular/common';
 import { CalendarComponent } from './components/home/calendar/calendar.component';
 import { EventListComponent } from './components/home/event-list/event-list.component';
+import { ChromeService } from './services/chrome.service';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -103,7 +104,8 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: OAuthSettings.appId,
       redirectUri: '/',
-      postLogoutRedirectUri: '/'
+      postLogoutRedirectUri: '/',
+      authority: "https://login.microsoftonline.com/common/",
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -167,6 +169,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
   ],
 
   providers: [
+    ChromeService,
     {provide: APP_BASE_HREF, useValue: '/'},
     {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {strict: false}},
     //msal-angular

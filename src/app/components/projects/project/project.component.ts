@@ -101,7 +101,7 @@ export class ProjectComponent implements OnInit, OnDestroy
   )
 
   MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
-
+  
   ProjectSettings$ = combineLatest([this.MinBoards$, this.Board$]).pipe(
     switchMap(([boards, current]) => {
       if (!current) return of(null);

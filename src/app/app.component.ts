@@ -10,6 +10,7 @@ import { UserService } from './services/user.service';
 
 import '@fullcalendar/core';
 import { MondayService } from './services/monday.service';
+import { ChromeService } from './services/chrome.service';
 
 @Component({
   selector: 'app-root',
@@ -36,8 +37,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private Token = new BehaviorSubject<string>(null);
   Token$ = this.Token.asObservable().pipe(shareReplay(1));
-
+  
+  IsChrome$ = this.chrome.IsChrome$;
+  
   constructor(
+    private chrome: ChromeService,
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     public navigation: NavigationService,

@@ -18,10 +18,10 @@ export class TimeEntry {
         let result = new TimeEntry();
 
         result.id = id;
-        console.log(stringified);
         Object.assign(result, JSON.parse(stringified));
         return result;
     }
+    
     constructor() {
         
     }

@@ -43,12 +43,6 @@ fs.readFile('proxy.conf.json', (err, data) => {
 
     app.options('*', cors())
     
-    app.use(
-        helmet({
-          frameguard: false,
-        })
-      );
-
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
