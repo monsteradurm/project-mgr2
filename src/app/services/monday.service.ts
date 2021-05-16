@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { ajax } from 'rxjs/ajax';
-import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError } from 'rxjs';
+import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError, pipe } from 'rxjs';
 import { switchMap, tap, shareReplay, map, take, catchError, takeWhile, retryWhen, retry, finalize } from 'rxjs/operators';
 
 import mondaySdk from 'monday-sdk-js';
@@ -400,6 +400,52 @@ export class MondayService {
     map(board => board['items']),
     shareReplay(1))
 
+  IssueSettings$() {
+    let query = `boards(ids:1297042574){
+      groups{
+        id
+        title
+        items {
+          id
+          name
+        }
+      }`
+    return this.Query$(query).pipe(
+      map(arr => arr['boards']),
+      map(boards => boards[0]),
+      take(1)
+    )
+  }
+
+  ItemIdsFromBoards$(boardids:string[]) {
+    let query = `boards(ids:[${boardids.join(' ')}]){
+      items{
+       id
+     }
+     }`
+     return this.Query$(query).pipe(
+       map(arr => arr['boards']),
+       map(boards => _.map(boards, b => b.items)),
+       map(items => _.flatten(items)),
+       map(items => _.map(items, i => i.id)),
+       take(1)
+     )
+  }
+
+  Issues$(Ids: string[]) {
+    let query = `	items(ids: [${Ids.join(' ')}]){ id name
+      column_values{ id text additional_info title }
+      board { id name
+      workspace{ id name } }
+      group { id title }
+      updates{ id body replies { id } creator { id } }
+    }`;
+
+    return this.Query$(query).pipe(
+      map(arr => arr['items']),
+      take(1)
+    )
+  }
   Query$(cmd) {
     return this.API_CMD$(cmd, 'query').pipe(take(1))
   }

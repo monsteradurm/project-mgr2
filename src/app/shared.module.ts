@@ -100,6 +100,9 @@ import { LogComponent } from './components/tooltips/log/log.component';
 import { ArtistComponent } from './components/tooltips/artist/artist.component';
 import { AllocationComponent } from './components/tooltips/allocation/allocation.component';
 import { FilterLogsByDatePipe } from './directives/elements/FilterLogByDate.directive';
+import { SupportService } from './services/support.service';
+import { SupportComponent } from './components/support/support.component';
+import { SupportItemComponent } from './components/support/support-item/support-item.component';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -152,7 +155,9 @@ const declarations = [
     LogComponent,
     ArtistComponent,
     AllocationComponent,
-    FilterLogsByDatePipe
+    FilterLogsByDatePipe,
+    SupportComponent,
+    SupportItemComponent
   ]
   
 const imports = [
@@ -213,7 +218,8 @@ const providers = [
     SyncSketchService,
     BoxService,
     ConfluenceService,
-    MessageService
+    MessageService,
+    SupportService,
 ];
 
 @NgModule({

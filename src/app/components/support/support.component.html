@@ -1,0 +1,27 @@
+<nav mat-tab-nav-bar pmTabUnderline [primaryColor]="primaryColor">
+
+    <div style="position:absolute;right:20px;" fxLayout="row" fxLayoutAlign="end end">
+        <ng-container *ngFor="let menu$ of [ViewStatusMenu$, ViewUserMenu$, ViewTeamMenu$,
+            ViewAppMenu$, ViewRendererMenu$, ViewServiceMenu$, ViewProjectMenu$, ViewBoardMenu$, ViewGroupMenu$]">
+          <ng-container *ngIf="(menu$ | async) as ViewMenu">
+            <div fxLayout="row" fxLayoutAlign="end center">
+              <div>
+                <ng-container *actionOutlet="ViewMenu"></ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        
+      </div>
+</nav>
+
+<div class="support-container">
+    <div class="pm-page-wtab">
+        <div style="width:100%;text-align:center">
+            <h2> The <span style="font-weight:bold;margin:5px">Support</span> Component is still under development</h2>
+        </div>
+        <ng-container *ngFor="let issue of (Issues$ | async)">
+            <div style="margin:20px">{{issue | json}}</div>
+        </ng-container>
+    </div>
+</div>
