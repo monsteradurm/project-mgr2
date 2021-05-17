@@ -62,7 +62,10 @@ export class ViewTaskDlgComponent implements OnInit {
   OpenDialog(Item: BoardItem, User: UserIdentity) {
     this.Item = Item;
     this.User = User;
+    this.SelectedSubItem = this.Item.subitem_ids.length > 0 ?
+      this.Item.subitem_ids[this.Item.subitem_ids.length - 1] : this.Item.id;
     this.Show = true;
+
   }
 
 

@@ -234,6 +234,9 @@ app-calendar {
     padding: 15px !important;
     font-size: 15px;
   }
+  .fc-scroller {
+    overflow: hidden !important;
+  }
 }
 app-event-list {
   app-user > div > div > div.avatar-circle, app-user > div > div > img  {
@@ -770,6 +773,9 @@ mat-divider {
   background-color: black;
 }
 
+app-sync-item {
+  width:100%;
+}
 app-navigation {
 
   action-mat-group > button {
