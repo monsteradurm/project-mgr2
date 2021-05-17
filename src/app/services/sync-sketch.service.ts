@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse, HttpEventType } 
 import { analyzeNgModules } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
-import { map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { delay, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as _ from 'underscore';
 import { Board } from '../models/BoardItem';
@@ -57,10 +57,10 @@ export class SyncSketchService {
           "project": `/api/v1/project/${project_id}/`,
           "name": review_name,
           "description": "",
-          "group": ""
+          "group": "",
+          "isPublic": true
       }
     )
-    
   }
   
   CreateProject(project_name: string) {

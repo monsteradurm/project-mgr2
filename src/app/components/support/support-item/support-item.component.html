@@ -1,4 +1,4 @@
-<div class="support-item-container no-select" [ngClass]="{'hovering' : Hovering}">
+<div class="support-item-container no-select" [ngClass]="{'hovering' : Hovering}" fxFlex="grow" fxLayout="column" fxLayoutAlign="stretch stretch">
     <div fxLayout="column" class="support-header" [style.background]="Item.status.color">
         <div fxLayout="row" fxLayoutAlign="space-between">
             <div class="support-workspace" style="opacity:0.5">{{Item.workspace.name}}</div>
@@ -8,7 +8,7 @@
             <div>{{Item.name}}</div>
         </div>
     </div>
-    <div class="support-contents">
+    <div class="support-contents" fxLayout="column" fxLayoutAlign="space-between">
         <div *ngIf="Item.description; else noDescription" [innerHTML]="Item.description"></div>
         <ng-template #noDescription>
             <div style="font-weight:italic">No Description</div>

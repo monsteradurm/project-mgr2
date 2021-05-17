@@ -19,7 +19,8 @@
     <div class="pm-page-wtab">
         <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center start">
             <ng-container *ngFor="let issue of (Issues$ | async)">
-                <app-support-item [Item]="issue"></app-support-item>
+                <app-support-item [Item]="issue" fxLayout="column" style="align-self:stretch"
+                fxLayoutAlign="stretch stretch"></app-support-item>
             </ng-container>
         </div>
     </div>
