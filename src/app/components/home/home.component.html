@@ -33,6 +33,7 @@
       </ng-container>
 
     </a>
+
     <div style="position:absolute;right:20px;" fxLayout="row" fxLayoutAlign="end end">
       <ng-container *ngFor="let menu$ of [ViewProjectMenu$, ViewBoardMenu$, ViewGroupMenu$, ViewUserMenu$]">
         <ng-container *ngIf="(menu$ | async) as ViewMenu">
@@ -43,15 +44,15 @@
           </div>
         </ng-container>
       </ng-container>
-      <ng-container *ngIf="tab == 'Schedule'">
-        <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
-          <div fxLayout="row" fxLayoutAlign="end center">
-            <div>
-              <ng-container *actionOutlet="ViewModeMenu"></ng-container>
-            </div>
+      <ng-container *ngIf="(ViewModeMenu$ | async) as ViewModeMenu">
+        <div fxLayout="row" fxLayoutAlign="end center" 
+          [ngStyle]="{'display' : tab == 'Schedule' ? 'flex' : 'none'}">
+          <div>
+            <ng-container *actionOutlet="ViewModeMenu"></ng-container>
           </div>
-        </ng-container>
+        </div>
       </ng-container>
+
     </div>
   </nav>
 

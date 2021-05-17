@@ -433,12 +433,12 @@ export class MondayService {
   }
 
   Issues$(Ids: string[]) {
-    let query = `	items(ids: [${Ids.join(' ')}]){ id name
-      column_values{ id text additional_info title }
+    let query = `	items(ids: [${Ids.join(' ')}]){ id name updated_at
+      column_values{ id text additional_info title value }
       board { id name
       workspace{ id name } }
       group { id title }
-      updates{ id body replies { id } creator { id } }
+      updates{ id body updated_at replies { id body updated_at } }
     }`;
 
     return this.Query$(query).pipe(

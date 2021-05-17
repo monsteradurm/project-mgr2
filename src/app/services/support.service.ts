@@ -4,6 +4,7 @@ import { ProjectService } from './project.service';
 import { UserService } from './user.service';
 import * as _ from 'underscore';
 import { MondayService } from './monday.service';
+import { Issue } from '../models/Issues';
 
 const _ISSUE_SETTINGS_ = '1297042574'
 const _PM_Issues_ = '1297738308'
@@ -27,7 +28,9 @@ export class SupportService {
   
   Issues$ = this.IssueBoardsIds$.pipe(
     switchMap(ids => this.monday.ItemIdsFromBoards$([_PM_Issues_].concat(ids))),
-    switchMap(ids => this.monday.Issues$(ids)),
+    switchMap((ids:string[]) => this.monday.Issues$(ids)),
+    map(issues => _.filter(issues, i => i.board.workspace != null)),
+    map(issues => _.map(issues, i => Issue.parse(i))),
     tap(console.log),
     take(1)
   )

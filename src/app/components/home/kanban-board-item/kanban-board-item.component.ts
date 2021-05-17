@@ -34,6 +34,7 @@ export class KanbanBoardItemComponent implements OnInit {
     if (!this.HasContext)
       this.Hovering = false;
   }
+
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     this.contextMenuLeft = evt.x;
     this.contextMenuTop = evt.y - 105;
@@ -43,7 +44,6 @@ export class KanbanBoardItemComponent implements OnInit {
   }
   
   @HostListener('click', ['$event']) onClick(evt) {
-    console.log(this.SyncItemComp)
     if (!this.SyncItemComp)
       return;
 

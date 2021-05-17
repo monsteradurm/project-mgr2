@@ -21,7 +21,13 @@ export enum ColumnType {
   Description = 'Description',
   Caption = 'Caption',
   ItemCode = 'ItemCode',
-  Status = 'Status'
+  Status = 'Status',
+  Issuer = 'Issuer',
+  Team = 'Team',
+  Service = 'Service',
+  Application = 'Application',
+  Renderer ='Renderer',
+  Support = 'Support'
 } 
 export class ColumnValues {
 
