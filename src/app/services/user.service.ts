@@ -26,7 +26,7 @@ export class UserService {
   IsAdmin$ = this.IsAdmin.asObservable().pipe(shareReplay());
 
   private User = new BehaviorSubject<UserIdentity>(null);
-  User$ = this.User.asObservable().pipe(shareReplay());
+  User$ = this.User.asObservable().pipe(shareReplay(1));
 
   MondayUsers$ = this.monday.MondayUsers$.pipe(shareReplay(1));
 
@@ -182,6 +182,7 @@ export class UserService {
   SetUser(user) {
     let u = this.User.value;
     if (user != u) {
+      console.log("SETTING USER", user)
       this.User.next(user);
       //window.location.reload()
     }

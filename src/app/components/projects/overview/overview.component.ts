@@ -423,6 +423,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   User$ = this.parent.userService.User$;
+
   BoardItemUpdates$ = this.parent.socket.BoardItemUpdates$
   ngOnInit(): void {
     this.subscriptions.push(
