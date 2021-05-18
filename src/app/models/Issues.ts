@@ -100,6 +100,7 @@ export class IssueStatus {
     static GetColor(i) {
         if(i && i.label == "New Issue")
             return '#000'
+            
         if (i && i.color)
             return i.color;
         return '#000'
