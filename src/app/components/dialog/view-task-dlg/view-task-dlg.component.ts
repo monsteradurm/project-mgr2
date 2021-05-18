@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Outpu
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActionButton, ActionGroup, ActionOutletFactory } from '@ng-action-outlet/core';
 import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of } from 'rxjs';
-import { catchError, delay, map, shareReplay, skipUntil, skipWhile, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, delay, map, mergeMap, shareReplay, skipUntil, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 import { Board, BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { BoxService } from 'src/app/services/box.service';
@@ -99,10 +99,10 @@ export class ViewTaskDlgComponent implements OnInit {
       
       let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
       return this.SyncBoard$.pipe(
-        switchMap((project:any) => this.syncSketch.CreateReview(project.id, name))
+        switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),
       )
     }),
-    shareReplay(1)
+    shareReplay(1),
   )
 
   set Item(s: BoardItem) {
@@ -355,11 +355,15 @@ export class ViewTaskDlgComponent implements OnInit {
   )
 
   SyncBoard$ = this.Board$.pipe(
-    switchMap(board => this.syncSketch.Project$(board).pipe(
-      switchMap(syncBoard => syncBoard ? of(syncBoard) :
-        this.syncSketch.CreateProject(board.selection))
+    switchMap(board => this.syncSketch.Project$(board)),
+    switchMap((syncBoard:any) => {
+      if (syncBoard)
+        return of(syncBoard);
+
+      return this.Board$.pipe(
+          switchMap(board => this.syncSketch.CreateProject(board.selection))
       )
-    ),
+    }),
     shareReplay(1)
   )
 

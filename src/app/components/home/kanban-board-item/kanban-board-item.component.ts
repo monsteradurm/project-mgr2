@@ -25,7 +25,9 @@ export class KanbanBoardItemComponent implements OnInit {
   @HostBinding('style.opacity') get opacity() {
     return this.SyncItemComp ? 1: 0.75;
   }
-
+  @HostBinding('style.cursor') get pointer() {
+    return this.SyncItemComp ? 'pointer' : 'default';
+  }
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {
     if (this.SyncItemComp)
       this.Hovering = true;

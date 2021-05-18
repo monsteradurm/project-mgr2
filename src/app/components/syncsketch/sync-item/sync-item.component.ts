@@ -13,10 +13,10 @@ export class SyncItemComponent implements OnInit {
   constructor(private syncSketch: SyncSketchService) { }
   @Input() ShowViewHint: boolean = true;
   private Item = new BehaviorSubject<any>(null);
-  Item$ = this.Item.asObservable().pipe(shareReplay(1));
+  Item$ = this.Item.asObservable();
 
   private lastUpdateOnly = new BehaviorSubject<boolean>(false);
-  LastUpdateOnly$ = this.lastUpdateOnly.asObservable().pipe(shareReplay(1));
+  LastUpdateOnly$ = this.lastUpdateOnly.asObservable();
 
   _item;
   @Input() set item(s:any) {
@@ -33,7 +33,7 @@ export class SyncItemComponent implements OnInit {
   _lastUpdateOnly;
   @Input() set LastUpdateOnly(l: boolean) { 
     this._lastUpdateOnly = l;
-    this.lastUpdateOnly.next(false);
+    this.lastUpdateOnly.next(l);
   }
 
   onClick() {
@@ -63,7 +63,7 @@ export class SyncItemComponent implements OnInit {
       else if (!lastUpdateOnly)
         return updates;
     
-      return [updates[updates.length - 1]];
+      return [updates.reverse()[0]];
     }),
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
   )

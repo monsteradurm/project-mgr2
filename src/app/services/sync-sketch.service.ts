@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse, HttpEventType } 
 import { analyzeNgModules } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
+import { of } from 'rxjs';
 import { delay, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as _ from 'underscore';
@@ -47,7 +48,7 @@ export class SyncSketchService {
   Project$(board: Board) {
     return this.Projects$.pipe(
       map(projects => _.find(projects ? projects : [], p => p.name == board.selection)),
-      switchMap((project:any) => project ? this.Query$(`/syncsketch/project/${project.id}/`) : null),
+      switchMap((project:any) => project ? this.Query$(`/syncsketch/project/${project.id}/`) : of(null)),
     )
   }
 
@@ -58,9 +59,10 @@ export class SyncSketchService {
           "name": review_name,
           "description": "",
           "group": "",
-          "isPublic": true
+          "isPublic" : true
       }
-    )
+    ).pipe(
+      take(1))
   }
   
   CreateProject(project_name: string) {
@@ -72,11 +74,11 @@ export class SyncSketchService {
   }
 
   Reviews$(project_id:string) {
-    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`).pipe(tap(console.log))
+    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`)
   }
 
   Updates$(item_id:string) {
-    return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`).pipe(tap(console.log))
+    return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`)
   }
   Items$(review_id: string) {
     return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1

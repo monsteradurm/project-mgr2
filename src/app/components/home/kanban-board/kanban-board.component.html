@@ -3,7 +3,7 @@
 
         <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center start">
             <ng-container *ngFor="let item of Items">
-                <app-kanban-board-item [Item]="item" style="margin-bottom:32px"
+                <app-kanban-board-item [Item]="item" fxLayout="column" style="align-self:stretch"
                     [SubItem]="SubItems$ | GetLastSubItemByBoardItem$ : item | async">
                 </app-kanban-board-item>
             </ng-container>

@@ -17,7 +17,7 @@ style="position:absolute !important"
 </mat-menu>
 
 <ng-container *ngIf="Item">
-    <div class="kanban-item no-select;position:relative" fxLayout="column" fxLayoutAlign="stretch stretch"
+    <div class="kanban-item-container no-select;position:relative" fxFlex="grow" fxLayout="column" fxLayoutAlign="stretch stretch"
     [ngClass]="{'hovering' : Hovering}">
         <ng-container *ngIf="(Item.status | GetTaskStatus) as Status">
             <div fxLayout="column" class="kanban-header" [style.background]="Status.color">
@@ -30,7 +30,7 @@ style="position:absolute !important"
                 </div>
             </div>
 
-            <div class="kanban-contents">
+            <div class="kanban-contents" fxLayout="column" fxLayoutAlign="stretch stretch" fxFlex="grow">
                 <div style="width:100%;position:relative;color:black;padding:0px 20px" fxLayout="column"
                     fxLayoutAlign="center center">
                     <ng-container *ngIf="SubItem; else noSubItems">

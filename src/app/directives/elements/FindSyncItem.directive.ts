@@ -14,13 +14,15 @@ export class FindSyncItemPipe  {
 constructor(private sanitizer: DomSanitizer,
             private syncSketch: SyncSketchService) { }
   transform(review$: Observable<any>, subitem: SubItem) {
-    
+   
     return review$.pipe(
         switchMap(review => {
+  
             if (!review || !review.id)
                 throw 'no review item to map';
             if (!subitem || !subitem.id)
                 throw 'no subitem to map';
+            
             
             return this.syncSketch.Items$(review.id).pipe(
                 map((items: any[]) => 

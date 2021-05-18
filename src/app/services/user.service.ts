@@ -20,13 +20,13 @@ export class UserService {
 
 
   private IsAuthorized = new BehaviorSubject<boolean>(true);
-  IsAuthorized$ = this.IsAuthorized.asObservable().pipe(shareReplay());
+  IsAuthorized$ = this.IsAuthorized.asObservable();
 
   private IsAdmin = new BehaviorSubject<boolean>(false);
-  IsAdmin$ = this.IsAdmin.asObservable().pipe(shareReplay());
+  IsAdmin$ = this.IsAdmin.asObservable();
 
   private User = new BehaviorSubject<UserIdentity>(null);
-  User$ = this.User.asObservable().pipe(shareReplay(1));
+  User$ = this.User.asObservable();
 
   MondayUsers$ = this.monday.MondayUsers$.pipe(shareReplay(1));
 
