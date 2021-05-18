@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
+import { SyncItemComponent } from '../sync-item/sync-item.component';
 
 @Component({
   selector: 'app-sync-update',
@@ -9,10 +10,10 @@ import { map, shareReplay, tap } from 'rxjs/operators';
 })
 export class SyncUpdateComponent implements OnInit {
 
-  constructor() { }
+  constructor(private parent :SyncItemComponent) { }
   _update;
   private Update = new BehaviorSubject<any>(null);
-  Update$ = this.Update.asObservable().pipe(shareReplay(1))
+  Update$ = this.Update.asObservable()
 
   @Input() set update(u) { 
     this._update = u;
@@ -20,6 +21,8 @@ export class SyncUpdateComponent implements OnInit {
   };
 
   @Input() Status;
+
+  Background$ = of('url("' + this.parent.item.thumbnail_url + '")');
 
   Updater$ = this.Update$.pipe(
     map(update =>
