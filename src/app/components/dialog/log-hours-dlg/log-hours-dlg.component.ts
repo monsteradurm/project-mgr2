@@ -9,8 +9,9 @@ import { MondayService } from 'src/app/services/monday.service';
 import { TimeEntry } from 'src/app/models/TimeLog';
 import { Dialog } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
+import { CalendarItem } from 'src/app/models/Calendar';
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
-          'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
+  'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
 
 @Component({
   selector: 'app-log-hours-dlg',
@@ -19,18 +20,19 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
 })
 export class LogHoursDlgComponent implements OnInit {
 
+  @Output() HoursUpdated = new EventEmitter<{id: string, entries: TimeEntry[]}>()
   Show: boolean = false;
   Item: BoardItem | ScheduledItem;
+  CalendarItem: CalendarItem;
+
   Entries: TimeEntry[] = [];
   User: MondayIdentity;
-  Date = moment.isMoment;
+  Date: moment.Moment;
 
   @ViewChild(Dialog, { static: false, read: ElementRef }) DlgContainer;
   constructor(public monday: MondayService, public messenger: MessageService) { }
 
   OpenDialog(item: BoardItem | ScheduledItem, date: moment.Moment, user: MondayIdentity) {
-
-    console.log("OPENING FOR DATE", date)
     if (!user) {
       this.messenger.add({
         severity: 'error',
@@ -42,16 +44,20 @@ export class LogHoursDlgComponent implements OnInit {
     this.User = user;
     this.Item = item;
     this.Show = true;
+    this.Date = date;
     this.UpdateEntries();
   }
 
-  UpdateEntries() {
+  UpdateEntries(sendEvent?) {
     let ids = _.map([this.Item.id].concat(this.Item.subitem_ids), i => i.toString());
 
 
     this.monday.TimeTracking$(ids).subscribe(
       (result) => {
-        this.Entries = _.sortBy(result, (r:TimeEntry) => moment(r.date))
+        this.Entries = _.sortBy(result, (r: TimeEntry) => moment(r.date));
+        if (sendEvent) {
+          this.HoursUpdated.next({id: this.Item.id.toString(), entries: this.Entries});
+        }
       }
     )
   }
@@ -69,12 +75,12 @@ export class LogHoursDlgComponent implements OnInit {
 
     else {
       this.monday.DeleteTimeEntry$(entry).pipe(take(1)).subscribe(
-        (result:any) => {
+        (result: any) => {
           if (result.delete_update && result.delete_update.id) {
-            this.messenger.add({severity: 'success', summary: 'Removed Time Entry', detail: this.Item.name});
-            this.UpdateEntries();
+            this.messenger.add({ severity: 'success', summary: 'Removed Time Entry', detail: this.Item.name });
+            this.UpdateEntries(true);
           } else {
-            this.messenger.add({severity: 'error', summary: 'Could Not Remove Time Entry', detail: this.Item.name});
+            this.messenger.add({ severity: 'error', summary: 'Could Not Remove Time Entry', detail: this.Item.name });
           }
         }
       )
@@ -96,11 +102,15 @@ export class LogHoursDlgComponent implements OnInit {
       return;
     }
 
-    let entry = new TimeEntry(this.Date);
+    let entry = new TimeEntry();
     entry.item = this.Item.id.toString();
     entry.editing = true;
     entry.isNew = true;
     let subitems = this.Item.subitem_ids;
+
+    if (this.Date) {
+      entry.date = this.Date.format('YYYY-MM-DD');
+    }
 
     if (subitems && subitems.length > 0) {
       entry.item = subitems[subitems.length - 1].toString();

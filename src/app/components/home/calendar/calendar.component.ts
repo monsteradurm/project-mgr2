@@ -35,7 +35,14 @@ export class CalendarComponent implements OnInit {
 
     let t = this.parent.CreateTippy(info);
     info.el.addEventListener('contextmenu', (evt) => {
-      let el = document.elementFromPoint(evt.x, evt.y);
+
+      let els = document.elementsFromPoint(evt.x, evt.y);
+      let el:Element = _.find(els, (e:Element) => e.classList.contains('fc-daygrid-day'));
+      
+      if (el) {
+        this.parent.LastDate = moment(el.getAttribute('data-date'), 'YYYY-MM-DD');
+      }
+      
       this.parent.contextMenuLeft = evt.x;
       this.parent.contextMenuTop = evt.y;
       this.parent.last = info.event;
@@ -49,14 +56,19 @@ export class CalendarComponent implements OnInit {
     for(let d = 0; d < collection.length; d++) {
       let day = collection.item(d);
       let date = day.getAttribute('data-date');
-
       if (date)
-        day.addEventListener('mouseenter', (evt) => {
+        day.addEventListener('mouseover', (evt:MouseEvent) => {
+          let el = document.elementFromPoint(evt.x, evt.y);
+   
+          if (!el.classList.contains('fc-daygrid-day'))
+            return;
+
           this.parent.LastDate = moment(date, 'YYYY-MM-DD');
           console.log(this.parent.LastDate);
         })
     }
   }
+
   Options$ = this.parent.Allocations$.pipe(
     tap((items: any) => {
       this.parent.entry.clear();
@@ -75,7 +87,7 @@ export class CalendarComponent implements OnInit {
       eventContent: (r) => this.parent.AllocatedContent(r),
     })
     ),
-    tap(t => this.addEventListeners(document.getElementsByClassName('fc-day')))
+    //tap(t => this.addEventListeners(document.getElementsByClassName('fc-daygrid-day')))
   )
 
 

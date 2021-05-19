@@ -7,7 +7,7 @@ import { CalendarItem, CalendarLog, CalendarProperties } from 'src/app/models/Ca
 import * as _ from 'underscore';
 import * as moment from 'moment';
 import { TimeEntry } from 'src/app/models/TimeLog';
-import { Calendar, compareByFieldSpec } from '@fullcalendar/core';
+import { Calendar, compareByFieldSpec, Identity } from '@fullcalendar/core';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -33,8 +33,14 @@ export class EventListComponent implements OnInit {
   _ViewMode = new BehaviorSubject<string>(null);
   ViewMode$ = this._ViewMode.asObservable().pipe(shareReplay(1));
 
-  LogDidMount(info) {
-    console.log("LLOG DID MOUNT")
+  UpdateAllocation(update: {id: string, entries: TimeEntry[]}) {
+    if (!update || !update.id)
+      return;
+
+    let allocation:AllocationComponent = _.find(this.AllocationComponents, (a:AllocationComponent) => a.Event.id == update.id);
+
+    if (allocation)
+      allocation.SetLogs(update.entries);
   }
 
   CreateLogHtml(entry) {
@@ -187,6 +193,7 @@ export class EventListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.parent.EventListComponent = this;
   }
 
 }

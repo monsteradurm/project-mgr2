@@ -27,6 +27,7 @@ import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.comp
 import { CalendarItem, CalendarMilestone, SubItemProperties } from 'src/app/models/Calendar';
 import { TimeEntry } from 'src/app/models/TimeLog';
 import { ViewTaskDlgComponent } from '../dialog/view-task-dlg/view-task-dlg.component';
+import { EventListComponent } from './event-list/event-list.component';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -43,6 +44,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger, { static: false }) contextMenuTrigger: MatMenuTrigger;
   @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
   @ViewChild(ViewTaskDlgComponent) ViewTaskDlg: ViewTaskDlgComponent;
+  EventListComponent: EventListComponent;
 
   @ViewChild('tooltipCreator', { read: ViewContainerRef, static: false }) entry: ViewContainerRef;
   @ViewChildren(TaskTooltipComponent) Tooltips: QueryList<TaskTooltipComponent>;
@@ -103,8 +105,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   onHoursDlg() {
     this.LastEvent$.subscribe((last: ScheduledItem) => {
-      this.Me$.pipe(take(1)).subscribe((user) => {
-        console.log(last);
+      this.Me$.pipe(take(1)).subscribe((user) => {;
         this.LogHoursDlg.OpenDialog(last, this.LastDate, user && user.id ? user : null);
       })
     })
@@ -411,12 +412,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return r.event.title;
   }
 
+  OnHourLogUpdated(update: {id: string, entries: TimeEntry[]}) {
+    this.EventListComponent.UpdateAllocation(update);
+  }
+
   CreateTippy(info) {
     let props = info.event.extendedProps;
     info.el.setAttribute('data-id', props.tooltipId);
     let t = tippy(info.el, {
       content: "",
-      placement: 'auto',
+      placement: 'top',
       allowHTML: true,
       interactive: true,
       onShow: (r) => this.onShowTooltip(r)

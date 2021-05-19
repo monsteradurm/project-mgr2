@@ -234,8 +234,8 @@ app-calendar {
     padding: 15px !important;
     font-size: 15px;
   }
-  .fc-scroller {
-    overflow: hidden !important;
+  .fc-scroller, .fc-scroller-harness {
+    overflow: visible !important;
   }
 }
 app-event-list {
@@ -292,6 +292,7 @@ app-event-list {
 
   .fc.fc-scroller-liquid, .fc-scroller {
     //overflow:unset !important;
+    overflow: visible !important;
     height: unset !important;
     border: solid 1px black;
     border-radius: 10px;
@@ -772,7 +773,10 @@ mat-divider {
 .mat-fab.mat-accent, .mat-mini-fab.mat-accent:hover {
   background-color: black;
 }
-
+app-tasktooltip {
+  z-index:10000;
+  overflow:visible !important;
+}
 app-sync-item {
   width:100%;
 }

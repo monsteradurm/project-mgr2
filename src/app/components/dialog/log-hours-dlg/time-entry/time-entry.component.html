@@ -19,7 +19,9 @@
             <div fxLayout="row" fxLayoutAlign="start center" style="transform: translateY(-15px);">
                 <div style="margin-right:20px">from</div>
                 <mat-form-field style="max-width:120px" pmFocusInput [primaryColor]="Status.color">
-                    <input matInput [matDatepicker]="picker" [(ngModel)]="Edit.start">
+                    <input matInput [matDatepicker]="picker" 
+                    (ngModelChange)="Edit.start = $event"
+                    [ngModel]="Edit.start ? Edit.start : selectedDate">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>

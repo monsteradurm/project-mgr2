@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, timestamp } from 'rxjs/operators';
 import { CalendarItem } from 'src/app/models/Calendar';
 import { TimeEntry } from 'src/app/models/TimeLog';
 import * as _ from 'underscore';
@@ -31,7 +31,9 @@ export class AllocationComponent implements OnInit {
   private _Event = new BehaviorSubject<CalendarItem>(null);
   private _Date = new BehaviorSubject<moment.Moment>(null);
   private _Height = new BehaviorSubject<number>(67);
+  private _LogUpdate = new BehaviorSubject<TimeEntry[]>(null);
 
+  LogUpdate$ = this._LogUpdate.asObservable().pipe(shareReplay(1));
   Event$ = this._Event.asObservable().pipe(shareReplay(1));
   Date$ = this._Date.asObservable().pipe(shareReplay(1));
 
@@ -60,16 +62,28 @@ export class AllocationComponent implements OnInit {
   height: number = 67;
   primaryColor: string;
 
-  Logs$ = combineLatest([this.Event$, this.Date$]).pipe(
-    map(([evt, date]) => {
-      console.log(evt, date);
-      if (!evt || !date || !evt.extendedProps.subitems || evt.extendedProps.subitems.length < 1)
+  
+  Logs$ = combineLatest([this.Event$.pipe(timestamp()), this.LogUpdate$.pipe(timestamp()), this.Date$]).pipe(
+    map(([evt, update, date]) => {
+      let logs;
+      if (!evt.value || !date)
         return [];
 
-    return _.filter(evt.extendedProps.logs,
+      if (!update.value || update.timestamp < evt.timestamp)
+        logs = evt.value.extendedProps.logs;
+      else{
+        logs = update.value;
+      }
+
+      
+    return _.filter(logs,
           (l:TimeEntry) => moment(l.date).isSame(date, 'day'))
     })
   )
+
+  SetLogs(logs: TimeEntry[]) {
+    this._LogUpdate.next(logs);
+  }
 
   Height$ =
     combineLatest([this.Logs$, this._Height.asObservable()]).pipe(

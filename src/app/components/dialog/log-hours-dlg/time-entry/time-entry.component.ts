@@ -29,7 +29,7 @@ export class TimeEntryComponent implements OnInit {
   get Item() { return this.parent.Item; }
   constructor(private parent: LogHoursDlgComponent) { }
 
-  onEdit() {
+  onEdit(date?:moment.Moment) {
     if (_.find(this.parent.Entries, e => e.editing || e.isNew)) {
       this.parent.messenger.add({
         severity: 'warn',
@@ -51,7 +51,8 @@ export class TimeEntryComponent implements OnInit {
 
   onSubmit() {
     let e = this.Edit;
-    let date = moment(`${e.start.format('YYYY-MM-DD')} ${e.hour}:${e.minute} ${e.half}`, 'YYYY-MM-DD HH:mm A')
+    let start = e.start ? e.start : (this.parent.Date ? this.parent.Date : moment());
+    let date = moment(`${start.format('YYYY-MM-DD')} ${e.hour}:${e.minute} ${e.half}`, 'YYYY-MM-DD HH:mm A')
 
     let duration = parseInt(e.duration_hours);
     duration += parseInt(e.duration_minutes) / 60;
@@ -68,18 +69,20 @@ export class TimeEntryComponent implements OnInit {
         return;
       }
       this.parent.messenger.add({ severity: 'success', summary: 'Added Time Entry', detail: this.Item.name});
-      this.parent.UpdateEntries();
+      this.parent.UpdateEntries(true);
     })
   }
 
+  get selectedDate() { return this.parent.Date}
 
   ngOnInit(): void {
   }
 
 }
 
+
 class NewLog {
-  start: moment.Moment = moment();
+  start: moment.Moment;
   hour: string = '09';
   minute: string = '00';
   half: string = 'AM';

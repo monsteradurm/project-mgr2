@@ -10,7 +10,7 @@
   </ng-template>
 </mat-menu>
 
-<app-log-hours-dlg></app-log-hours-dlg>
+<app-log-hours-dlg (HoursUpdated)="OnHourLogUpdated($event)"></app-log-hours-dlg>
 
 
 <div *ngIf="(Tab$ | async) as tab" class="no-select">
