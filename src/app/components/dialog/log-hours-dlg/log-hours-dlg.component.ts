@@ -9,7 +9,7 @@ import { MondayService } from 'src/app/services/monday.service';
 import { TimeEntry } from 'src/app/models/TimeLog';
 import { Dialog } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
-const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline', 
+const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
           'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
 
 @Component({
@@ -18,16 +18,19 @@ const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   styleUrls: ['./log-hours-dlg.component.scss']
 })
 export class LogHoursDlgComponent implements OnInit {
-  
+
   Show: boolean = false;
   Item: BoardItem | ScheduledItem;
   Entries: TimeEntry[] = [];
   User: MondayIdentity;
+  Date = moment.isMoment;
 
   @ViewChild(Dialog, { static: false, read: ElementRef }) DlgContainer;
   constructor(public monday: MondayService, public messenger: MessageService) { }
 
-  OpenDialog(item: BoardItem | ScheduledItem, user: MondayIdentity) {
+  OpenDialog(item: BoardItem | ScheduledItem, date: moment.Moment, user: MondayIdentity) {
+
+    console.log("OPENING FOR DATE", date)
     if (!user) {
       this.messenger.add({
         severity: 'error',
@@ -39,7 +42,6 @@ export class LogHoursDlgComponent implements OnInit {
     this.User = user;
     this.Item = item;
     this.Show = true;
-
     this.UpdateEntries();
   }
 
@@ -94,12 +96,12 @@ export class LogHoursDlgComponent implements OnInit {
       return;
     }
 
-    let entry = new TimeEntry();
+    let entry = new TimeEntry(this.Date);
     entry.item = this.Item.id.toString();
     entry.editing = true;
     entry.isNew = true;
     let subitems = this.Item.subitem_ids;
-    
+
     if (subitems && subitems.length > 0) {
       entry.item = subitems[subitems.length - 1].toString();
     }

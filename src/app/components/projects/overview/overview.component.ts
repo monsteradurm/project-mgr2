@@ -32,9 +32,9 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   ShowHoursLog = false;
   onHoursDlg(item: BoardItem | ScheduledItem) {
     this.parent.userService.MondayUser$.pipe(take(1)).subscribe((user) => {
-      this.LogHoursDlg.OpenDialog(item, user && user.id ? user: null);
+      this.LogHoursDlg.OpenDialog(item, null, user && user.id ? user: null);
     })
-    
+
   }
 
   initializing = true;
@@ -173,7 +173,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
           )
       }),
       tap(t => this.Fetching = false),
-      
+
       shareReplay(1)
     )
 
@@ -348,7 +348,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.SortByOptions.forEach(o => {
         this.sortByMenu.createButton().setTitle(o).fire$.subscribe(a => this.SetSortBy(o));
       })
-      
+
       this.initializing = false;
       return this.sortByMenu;
     })
@@ -400,7 +400,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
                 if (!entry)
                   return;
                 isSubItem = true;
-              
+
                 obser = this.parent.monday.GetSubItem$(update.item_id);
               }
               else {
@@ -429,7 +429,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.subscriptions.push(
       combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.User$, this.BoardItemUpdates$]).subscribe(
         ([workspace, board, group, user, update]) => {
-          
+
           if (!workspace || !board || !group || !user || !update)
             return;
 
@@ -440,7 +440,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
             return;
 
             console.log("Received BoardItem Update,", update);
-          
+
           this.ReceivedItemUpdate(workspace, board, group, user, update);
         })
     );

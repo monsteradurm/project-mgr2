@@ -21,8 +21,9 @@ export class TimeEntry {
         Object.assign(result, JSON.parse(stringified));
         return result;
     }
-    
-    constructor() {
-        
+
+    constructor(date?) {
+        if (date)
+          this.date = date;
     }
 }

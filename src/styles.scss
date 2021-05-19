@@ -289,7 +289,7 @@ app-event-list {
     border-bottom-left-radius:10px;
     border-bottom-right-radius:10px;
   }
-  
+
   .fc.fc-scroller-liquid, .fc-scroller {
     //overflow:unset !important;
     height: unset !important;
@@ -298,7 +298,7 @@ app-event-list {
     box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
   }
   .fc-list-day-cushion {
-    
+
     color: #2998f5;
     background: white !important;
     border-bottom: solid 2px #2998f5;
@@ -308,7 +308,7 @@ app-event-list {
 
   }
 }
-nav { 
+nav {
   overflow:hidden
 }
 
@@ -354,7 +354,7 @@ h4 {
   font-family:$font;
 }
 
-h5 { 
+h5 {
   font-family:$font;
 }
 h6 {
@@ -386,7 +386,7 @@ mat-checkbox[ng-reflect-model="true"] > label > .mat-checkbox-inner-container > 
 }
 
 .mat-mini-fab.mat-accent.app-icon-close {
-  background-color: black !important; 
+  background-color: black !important;
 }
 
 .newlog-select.newlog-select {
@@ -459,7 +459,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   min-width:50px
 }
 
-@mixin set-component-colors($primary, $component) { 
+@mixin set-component-colors($primary, $component) {
   #{$component} {
     .mat-checkbox-background > svg > path {
       fill: $primary;
@@ -470,7 +470,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
 
     .mat-focused > .mat-form-field-wrapper > .mat-form-field-underline > .mat-form-field-ripple{
       background-color:$primary
-    }  
+    }
 
     .log-hours-container {
       background: transparent !important;
@@ -484,7 +484,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
     .log-hours-container:hover {
       opacity: 1 !important;
     }
-    
+
     .log-hours-container > mat-button > mat-icon {
       color:$primary;
     }
@@ -550,7 +550,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       color:gray;
       background:transparent;
     }
-    
+
     mat-toolbar.side-dlg-toolbar > .mat-flat-button.side-btn-active {
       color:black !important;
       font-weight: bold !important;
@@ -566,7 +566,7 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
       //background-color: $primary;
     }
 
-    
+
 
     mat-toolbar.side-dlg-toolbar > .mat-flat-button > .mat-button-wrapper > .side-btn-inactive {
       opacity: 0;
@@ -612,7 +612,7 @@ p-toastitem {
   $error: rgb(200, 0, 81);
   $warn: #FF8500;
   $custom: #2A9BFA;
-  
+
   .p-toast-message-custom > div {
     background: $warn;
     /* border: solid #000000; */
@@ -686,7 +686,7 @@ p-toastitem {
   $component: "app-settings",
 );
 
-@include set-component-colors( 
+@include set-component-colors(
   $primary: rgb(200, 0, 81) !important,
   $component: "app-system",
 );
@@ -750,11 +750,11 @@ p-scrollpanel {
   flex-grow: 10000;
 }
 
-.gantt_hor_scroll { 
+.gantt_hor_scroll {
   visibility:hidden !important;
 };
 
-.gantt_ver_scroll { 
+.gantt_ver_scroll {
   visibility:hidden !important;
 };
 mat-divider {
@@ -780,7 +780,7 @@ app-navigation {
 
   action-mat-group > button {
     margin: 0px 20px !important;
-  } 
+  }
 
   .nav-toolbar > div > action-mat-button > button {
     padding: 0px 30px !important;
@@ -854,7 +854,7 @@ div.bp-header-container > div > .bp-default-logo {
 }
 
 .bcu-footer-right > button > .btn-content {
-  font-size:20px; 
+  font-size:20px;
 
 }
 
@@ -951,7 +951,7 @@ app-overview {
     margin-top: -4px;
   }
   .gantt_empty_task > .gantt_task_content {
-    width: auto !important; 
+    width: auto !important;
     opacity:0.35;
   }
   .gantt_empty_task.last-revision > .gantt_task_content {
@@ -960,7 +960,7 @@ app-overview {
   app-overview > p-scrollpanel > div > div.p-scrollpanel-wrapper > div > p-splitter > div {
     width:calc(100vw - 26px);
   }
-  
+
   .gantt_empty_task {
     width: auto;
     padding: 0px 10px;
@@ -997,7 +997,7 @@ app-overview {
         /* border-color: lightgray; */
         box-shadow: 10px 0px 10px 5px rgb(0 0 0 / 10%);
     }
-  
+
 
     .p-splitter .p-splitter-gutter .p-splitter-gutter-handle {
       background: #aaa;
@@ -1212,7 +1212,7 @@ app-itemchart > div > p-chart > div > canvas {
     margin-top: -71px;
     height: 100vh;
     width: 100vw;
-    
+
   app-user > div.user-avatar-nav {
     right:10px !important;
   }
@@ -1220,7 +1220,7 @@ app-itemchart > div > p-chart > div > canvas {
   app-user > div > div > img {
     border-color: black !important;
   }
-  
+
 }
 
 app-time-entry {

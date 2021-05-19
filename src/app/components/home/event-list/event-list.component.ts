@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { HomeComponent } from '../home.component';
@@ -23,6 +23,10 @@ import { ArtistComponent } from '../../tooltips/artist/artist.component';
 })
 export class EventListComponent implements OnInit {
   calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
+  AllocationComponents = [];
+  ArtistComponents = [];
+  LogComponents = [];
+
   listPlugin = [listPlugin]
   constructor(private parent: HomeComponent) { }
 
@@ -43,12 +47,60 @@ export class EventListComponent implements OnInit {
 
   }
 
+  GetDate(x, y) {
+
+    let dates =_.filter(
+      _.map([this.AllocationComponents, this.ArtistComponents, this.LogComponents], components =>
+        {
+          let mouseOver = _.filter(components, c => c.IsMouseOver);
+          if (mouseOver.length > 0)
+            return mouseOver[0].Date;
+        }
+      )
+    )
+    if (dates.length > 0)
+        return dates[0];
+
+    return null;
+    /*
+    for(let d = 0; d < days.length; d++) {
+
+      let day = days.item(d) as HTMLElement;
+
+      let sx = day.clientLeft + 100;
+      let ex = sx + day.clientWidth;
+      let sy = day.clientTop + 50;
+      let ey = sy + day.clientHeight;
+
+      console.log(x, y, sx, sy, ex, ey)
+      if ((x >= sx && x <= ex) && (y >= sy && y <= ey)) {
+        console.log("HERE", day);
+        return day.previousElementSibling.getAttribute('data-date');
+      }
+    }*/
+
+
+  }
+
   EventDidMount(info) {
     let props = info.event.extendedProps;
     if (props.type != 'milestone') {
       let el = info.el;
       this.EventContent(info.event, info.el);
-      this.parent.EventDidMount(info);
+
+      let t = this.parent.CreateTippy(info);
+      info.el.addEventListener('contextmenu', (evt) => {
+        let date = this.GetDate(evt.x, evt.y );
+        if (date) {
+          this.parent.LastDate = date;
+          this.parent.contextMenuLeft = evt.x;
+          this.parent.contextMenuTop = evt.y;
+          this.parent.last = info.event;
+          this.parent.contextMenuTrigger.openMenu();
+        }
+
+        evt.preventDefault();
+      })
     }
   }
 
@@ -57,7 +109,7 @@ export class EventListComponent implements OnInit {
 
     if (sibling.classList.contains('fc-list-day'))
       return sibling;
-    
+
     return this.findDateElement(sibling);
   }
 
@@ -72,7 +124,9 @@ export class EventListComponent implements OnInit {
       let resolver = this.parent.cfr.resolveComponentFactory(ArtistComponent);
       let x = this.parent.entry.createComponent(resolver);
       x.instance.Ids = event.extendedProps.users;
+      x.instance.Date = moment(date, 'YYYY-MM-DD');
       element.children.item(0).firstChild.replaceWith(x.instance.element.nativeElement as HTMLElement);
+      this.ArtistComponents.push(x.instance);
     }
 
     if (t == 'allocation') {
@@ -80,10 +134,11 @@ export class EventListComponent implements OnInit {
       let x = this.parent.entry.createComponent(resolver);
       x.instance.Event = event as CalendarItem;
       x.instance.height = 67 + ((event.extendedProps.users.length - 1) * 49);
-      x.instance.primaryColor = event.backgroundColor; 
+      x.instance.primaryColor = event.backgroundColor;
       x.instance.date = moment(date, 'YYYY-MM-DD');
       let child = element.childNodes.item(2).firstChild;
       child.replaceWith(x.instance.element.nativeElement as HTMLElement);
+      this.AllocationComponents.push(x.instance);
     }
     else if (t != 'milestone') {
       let resolver = this.parent.cfr.resolveComponentFactory(LogComponent);
@@ -114,6 +169,7 @@ export class EventListComponent implements OnInit {
       plugins: [listPlugin],
       events: events,
       initialView: 'listWeek',
+      weekends: false,
       eventDidMount: (r) => this.EventDidMount(r),
     })
     ),

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -13,6 +13,19 @@ import * as _ from 'underscore';
 })
 export class AllocationComponent implements OnInit {
 
+  @HostListener('mouseenter', ['$event']) onMouseEnter(evt) {
+    this.IsMouseOver = true;
+  }
+
+  @HostListener('mouseleave', ['$event']) onMouseLeave(evt) {
+    this.IsMouseOver = false;
+  }
+
+  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
+    this.IsMouseOver = true;
+  }
+
+  IsMouseOver: boolean = false;
   constructor(public element: ElementRef) { }
 
   private _Event = new BehaviorSubject<CalendarItem>(null);
@@ -53,12 +66,12 @@ export class AllocationComponent implements OnInit {
       if (!evt || !date || !evt.extendedProps.subitems || evt.extendedProps.subitems.length < 1)
         return [];
 
-    return _.filter(evt.extendedProps.logs, 
+    return _.filter(evt.extendedProps.logs,
           (l:TimeEntry) => moment(l.date).isSame(date, 'day'))
     })
   )
 
-  Height$ = 
+  Height$ =
     combineLatest([this.Logs$, this._Height.asObservable()]).pipe(
       map(([logs, height]) => {
         return this.__Height + (logs.length * 35) + 20;

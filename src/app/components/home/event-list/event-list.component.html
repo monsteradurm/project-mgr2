@@ -1,13 +1,13 @@
 <ng-container *ngIf="(ViewMode$ | async) as ViewMode">
     <ng-container *ngIf="ViewMode == 'Week'; else dayCalendar">
         <ng-container *ngIf="(WeekListOptions$ | async) as Options">
-            <full-calendar [options]="Options" [weekends]="false"></full-calendar>
+            <full-calendar [options]="Options" [weekends]="false" style="position:relative"></full-calendar>
         </ng-container>
 
     </ng-container>
     <ng-template #dayCalendar>
         <ng-container *ngIf="(DayListOptions$ | async) as Options">
-            <full-calendar [options]="Options"></full-calendar>
+            <full-calendar [options]="Options" style="position:relative"></full-calendar>
         </ng-container>
     </ng-template>
 </ng-container>

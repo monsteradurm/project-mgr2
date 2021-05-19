@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.LastEvent$.subscribe((last: ScheduledItem) => {
       this.Me$.pipe(take(1)).subscribe((user) => {
         console.log(last);
-        this.LogHoursDlg.OpenDialog(last, user && user.id ? user : null);
+        this.LogHoursDlg.OpenDialog(last, this.LastDate, user && user.id ? user : null);
       })
     })
   }
@@ -423,18 +423,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  EventDidMount(info) {
-    let t = this.CreateTippy(info);
 
-    info.el.addEventListener('contextmenu', (evt) => {
-      this.contextMenuLeft = evt.x;
-      this.contextMenuTop = evt.y;
-      this.last = info.event;
-      this.contextMenuTrigger.openMenu();
-      evt.preventDefault();
-    })
-    return t;
-  }
+  LastDate: moment.Moment;
 
   Allocations$ = this.MyTimelineItems$.pipe(
     map(items => _.filter(items, i => !i.is_milestone())),
@@ -519,6 +509,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
   }
+
 
   ngOnInit(): void {
     this.navigation.SetPageTitles([])

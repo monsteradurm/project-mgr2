@@ -23,7 +23,7 @@ import { CalendarItem } from 'src/app/models/Calendar';
 })
 export class CalendarComponent implements OnInit {
   calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
-  constructor(private parent: HomeComponent) { 
+  constructor(private parent: HomeComponent) {
     const name = Calendar.name;
   }
 
@@ -31,6 +31,32 @@ export class CalendarComponent implements OnInit {
 
   }
 
+  EventDidMount(info) {
+
+    let t = this.parent.CreateTippy(info);
+    info.el.addEventListener('contextmenu', (evt) => {
+      let el = document.elementFromPoint(evt.x, evt.y);
+      this.parent.contextMenuLeft = evt.x;
+      this.parent.contextMenuTop = evt.y;
+      this.parent.last = info.event;
+      this.parent.contextMenuTrigger.openMenu();
+      evt.preventDefault();
+    })
+    return t;
+  }
+
+  addEventListeners(collection: HTMLCollection) {
+    for(let d = 0; d < collection.length; d++) {
+      let day = collection.item(d);
+      let date = day.getAttribute('data-date');
+
+      if (date)
+        day.addEventListener('mouseenter', (evt) => {
+          this.parent.LastDate = moment(date, 'YYYY-MM-DD');
+          console.log(this.parent.LastDate);
+        })
+    }
+  }
   Options$ = this.parent.Allocations$.pipe(
     tap((items: any) => {
       this.parent.entry.clear();
@@ -45,13 +71,14 @@ export class CalendarComponent implements OnInit {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
       events: allocations,
-      eventDidMount: (r) => this.parent.EventDidMount(r),
-      eventContent: (r) => this.parent.AllocatedContent(r)
+      eventDidMount: (r) => this.EventDidMount(r),
+      eventContent: (r) => this.parent.AllocatedContent(r),
     })
     ),
+    tap(t => this.addEventListeners(document.getElementsByClassName('fc-day')))
   )
 
-  
+
 
 
 }
