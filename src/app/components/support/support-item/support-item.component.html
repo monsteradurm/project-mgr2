@@ -1,3 +1,21 @@
+<span #contextMenuTrigger (menuClosed)="onContextClosed()"
+[matMenuTriggerFor]="ItemContextMenu"
+style="position:absolute !important"
+[style.left.px]="contextMenuLeft"
+[style.top.px]="contextMenuTop"></span>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below" preventContext>
+  <ng-template matMenuContent>
+      <button mat-menu-item [matMenuTriggerFor]="statusMenu" preventContext>Status</button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #statusMenu="matMenu" >
+  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+    [style.background]="s.color" style.color="white !important"
+    (click)= "onSetStatus(s)">{{s.label}}</button>
+</mat-menu>
+
 <div class="support-item-container no-select" [ngClass]="{'hovering' : Hovering}" 
     fxFlex="grow" fxLayout="column" fxLayoutAlign="stretch stretch">
     <div fxLayout="column" class="support-header" [style.background]="Item.status.color">

@@ -23,9 +23,14 @@ export class SocketService {
   
   BoardItemUpdates$: Observable<BoardItemUpdate> = this.socket.fromEvent('boarditem-update')
   BoardUpdates$: Observable<BoardUpdate> = this.socket.fromEvent('board-update')
+  IssueUpdates$: Observable<boolean> = this.socket.fromEvent('issue-update');
+  
+  SendIssueUpdate() {
+    this.socket.emit('send-issue-update', { user_id: this.user})
+  }
 
   SendBoardUpdate(board_id:string, group_id:string) {
-    this.socket.emit('send-board-update', { board_id, group_id, user_ud: this.user });
+    this.socket.emit('send-board-update', { board_id, group_id, user_id: this.user });
   }
 
   SendBoardItemUpdate(board_id:string, group_id:string, item_id) {

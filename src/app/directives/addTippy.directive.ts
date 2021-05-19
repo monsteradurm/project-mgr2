@@ -18,7 +18,7 @@ import tippy from 'tippy.js';
     private _tippy;
     @Input() set tippyText(c) {
         this._tippyText = c;
-         
+        
         this._tippy = tippy(this.el.nativeElement, {
             allowHTML: true,
             // offset: [0, -10],

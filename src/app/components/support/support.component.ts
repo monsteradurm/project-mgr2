@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActionOutletFactory } from '@ng-action-outlet/core';
-import { BehaviorSubject } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map, shareReplay, take, tap } from 'rxjs/operators';
+import { Issue } from 'src/app/models/Issues';
 import { NavigationService } from 'src/app/services/navigation.service';
 import { SupportService } from 'src/app/services/support.service';
 
@@ -13,19 +14,20 @@ import { SupportService } from 'src/app/services/support.service';
 export class SupportComponent implements OnInit, OnDestroy {
 
   constructor(public supportService: SupportService,
-      public actionOutlet: ActionOutletFactory,
-      public navigation:NavigationService,
-      ) { 
+    public actionOutlet: ActionOutletFactory,
+    public navigation: NavigationService,
+  ) {
   }
 
   primaryColor;
-
-  Issues$ = this.supportService.Issues$
 
   WebServiceOptions$ = this.supportService.WebServiceOptions$;
   ApplicationOptions$ = this.supportService.ApplicationOptions$;
   TeamOptions$ = this.supportService.TeamOptions$;
   RenderOptions$ = this.supportService.RenderOptions$;
+
+  private issues = new BehaviorSubject<Issue[]>(null)
+  Issues$ = this.issues.asObservable();
 
   selectedUser = new BehaviorSubject<string>('All Users');
   SelectedUser$ = this.selectedUser.asObservable().pipe(shareReplay(1));
@@ -65,6 +67,7 @@ export class SupportComponent implements OnInit, OnDestroy {
   private ViewAppMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('wysiwyg');
   private ViewServiceMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('api');
 
+  StatusOptions$ = this.supportService.StatusOptions$;
   ViewServiceMenu$ = this.SelectedService$.pipe(
     map(([selected]) => {
       let menu = this.ViewServiceMenu;
@@ -154,11 +157,24 @@ export class SupportComponent implements OnInit, OnDestroy {
       return menu;
     })
   )
-  
 
+  IssueUpdates$ = this.supportService.IssueUpdates$;
   subscriptions = [];
   ngOnInit(): void {
     this.navigation.SetPageTitles([])
+    this.subscriptions.push(
+      this.supportService.Issues$.subscribe(
+          (issues) => 
+          this.issues.next(issues)
+      )
+    )
+
+    this.subscriptions.push(
+      this.supportService.IssueUpdates$.subscribe(
+        (update) => this.supportService.Issues$.pipe(take(1)).subscribe(issues => this.issues.next(issues))
+      )
+    )
+    
     this.subscriptions.push(
       this.navigation.PrimaryColor$.subscribe(c => this.primaryColor = c)
     )

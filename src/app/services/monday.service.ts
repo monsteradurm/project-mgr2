@@ -432,6 +432,12 @@ export class MondayService {
      )
   }
 
+  IssueTemplate$ = this.Query$(`boards(ids:1297031115){
+    columns{ id settings_str } }`).pipe(
+      map(arr => arr['boards'][0]),
+      shareReplay(1)
+    )
+    
   Issues$(Ids: string[]) {
     let query = `	items(ids: [${Ids.join(' ')}]){ id name updated_at
       column_values{ id text additional_info title value }

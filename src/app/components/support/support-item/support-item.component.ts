@@ -1,5 +1,7 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Issue } from 'src/app/models/Issues';
+import { SupportComponent } from '../support.component';
 
 @Component({
   selector: 'app-support-item',
@@ -7,6 +9,10 @@ import { Issue } from 'src/app/models/Issues';
   styleUrls: ['./support-item.component.scss']
 })
 export class SupportItemComponent implements OnInit {
+  contextMenuTop;
+  contextMenuLeft;
+  @ViewChild(MatMenu, {static:false}) contextMenu:MatMenu;
+  @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
 
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {
       this.Hovering = true;
@@ -16,11 +22,34 @@ export class SupportItemComponent implements OnInit {
       this.Hovering = false;
   }
 
-  constructor() { }
+  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
+    this.contextMenuLeft = evt.x;
+    this.contextMenuTop = evt.y - 155;
+    this.contextMenuTrigger.toggleMenu()
+    this.HasContext = true;
+    event.preventDefault();
+  }
+
+  constructor(private parent: SupportComponent) { }
+
+  onContextClosed() {
+    this.HasContext = false;
+    this.Hovering = false;
+  }
+
+  onSetStatus(column) {
+    this.parent.supportService.SetItemStatus(this.Item.board.id, this.Item, column);
+
+    this.Item.status.color = column.color;
+    this.Item.status.text = column.label;
+    this.Item = JSON.parse(JSON.stringify(this.Item));
+  }
 
   @Input() Item: Issue;
   Hovering: boolean = false;
   HasContext: boolean = false;
+
+  StatusOptions$ = this.parent.StatusOptions$;
   ngOnInit(): void {
   }
 

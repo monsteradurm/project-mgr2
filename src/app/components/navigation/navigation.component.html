@@ -7,7 +7,8 @@
 
 
         <ng-container *ngFor="let title of NavigationMenu.Titles">
-            <div [ngStyle]="{'background' : title == selected.title? selected.background : 'transparent'}"
+            <div [ngStyle]="{'background' : title == selected.title? selected.background : 'transparent'}" 
+                addTippy [tippyText]="title"
                 [ngClass]="{'pm-active-nav' : title == selected.title, 'pm-inactive-nav' : title != selected.title}">
                 <ng-container *actionOutlet="NavigationMenu.Pages[title].menu" style="margin-top:30px"></ng-container>
             </div>

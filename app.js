@@ -64,8 +64,11 @@ fs.readFile('proxy.conf.json', (err, data) => {
             io.emit("test-message", update);
         });
 
+        socket.on('send-issue-update', (update) => {
+            io.emit('issue-update', update);
+        })
         socket.on('send-boarditem-update', (update) => {
-            console.log(update);
+
             io.emit('boarditem-update', update);
         });
 

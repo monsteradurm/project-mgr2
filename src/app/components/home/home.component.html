@@ -4,9 +4,9 @@
 <span #contextMenuTrigger [matMenuTriggerFor]="ItemContextMenu" style="position:absolute !important"
   [style.left.px]="contextMenuLeft" [style.top.px]="contextMenuTop"></span>
 
-<mat-menu #ItemContextMenu="matMenu" yPosition="below">
+<mat-menu #ItemContextMenu="matMenu" yPosition="below" preventContext>
   <ng-template matMenuContent>
-    <button mat-menu-item (click)="onHoursDlg()">Time Logging</button>
+    <button mat-menu-item (click)="onHoursDlg()" preventContext>Time Logging</button>
   </ng-template>
 </mat-menu>
 

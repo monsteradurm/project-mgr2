@@ -24,7 +24,7 @@ import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-tas
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DialogModule } from 'primeng/dialog';
 
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, preventContextMenu } from '@fullcalendar/angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -103,6 +103,7 @@ import { FilterLogsByDatePipe } from './directives/elements/FilterLogByDate.dire
 import { SupportService } from './services/support.service';
 import { SupportComponent } from './components/support/support.component';
 import { SupportItemComponent } from './components/support/support-item/support-item.component';
+import { PreventContextDirective } from './directives/preventContext.directive';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -157,7 +158,9 @@ const declarations = [
     AllocationComponent,
     FilterLogsByDatePipe,
     SupportComponent,
-    SupportItemComponent
+    SupportItemComponent,
+    PreventContextDirective,
+    AddTippyDirective
   ]
   
 const imports = [
