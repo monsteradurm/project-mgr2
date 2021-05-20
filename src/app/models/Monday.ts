@@ -56,9 +56,9 @@ export class ScheduledItem {
         name: string
     }
     artist: ColumnValues[];
-    timetracking: ColumnValues;
     director: ColumnValues[];
     status: ColumnValues;
+    caption: ColumnValues;
     timeline: ColumnValues;
     department: ColumnValues;
     department_text: string[];
@@ -102,7 +102,7 @@ export class ScheduledItem {
         this.timeline = ColumnValues.ParseFirst(i.column_values, ColumnType.Timeline);
 
         this.column_ids[ColumnType.TimeTracking] = ColumnValues.FindColumnId(i.column_values, ColumnType.TimeTracking)
-        this.timetracking = ColumnValues.ParseValue(i.column_values, ColumnType.TimeTracking);
+        this.caption = ColumnValues.ParseFirst(i.column_values, ColumnType.Caption);
 
         this.column_ids[ColumnType.Status] = ColumnValues.FindColumnId(i.column_values, ColumnType.Status)
         this.status = ColumnValues.ParseFirst(i.column_values, ColumnType.Status);

@@ -1,0 +1,11 @@
+<div class="mobile-nav" fxLayout="row" fxLayoutAlign="start center" fxGap="32px">
+    <div fxLayout="column" fxLayoutAlign="center center" style="height:100%">
+        <mat-icon style="color:white !important;font-size:30px;line-height:30px;height:30px">view_list</mat-icon>
+    </div>
+    <h2 class="nav-title" matBadge="2" matBadgePosition="below after">
+        <span style="z-index:12">Project Manager</span>
+    </h2>
+    <div *ngIf="IsAuthorized" class="nav-user">
+        <app-user [User]="User" [Photo]="MyPhoto" [IsNav]="true"></app-user>
+    </div>
+</div>

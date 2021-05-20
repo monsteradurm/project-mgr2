@@ -1,13 +1,27 @@
-<ng-container *ngIf="(ViewMode$ | async) as ViewMode">
-    <ng-container *ngIf="ViewMode == 'Week'; else dayCalendar">
-        <ng-container *ngIf="(WeekListOptions$ | async) as Options">
-            <full-calendar [options]="Options" [weekends]="false" style="position:relative"></full-calendar>
-        </ng-container>
+<ng-container *ngIf="!Fetching; else fetching">
+    <ng-container *ngIf="(ViewMode$ | async) as ViewMode">
+        <ng-container *ngIf="ViewMode == 'Week'; else dayCalendar">
+            <ng-container *ngIf="(WeekListOptions$ | async) as Options">
+                <full-calendar [options]="Options" [weekends]="false" style="position:relative"></full-calendar>
+            </ng-container>
 
-    </ng-container>
-    <ng-template #dayCalendar>
-        <ng-container *ngIf="(DayListOptions$ | async) as Options">
-            <full-calendar [options]="Options" style="position:relative"></full-calendar>
         </ng-container>
-    </ng-template>
+        <ng-template #dayCalendar>
+            <ng-container *ngIf="(DayListOptions$ | async) as Options">
+                <full-calendar [options]="Options" style="position:relative"></full-calendar>
+            </ng-container>
+        </ng-template>
+    </ng-container>
 </ng-container>
+<ng-template #fetching>
+    <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+        <div style="opacity:0.15;">
+            <app-swapping-squares-spinner [animationDuration]="1000" [color]="primaryColor" [size]="120"
+                style="opacity:0.15;">
+            </app-swapping-squares-spinner>
+        </div>
+        <h3 [style.color]="primaryColor" style="margin-top:30px">
+            Fetching Items from Monday...
+        </h3>
+    </div>
+</ng-template>

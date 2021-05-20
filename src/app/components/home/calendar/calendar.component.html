@@ -1,4 +1,17 @@
-<full-calendar #month style="position:relative"
-        [options]="Options$ | async">
-</full-calendar>
+<ng-container *ngIf="!Fetching; else fetching">
+        <full-calendar #month style="position:relative" [options]="Options$ | async">
+        </full-calendar>
+</ng-container>
 
+<ng-template #fetching>
+        <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
+                <div style="opacity:0.15;">
+                        <app-swapping-squares-spinner [animationDuration]="1000" [color]="primaryColor" [size]="120"
+                                style="opacity:0.15;">
+                        </app-swapping-squares-spinner>
+                </div>
+                <h3 [style.color]="primaryColor" style="margin-top:30px">
+                        Fetching Items from Monday...
+                </h3>
+        </div>
+</ng-template>

@@ -28,6 +28,7 @@ import { CalendarItem, CalendarMilestone, SubItemProperties } from 'src/app/mode
 import { TimeEntry } from 'src/app/models/TimeLog';
 import { ViewTaskDlgComponent } from '../dialog/view-task-dlg/view-task-dlg.component';
 import { EventListComponent } from './event-list/event-list.component';
+import { CalendarEventComponent } from '../tooltips/calendar-event/calendar-event.component';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -406,10 +407,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     r.setContent(this.findElement(id).innerHTML);
   }
 
-  AllocatedContent(r) {
-    let t = r.event.extendedProps.type;
-    if (t == 'allocation')
-      return r.event.title;
+  AllocatedContent(event, element: Element) {
+
+    let resolver = this.cfr.resolveComponentFactory(CalendarEventComponent);
+      let x = this.entry.createComponent(resolver);
+      x.instance.Item = event as CalendarItem;      
+      let child = element.childNodes.item(0);
+      child.replaceWith(x.instance.element.nativeElement as HTMLElement);
+      //this.AllocationComponents.push(x.instance);
   }
 
   OnHourLogUpdated(update: {id: string, entries: TimeEntry[]}) {

@@ -1,3 +1,20 @@
+<span #contextMenuTrigger (menuClosed)="onContextClosed()"
+[matMenuTriggerFor]="ItemContextMenu"
+style="position:absolute !important"
+[style.left.px]="contextMenuLeft"
+[style.top.px]="contextMenuTop"></span>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below" preventContext>
+  <ng-template matMenuContent>
+      <button mat-menu-item [matMenuTriggerFor]="statusMenu" preventContext>Status</button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #statusMenu="matMenu" >
+  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+    [style.background]="s.color" style.color="white !important"
+    (click)= "onSetStatus(s)">{{s.label}}</button>
+</mat-menu>
 
 <ng-container *ngIf="Item">
     <div class="kanban-item-container no-select;position:relative" fxFlex="grow" fxLayout="column" fxLayoutAlign="stretch stretch"
@@ -46,7 +63,9 @@
             <div fxLayout="column" class="kanban-footer" [style.background]="Status.color">
                 <div fxLayout="row" fxLayoutAlign="space-between center" style="opacity:0.7">
                     <div>{{Item.timeline?.text | timeline}}</div>
-                    <div>{{Status.text}}</div>
+                    <div>{{Status.text}}
+                        <span *ngIf="Item.caption?.text">- {{Item.caption.text}}</span>
+                    </div>
                 </div>
 
             </div>

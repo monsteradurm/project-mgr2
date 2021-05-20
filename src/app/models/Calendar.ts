@@ -31,7 +31,7 @@ export class CalendarItem {
         this.title = `${i.name} (${status.text})`;
 
         if (i.itemcode && i.itemcode.text)
-            this.title = i.itemcode.text + ', ' + this.title;
+            this.title = this.title;
 
         if (i.subitem_ids.length > 0) {
             this.extendedProps.subitems = _.map(i.subitems, (sub) => ({id: sub.id, name: sub.name}))

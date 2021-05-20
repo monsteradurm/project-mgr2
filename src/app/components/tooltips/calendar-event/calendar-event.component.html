@@ -1,0 +1,13 @@
+<div fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="column" fxLayoutAlign="center space-between" style="color:white;width:100%;">
+        <div class="cal-element">{{Item.extendedProps.element}}</div>
+        <div class="cal-task">{{Item.extendedProps.task}}</div>
+    </div>
+    <ng-container *ngFor="let Id of Item.extendedProps.users">
+        <ng-container *ngIf="(Id | FindUserFromMondayId$ | async) as User">
+            <app-user [User]="User" backgroundColor="rgb(42, 155, 250)" [CircleOnly]="true"
+                [Photo]="User | FindUserPhotoFromIdentity$ | async" borderColor="#fff9" textColor="white"
+                borderStyle="solid" borderWidth="1px" style="margin-right:3px;"></app-user>
+        </ng-container>
+    </ng-container>
+</div>

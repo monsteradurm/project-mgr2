@@ -1150,6 +1150,23 @@ p-badge.badge-requires-assistance > span {
 .kanban-attr > .mat-form-field-wrapper > .mat-form-field-underline {
   display:none !important;
 }
+
+app-calendar-event > div > app-user > div > div > .avatar-circle {
+  margin-top:5px;
+}
+app-calendar-event > div > app-user > div > div > .avatar-circle > .initials-circle {
+  font-size:14px;
+}
+app-calendar-event > div > app-user > div > div > .user-photo {
+  height:30px !important;
+  width: 30px !important;
+  border: solid 0.25px #000a !important;
+}
+app-mobile {
+  .mat-badge-content {
+    margin-top:-10px;
+  }
+}
 app-people {
   table {
     border-radius:10px;

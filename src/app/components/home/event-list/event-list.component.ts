@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy } from '@angular/core';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { HomeComponent } from '../home.component';
 import listPlugin from '@fullcalendar/list';
@@ -21,7 +21,7 @@ import { ArtistComponent } from '../../tooltips/artist/artist.component';
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.scss']
 })
-export class EventListComponent implements OnInit {
+export class EventListComponent implements OnInit, OnDestroy {
   calendarPlugins = [dayGridPlugin, timeGridPlugin, interactionPlugin]; // important!
   AllocationComponents = [];
   ArtistComponents = [];
@@ -30,14 +30,15 @@ export class EventListComponent implements OnInit {
   listPlugin = [listPlugin]
   constructor(private parent: HomeComponent) { }
 
+  Fetching: boolean = false;
   _ViewMode = new BehaviorSubject<string>(null);
   ViewMode$ = this._ViewMode.asObservable().pipe(shareReplay(1));
 
-  UpdateAllocation(update: {id: string, entries: TimeEntry[]}) {
+  UpdateAllocation(update: { id: string, entries: TimeEntry[] }) {
     if (!update || !update.id)
       return;
 
-    let allocation:AllocationComponent = _.find(this.AllocationComponents, (a:AllocationComponent) => a.Event.id == update.id);
+    let allocation: AllocationComponent = _.find(this.AllocationComponents, (a: AllocationComponent) => a.Event.id == update.id);
 
     if (allocation)
       allocation.SetLogs(update.entries);
@@ -55,17 +56,16 @@ export class EventListComponent implements OnInit {
 
   GetDate(x, y) {
 
-    let dates =_.filter(
-      _.map([this.AllocationComponents, this.ArtistComponents, this.LogComponents], components =>
-        {
-          let mouseOver = _.filter(components, c => c.IsMouseOver);
-          if (mouseOver.length > 0)
-            return mouseOver[0].Date;
-        }
+    let dates = _.filter(
+      _.map([this.AllocationComponents, this.ArtistComponents, this.LogComponents], components => {
+        let mouseOver = _.filter(components, c => c.IsMouseOver);
+        if (mouseOver.length > 0)
+          return mouseOver[0].Date;
+      }
       )
     )
     if (dates.length > 0)
-        return dates[0];
+      return dates[0];
 
     return null;
     /*
@@ -96,7 +96,7 @@ export class EventListComponent implements OnInit {
 
       let t = this.parent.CreateTippy(info);
       info.el.addEventListener('contextmenu', (evt) => {
-        let date = this.GetDate(evt.x, evt.y );
+        let date = this.GetDate(evt.x, evt.y);
         if (date) {
           this.parent.LastDate = date;
           this.parent.contextMenuLeft = evt.x;
@@ -110,7 +110,7 @@ export class EventListComponent implements OnInit {
     }
   }
 
-  findDateElement(el: Element) : Element{
+  findDateElement(el: Element): Element {
     let sibling = el.previousElementSibling;
 
     if (sibling.classList.contains('fc-list-day'))
@@ -169,17 +169,25 @@ export class EventListComponent implements OnInit {
   )
 
 
-  WeekListOptions$ = this.Events$.pipe(
-    map((events) =>
-    ({
-      plugins: [listPlugin],
-      events: events,
-      initialView: 'listWeek',
-      weekends: false,
-      eventDidMount: (r) => this.EventDidMount(r),
-    })
-    ),
-  )
+  WeekListOptions$ =
+    of(null).pipe(
+      tap(t => this.Fetching = true),
+      switchMap(() => this.Events$.pipe(
+        map((events) =>
+        ({
+          plugins: [listPlugin],
+          events: events,
+          initialView: 'listWeek',
+          weekends: false,
+          eventDidMount: (r) => this.EventDidMount(r),
+        })
+        ),
+      )
+      ),
+      shareReplay(1),
+      tap(t => this.Fetching = false)
+    )
+  _
 
   DayListOptions$ = this.WeekListOptions$.pipe(
     map(options => {
@@ -192,8 +200,17 @@ export class EventListComponent implements OnInit {
     this._ViewMode.next(s);
   }
 
+  WeekOptions;
+  subscriptions = [];
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
   ngOnInit(): void {
     this.parent.EventListComponent = this;
+    this.subscriptions.push(
+      this.WeekListOptions$.subscribe(weekOptions => this.WeekOptions = weekOptions)
+    )
   }
 
 }

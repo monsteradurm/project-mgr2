@@ -104,6 +104,7 @@ import { SupportService } from './services/support.service';
 import { SupportComponent } from './components/support/support.component';
 import { SupportItemComponent } from './components/support/support-item/support-item.component';
 import { PreventContextDirective } from './directives/preventContext.directive';
+import { LayoutModule } from '@angular/cdk/layout';
 
 const config: SocketIoConfig = { url: '', options: {} };
 declare var google:any;
@@ -186,6 +187,7 @@ const imports = [
     FormsModule,
     MatDividerModule,
     MatSidenavModule,
+    LayoutModule,
 
     //prime
     ScrollPanelModule,

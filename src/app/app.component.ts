@@ -11,6 +11,7 @@ import { UserService } from './services/user.service';
 import '@fullcalendar/core';
 import { MondayService } from './services/monday.service';
 import { ChromeService } from './services/chrome.service';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -48,11 +49,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private application: ApplicationRef,
     private monday: MondayService,
     private msalBroadcastService: MsalBroadcastService,
-    private userService: UserService
+    private userService: UserService,
+    private breakpointObserver: BreakpointObserver
   ) {
     this.navigation.AppComponent = this;
   }
-
+  isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
   MarginTop: number = 71;
   DisplayNavigation:boolean = true;
 
