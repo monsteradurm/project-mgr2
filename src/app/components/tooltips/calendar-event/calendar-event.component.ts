@@ -11,6 +11,7 @@ export class CalendarEventComponent implements OnInit {
   constructor(public element: ElementRef) { }
   @Input() Item: CalendarItem;
   ngOnInit(): void {
+    
   }
 
 }
