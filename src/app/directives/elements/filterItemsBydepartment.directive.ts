@@ -16,12 +16,12 @@ export class FilterItemsByDepartmentPipe  {
       map(([items, department]) => {
         if (!department) return [];
         let dep = department.id;
-
+        let milestones = _.filter(items, (i) => i.is_milestone());
         let filtered = _.filter(items, i =>
           _.map(i.department, d=> d.id)
           .indexOf(dep) >= 0);
           
-        return filtered;
+        return filtered.concat(milestones);
       })
     )
   }

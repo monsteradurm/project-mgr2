@@ -151,20 +151,36 @@ action-mat-group > button > span > mat-icon {
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
+  //box-shadow: 3px 3px 4px #0004;
   //opacity:0.7 !important;
 }
 .fc-daygrid-event:hover {
   opacity:1 !important;
+  box-shadow: 5px 5px 10px #0004, inset 0px 0px 0px 1px #000f;
 }
 .fc-daygrid-event-harness {
   padding: 2px 0px !important;
 }
-
+.fc-daygrid-day-top {
+  height: 30px !important;
+}
+.fc-daygrid-day-number {
+  padding: 8px;
+  position: relative;
+  z-index: 4;
+  /* font-weight: bold; */
+  font-size: 15px;
+  /* color: #666666; */
+}
 .fc-daygrid-bg-harness > .fc-bg-event.milestone-item {
-  background: #646477!important;
-  color: white !important;
+  background: #fff !important;
+  color: black !important;
   font-size: 15px !important;
   opacity: 1 !important;
+  overflow: visible !important;
+  border: solid 2px black;
+  margin: -1px;
+  box-shadow: 5px 5px 10px 3px #0004;
 }
 
 th.fc-col-header-cell.fc-day.fc-day-sun,

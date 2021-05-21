@@ -354,14 +354,18 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     })
   )
 
+
   GroupsMenu$ = combineLatest([this.Board$, this.Group$]).pipe(
     map(([board, group]) => {
       if (!board || !group || !group.title)
         return null;
       this.groupMenu.setTitle(group.title);
       this.groupMenu.removeChildren();
-      board.groups.forEach(g => this.groupMenu.createButton()
-        .setTitle(g.title).fire$.subscribe(a => this.SetGroup(g.id)));
+      board.groups.forEach(g => {
+        if (g.title != 'Milestones')
+        this.groupMenu.createButton()
+        .setTitle(g.title).fire$.subscribe(a => this.SetGroup(g.id))
+      });
       return this.groupMenu;
     }),
   )

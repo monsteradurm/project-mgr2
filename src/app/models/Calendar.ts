@@ -28,6 +28,14 @@ export class CalendarItem {
         this.extendedProps.group = i.group.title;
         this.extendedProps.board = i.board.name;
         this.extendedProps.id  = i.id;
+        
+        this.extendedProps.due = i.due ? moment(i.due.text) : null;
+        this.extendedProps.expected_days = i.expected_days ? i.expected_days.value : null;
+
+
+        //console.log("DUE", i.due)
+        //console.log("EXPECTED DAYS", i.expected_days);
+
         this.title = `${i.name} (${status.text})`;
 
         if (i.itemcode && i.itemcode.text)
@@ -68,6 +76,8 @@ export class CalendarProperties {
     subitems: SubItemProperties[] = [];
     status: ItemStatus = new ItemStatus();
     users: string[];
+    due: moment.Moment;
+    expected_days: number;
     logs: TimeEntry[] = [];
     constructor(type:string) {
         this.type = type;

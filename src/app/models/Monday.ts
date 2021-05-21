@@ -65,11 +65,12 @@ export class ScheduledItem {
     itemcode: ColumnValues;
     subitems: SubItem[];
     subitem_ids: string[];
-
+    due: ColumnValues;
+    expected_days: ColumnValues;
     task:string;
     element:string;
 
-    selection: string;
+    selection: string; 
     column_values: any;
     column_ids: any = {};
 
@@ -109,6 +110,12 @@ export class ScheduledItem {
 
         this.column_ids[ColumnType.ItemCode] = ColumnValues.FindColumnId(i.column_values, ColumnType.ItemCode)
         this.itemcode = ColumnValues.ParseFirst(i.column_values, ColumnType.ItemCode);
+
+        this.column_ids[ColumnType.Due] = ColumnValues.FindColumnId(i.column_values, ColumnType.Due)
+        this.due = ColumnValues.ParseFirst(i.column_values, ColumnType.Due);
+
+        this.column_ids[ColumnType.ExpectedDays] = ColumnValues.FindColumnId(i.column_values, ColumnType.ExpectedDays)
+        this.expected_days = ColumnValues.ParseFirst(i.column_values, ColumnType.ExpectedDays);
 
         this.subitems = null;
 

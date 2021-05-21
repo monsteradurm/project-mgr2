@@ -27,7 +27,9 @@ export enum ColumnType {
   Service = 'Service',
   Application = 'Application',
   Renderer ='Renderer',
-  Support = 'Support'
+  Support = 'Support',
+  Due = 'Due',
+  ExpectedDays = 'Expected Days'
 } 
 export class ColumnValues {
 

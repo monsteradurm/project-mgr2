@@ -29,6 +29,7 @@ import { TimeEntry } from 'src/app/models/TimeLog';
 import { ViewTaskDlgComponent } from '../dialog/view-task-dlg/view-task-dlg.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { CalendarEventComponent } from '../tooltips/calendar-event/calendar-event.component';
+import { CalendarMilestoneComponent } from '../tooltips/calendar-milestone/calendar-milestone.component';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -223,11 +224,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
       if (me.teams.indexOf('Managers') > -1)
         return items;
 
-      let filtered = _.filter(items, i =>
-        (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0)
+      let filtered = _.filter(items, (i:ScheduledItem) =>
+        (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0) || i.is_milestone()
       );
 
       filtered = _.filter(filtered, i =>
+        i.is_milestone() ||
         _.find(i.artist, a => a.text.indexOf(name) > -1) ||
         _.find(i.director, d => d.text.indexOf(name) > -1)
       )
@@ -246,7 +248,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         let filtered = items;
         if (user != 'All Users') {
-          filtered = _.filter(filtered, i => {
+          filtered = _.filter(filtered, (i:ScheduledItem) => {
+            if (i.is_milestone)
+              return true;
+
             let artists = _.pluck(i.artist, 'text').join(', ');
             let directors = _.pluck(i.director, 'text').join(', ');
             return artists.indexOf(user) > -1 || directors.indexOf(user) > -1
@@ -279,7 +284,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
           return items;
         })
       )),
-      shareReplay(1)
+      distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+      shareReplay(1),
     )
 
   MyTimelineItems$ = this.MyFilteredItems$.pipe(
@@ -408,6 +414,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   AllocatedContent(event, element: Element) {
+    if (event.extendedProps.type == 'milestone') {
+      let resolver = this.cfr.resolveComponentFactory(CalendarMilestoneComponent);
+      let x = this.entry.createComponent(resolver);
+      x.instance.Item = event as CalendarMilestone;      
+      let child = element.childNodes.item(0);
+      child.replaceWith(x.instance.element.nativeElement as HTMLElement);
+      return;
+    }
 
     let resolver = this.cfr.resolveComponentFactory(CalendarEventComponent);
       let x = this.entry.createComponent(resolver);
@@ -469,8 +483,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   )
 
   Milestones$ = this.MyTimelineItems$.pipe(
-    map(items => _.filter(items, i => !i.is_milestone())),
+    map(items => _.filter(items, i => i.is_milestone())),
     map(items => _.map(items, i => new CalendarMilestone(i))),
+    map(items => _.uniq(items, (i:CalendarMilestone) => i.start + i.title)),
     shareReplay(1)
   )
 

@@ -155,14 +155,39 @@ export class ProjectComponent implements OnInit, OnDestroy
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
     shareReplay(1)
   )
+
+  BoardMilestones$ = this.Board$.pipe(
+    switchMap(
+      board => {
+        if (!board) return of([]);
+
+        let grp = _.find(board.groups, g => g.title == 'Milestones');
+        if (grp)
+          return this.monday.BoardItems$(board.id, grp.id).pipe(
+            map(items => _.map(items, i => {
+              return new BoardItem(i, board.workspace, grp, board)
+            })
+            ),
+          );
+
+        return of([]);
+      }
+    ),
+    tap(t => console.log)
+  )
   
-  BoardItems$ = combineLatest([this.Board$, this.Group$]).pipe(
+  BoardItems$ = combineLatest([this.Board$, this.Group$, this.BoardMilestones$]).pipe(
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    switchMap(([board, group]) =>
-    board && board.id && group && group.id ?
-    this.monday.BoardItems$(board.id, group.id).pipe(
-      map((items) => _.map(items, i => new BoardItem(i, board.workspace, group, board)))
-    ) : of([])),
+    switchMap(([board, group, milestones]) => {
+    if (!board || !board.id || !group || !group.id)
+      return of([]);
+  
+    return this.monday.BoardItems$(board.id, group.id).pipe(
+      map((items) => _.map(items, i => new BoardItem(i, board.workspace, group, board))),
+      map(items => milestones.concat(items))
+    );
+
+    }),
     catchError(msg => {
       this.errorMessage.next(msg)
       return of([])

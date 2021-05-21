@@ -8,7 +8,9 @@
 
             <div fxLayout="row" fxLayoutAlign="space-between space-between" style="margin-top:5px;width:100%">
                 <div fxLayout="column" fxLayoutAlign="start start">
-                    <div style="font-size:13px;float:left;font-weight:bold">{{Item.element}} / {{Item.task}}</div>
+                    <div style="font-size:13px;float:left;font-weight:bold">
+                        <span *ngIf="Item.element && Item.element.length > 0">{{Item.element}} /</span> 
+                        {{Item.task}}</div>
 
                     <div fxLayout="row" fxLayoutAlgn="end center" *ngIf="Item.artist" style="margin-top:10px">
                         <div class="tip-attribute">Assigned:</div>
@@ -19,7 +21,7 @@
                         <div class="tip-value">{{Item.director}}</div>
                     </div>
                 </div>
-                <div fxLayout="column" fxLayoutAlign="end end">
+                <div fxLayout="column" fxLayoutAlign="end end" *ngIf="Item.type != 'milestone'">
                     <div style="width:100%;text-align:right">{{Item.timeline}}</div>
                 </div>
             </div>

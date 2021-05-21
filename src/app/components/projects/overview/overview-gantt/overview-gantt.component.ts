@@ -102,6 +102,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
       });
 
       let milestones = _.filter(this.BoardItems, i => i.is_milestone());
+      console.log("MILESTONES", milestones)
       milestones.forEach(i => {
         gantt.addMarker({
           start_date: moment(i.timeline.value.from),
@@ -394,13 +395,13 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     };
 
     let milestones = _.filter(this.BoardItems, i => i.is_milestone());
+
     milestones.forEach(i => {
-      console.log(
       gantt.addMarker({
         start_date: moment(i.timeline.value.from),
         css: "Milestone",
         text: i.name,
-      }));
+      });
     })
 
     gantt.addMarker({

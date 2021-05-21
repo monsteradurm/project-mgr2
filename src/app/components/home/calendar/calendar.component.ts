@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { HomeComponent } from '../home.component';
-import { Calendar, compareByFieldSpec } from '@fullcalendar/core';
+import { Calendar, compareByFieldSpec, eventTupleToStore } from '@fullcalendar/core';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -11,10 +11,10 @@ import tippy from "tippy.js";
 import * as moment from 'moment';
 import * as _ from 'underscore';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { LogHoursDlgComponent } from '../../dialog/log-hours-dlg/log-hours-dlg.component';
 import { TaskTooltipComponent } from '../../tooltips/task/task.component';
-import { CalendarItem } from 'src/app/models/Calendar';
+import { CalendarItem, CalendarMilestone } from 'src/app/models/Calendar';
 
 @Component({
   selector: 'app-calendar',
@@ -45,6 +45,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
     let t = this.parent.CreateTippy(info);
     info.el.addEventListener('contextmenu', (evt) => {
 
+      if (info.event.extendedProps.type == 'milestone') {
+        evt.preventDefault();
+        return;
+      }
+      
       let els = document.elementsFromPoint(evt.x, evt.y);
       let el: Element = _.find(els, (e: Element) => e.classList.contains('fc-daygrid-day'));
 
@@ -81,8 +86,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
     of(null).pipe(
       tap(t => this.Fetching = true),
       switchMap(() =>
-        this.parent.Allocations$.pipe(
-          tap((items: any) => {
+        combineLatest([this.parent.Allocations$, this.parent.Milestones$]).pipe(
+          map(([items, milestones]) => {
             this.parent.entry.clear();
             let counter = 0;
             _.forEach(items, (i: CalendarItem) => {
@@ -90,13 +95,20 @@ export class CalendarComponent implements OnInit, OnDestroy {
               this.parent.CreateTooltip(i.extendedProps, i.extendedProps.tooltipId)
               counter += 1;
             })
+            _.forEach(milestones, (i: CalendarMilestone) => {
+              i.extendedProps.tooltipId = counter;
+              this.parent.CreateTooltip(i.extendedProps, i.extendedProps.tooltipId)
+              counter += 1;
+            })
+
+            return items.concat(milestones);
           }),
-          map((allocations: ScheduledItem[]) => ({
+          map((allocations: any[]) => ({
             plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
             initialView: 'dayGridMonth',
             events: allocations,
             eventDidMount: (r) => this.EventDidMount(r),
-            //eventContent: (r) => this.parent.AllocatedContent(r),
+            eventContent: (r) => { return ''; },
           })
           ),
           //tap(t => this.addEventListeners(document.getElementsByClassName('fc-daygrid-day')))

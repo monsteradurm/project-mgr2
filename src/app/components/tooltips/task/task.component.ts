@@ -11,7 +11,7 @@ import * as _ from 'underscore';
 export class TaskTooltipComponent implements OnInit {
 
   constructor() { }
-  private _Item: any;
+  private _Item: CalendarProperties;
   tooltipId: string; 
   type: string = 'allocation';
   

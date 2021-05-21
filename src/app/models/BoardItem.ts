@@ -1,5 +1,6 @@
 import { ColumnType, ColumnValues } from "./Columns";
 import * as _ from 'underscore';
+import { Column } from "./Monday";
 
 export class BoardItem {
     id: number;
@@ -9,6 +10,8 @@ export class BoardItem {
     updated_at: string;
     element: string;
     group: { id: string, title: string }
+    due: ColumnValues;
+    expected_days: Column;
     department: ColumnValues[];
     department_text: string[];
     artist: ColumnValues[];
@@ -73,6 +76,7 @@ export class BoardItem {
     }
 
     constructor(i: any, w:any, g:any, b:any) {
+        
         this.id = i.id;
         this.name = i.name;
         this.updated_at = i.updated_at;
@@ -81,9 +85,6 @@ export class BoardItem {
         let arr = i.name.split('/');
         this.task = arr[arr.length - 1];
         this.element = arr[arr.length - 2];
-
-        this.validate(i.column_values);
-
         this.department = ColumnValues.ParseDistinct(i.column_values, ColumnType.Department);
         this.department_text = _.map(this.department, d => d.text);
         this.artist = ColumnValues.ParseDistinct(i.column_values, ColumnType.Artist);
@@ -94,7 +95,8 @@ export class BoardItem {
         this.description = ColumnValues.ParseFirst(i.column_values, ColumnType.Description);
         this.status = ColumnValues.ParseFirst(i.column_values, ColumnType.Status);
         this.itemcode = ColumnValues.ParseFirst(i.column_values, ColumnType.ItemCode);
-
+        this.due = ColumnValues.ParseFirst(i.column_values, ColumnType.Due);
+        this.expected_days = ColumnValues.ParseFirst(i.column_values, ColumnType.ExpectedDays);
         this.selection = this.group.title + ', ' + this.name;
         this.workspace = { id: w.id, name: w.name};
 
