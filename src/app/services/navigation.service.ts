@@ -290,6 +290,11 @@ export class NavigationService {
 
     let menu = page.menu;
     menu.removeChildren();
+    menu.createGroup().enableDropdown().setTitle("Studio Pipeline")
+    .createButton().setTitle('Confluence').fire$.subscribe(a => {
+      window.open('https://liquidanimation.atlassian.net/wiki/spaces/LAT0003/overview', "_blank");
+    })
+    menu = menu.createGroup();
     if (projects.length < 1) {
       menu.createButton({ title: "No Projects to Show" });
     }

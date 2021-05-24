@@ -32,6 +32,13 @@ $custom-typography: mat-typography-config(
 
 $font: 'Delius' !important;
 
+#mat-menu-panel-3 > div > div > button:nth-child(2) > mat-icon {
+  padding-left:0px !important;
+}
+#mat-menu-panel-3 > div > div > button:nth-child(2) > span {
+  font-weight:bold;
+}
+
 .mat-body, .mat-body-1, .mat-typography, a, div, input, span {
   font-family: Delius;
   letter-spacing: 0.25px !important;
