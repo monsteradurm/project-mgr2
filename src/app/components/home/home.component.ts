@@ -135,10 +135,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     })
 
   }
-  Me$ = combineLatest([this.UserService.User$, this.monday.MondayUsers$]).pipe(
-    map(([me, users]) => me && users ? _.find(users, u => u.email == me.mail) : null),
-    shareReplay(1)
-  )
+  
+  Me$ = this.UserService.MondayUser$;
 
   ViewModeOptions = {
     'Day': 'dayList',
