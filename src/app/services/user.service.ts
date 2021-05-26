@@ -32,10 +32,10 @@ export class UserService {
 
   MondayUser$ = this.User$.pipe(
     switchMap(user => this.MondayUsers$.pipe(
-      map(users => _.find(users, (u: MondayIdentity) => u.email == user.mail)),
+      map(users => _.find(users, (u: MondayIdentity) => u.email == user.mail.toLowerCase())),
       catchError(err => EMPTY),
       shareReplay(1)
-    ))
+    )) 
   )
 
   UserIsManager$ = this.MondayUser$.pipe(
@@ -174,6 +174,10 @@ export class UserService {
           map(users => _.filter(users, u => u.givenName && u.surname && u.mail)),
           map(users => _.filter(users,
             u => u.mail.indexOf('liquidanimation.com') > 0)),
+          map(users => {
+            _.forEach(users, u => u.mail = u.mail.toLowerCase());
+            return users;
+          })
         )
     }),
     shareReplay(1)

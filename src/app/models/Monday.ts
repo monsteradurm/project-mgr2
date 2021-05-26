@@ -13,7 +13,7 @@ export class MondayIdentity {
     constructor(i: any) {
         this.id = i.id;
         this.name = i.name;
-        this.email = i.email;
+        this.email = i.email.toLowerCase();
         this.title = i.title;
         this.teams = i.teams ? _.map(i.teams, t => t.name) : [];
         if (i.is_pending)
