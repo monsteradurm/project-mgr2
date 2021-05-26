@@ -15,12 +15,11 @@ import { MondayIdentity } from 'src/app/models/Monday';
 export class FindUserFromMondayIdentityPipe  {
     constructor(private userService: UserService, private monday:MondayService){}
   transform(id: string)  : Observable<UserIdentity>{
-
     return this.monday.MondayUsers$.pipe(
         map(users => _.find(users, (u:MondayIdentity) => u.id.toString() == id)),
         switchMap(user => 
             this.userService.AllUsers$.pipe(
-                map((users:UserIdentity[]) => _.find(users, u => user.name == u.givenName + ' ' + u.surname))
+                map((users:UserIdentity[]) => _.find(users, u => user.name.replace("'", "") == (u.givenName + ' ' + u.surname).replace("'", "")))
             )
         )
     )
