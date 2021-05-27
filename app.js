@@ -57,9 +57,10 @@ fs.readFile('proxy.conf.json', (err, data) => {
         console.log("project-mgr2 --> listening at: " + port)
     });
 
-    const io = require('socket.io')(server);
-    io.origins('*:*')
-    
+    const io = require('socket.io')(server, {
+        origins: '*:*'
+    });
+
     io.on("connection", socket => {
         socket.on('test-message', (update) => {
             io.emit("test-message", update);
