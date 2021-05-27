@@ -58,7 +58,8 @@ fs.readFile('proxy.conf.json', (err, data) => {
     });
 
     const io = require('socket.io')(server);
-
+    io.origins('*:*')
+    
     io.on("connection", socket => {
         socket.on('test-message', (update) => {
             io.emit("test-message", update);
