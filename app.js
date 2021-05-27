@@ -50,12 +50,10 @@ fs.readFile('proxy.conf.json', (err, data) => {
     
     
     app.use(express.static(__dirname+'/dist/project-mgr2'));
-    /*
-    app.get('*', function(req, res) {
+    
+    app.get('/', function(req, res) {
       res.sendFile(path.join(__dirname+'/dist/project-mgr2/index.html'));
     });
-
-    */
 
     const server = app.listen(port, () => {
         console.log("project-mgr2 --> listening at: " + port)
