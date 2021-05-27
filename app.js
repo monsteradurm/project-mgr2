@@ -47,21 +47,17 @@ fs.readFile('proxy.conf.json', (err, data) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
       });
-    
-    
+      
     app.use(express.static(__dirname+'/dist/project-mgr2'));
-    
-    app.get('/', function(req, res) {
+    app.get('*', function(req, res) {
       res.sendFile(path.join(__dirname+'/dist/project-mgr2/index.html'));
     });
 
     const server = app.listen(port, () => {
         console.log("project-mgr2 --> listening at: " + port)
     });
-
-    const io = require('socket.io')(server, {
-        origins: '*:*'
-    });
+    /*
+    const io = require('socket.io')(server);
 
     io.on("connection", socket => {
         socket.on('test-message', (update) => {
@@ -86,4 +82,5 @@ fs.readFile('proxy.conf.json', (err, data) => {
 
         socket.on('disconnect', () => {});
     });
+    */
 });

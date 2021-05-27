@@ -106,7 +106,7 @@ import { SupportItemComponent } from './components/support/support-item/support-
 import { PreventContextDirective } from './directives/preventContext.directive';
 import { LayoutModule } from '@angular/cdk/layout';
 
-const config: SocketIoConfig = { url: '', options: {} };
+const config: SocketIoConfig = { url: '/socket', options: {} };
 declare var google:any;
 
 const declarations = [

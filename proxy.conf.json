@@ -61,5 +61,14 @@
         "pathRewrite": {
             "^/box-account/*": ""
         }
+    },
+    "/socket/*": {
+        "target": "https://port-3000-lapm_websocket-acranch908002.preview.codeanywhere.com/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/socket/*": ""
+        }
     }
 }

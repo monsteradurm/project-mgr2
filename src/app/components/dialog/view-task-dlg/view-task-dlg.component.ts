@@ -261,14 +261,14 @@ export class ViewTaskDlgComponent implements OnInit {
 
   }
 
-  StatusOptions$ = this.Item$.pipe(
-    map(item => item.board.id),
-    switchMap(boardid => this.projectService.GetStatusOptions$(boardid)),
-    catchError(err => EMPTY)
-  )
+  StatusOptions = []
 
   EditStatus() {
-    this.contextMenuTrigger.openMenu();
+
+    this.projectService.GetStatusOptions$(this.Item.board.id).pipe(take(1)).subscribe((options) => {
+      this.StatusOptions = options;
+      this.contextMenuTrigger.openMenu();
+    });
   }
 
   onSetStatus(column) {
