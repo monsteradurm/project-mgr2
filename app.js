@@ -31,7 +31,7 @@ fs.readFile('proxy.conf.json', (err, data) => {
             req.url = '/' + arr.join('/');
 
             console.log(req.url);
-
+            console.log(config[addr].target);
             proxy.web(req, res, {
                 
                 target: config[addr].target,

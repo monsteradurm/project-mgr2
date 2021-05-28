@@ -13,10 +13,9 @@ import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 import { BoxService } from 'src/app/services/box.service';
 
 import {MessageService} from 'primeng/api';
-import { SocketService } from 'src/app/services/socket.service';
 import { UserService } from 'src/app/services/user.service';
 import { ProjectService } from 'src/app/services/project.service';
-
+import { FirebaseService} from 'src/app/services/firebase.service';
 
 const _PAGE_ = '/Projects/Overview';
 
@@ -32,7 +31,7 @@ export class ProjectComponent implements OnInit, OnDestroy
               public syncSketch: SyncSketchService,
               public messenger: MessageService,
               public projectService: ProjectService,
-              public socket: SocketService,
+              public firebase: FirebaseService,
               public box: BoxService,
               public userService: UserService,
               public monday: MondayService) {

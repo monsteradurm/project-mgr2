@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": [ 
+            "allowedCommonJsDependencies": [
               "underscore",
               "monday-sdk.js"
             ],
@@ -37,8 +37,10 @@
               "node_modules/primeng/resources/primeng.min.css",
               "node_modules/primeicons/primeicons.css"
             ],
-            "scripts": ["node_modules/leader-line/leader-line.min.js",
-              "node_modules/chart.js/dist/Chart.js"]
+            "scripts": [
+              "node_modules/leader-line/leader-line.min.js",
+              "node_modules/chart.js/dist/Chart.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -129,6 +131,10 @@
               "devServerTarget": "project-mgr2:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

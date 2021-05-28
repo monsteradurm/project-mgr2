@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "pm-websocket": {
+      "hosting": {
+        "project-mgr2": [
+          "pm-websocket"
+        ]
+      }
+    }
+  }
+}

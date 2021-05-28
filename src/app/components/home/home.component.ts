@@ -20,7 +20,6 @@ import { TaskTooltipComponent } from './../tooltips/task/task.component';
 
 import tippy from "tippy.js";
 import { Board, BoardItem, Workspace } from 'src/app/models/BoardItem';
-import { SocketService } from 'src/app/services/socket.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
@@ -30,6 +29,7 @@ import { ViewTaskDlgComponent } from '../dialog/view-task-dlg/view-task-dlg.comp
 import { EventListComponent } from './event-list/event-list.component';
 import { CalendarEventComponent } from '../tooltips/calendar-event/calendar-event.component';
 import { CalendarMilestoneComponent } from '../tooltips/calendar-milestone/calendar-milestone.component';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 const _SCHEDULE_COLUMNS_ = ['Artist', 'Director', 'Timeline',
   'Time Tracking', 'Status', 'ItemCode', 'Department', 'SubItems']
@@ -120,7 +120,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private navigation: NavigationService,
     public monday: MondayService,
     public projectService: ProjectService,
-    private socket: SocketService,
+    private firebase: FirebaseService,
     private UserService: UserService,
   ) {
 

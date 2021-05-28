@@ -428,7 +428,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   User$ = this.parent.userService.User$;
 
-  BoardItemUpdates$ = this.parent.socket.BoardItemUpdates$
+  BoardItemUpdates$ = this.parent.firebase.BoardItemUpdates$
   ngOnInit(): void {
     this.subscriptions.push(
       combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.User$, this.BoardItemUpdates$]).subscribe(

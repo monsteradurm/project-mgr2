@@ -11,7 +11,6 @@ import { SyncSketchService } from 'src/app/services/sync-sketch.service';
 import { Dialog } from 'primeng/dialog'
 import * as _ from 'underscore';
 import { MessageService } from 'primeng/api';
-import { SocketService } from 'src/app/services/socket.service';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { UserService } from 'src/app/services/user.service';
 import { UserIdentity } from 'src/app/models/UserIdentity';
@@ -20,6 +19,7 @@ import { Identity } from '@fullcalendar/common';
 import { FileUpload } from 'primeng/fileupload'
 import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 import { ProjectService } from 'src/app/services/project.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-view-task-dlg',
@@ -75,7 +75,7 @@ export class ViewTaskDlgComponent implements OnInit {
     private box: BoxService,
     private projectService: ProjectService,
     private sanitizer: DomSanitizer,
-    private socket: SocketService,
+    private firebase: FirebaseService,
     private messager: MessageService,
     private actionOutlet: ActionOutletFactory) { }
 
@@ -159,7 +159,7 @@ export class ViewTaskDlgComponent implements OnInit {
     let board_id = this.Item.board.id;
     let workspace_id = this.Item.workspace.id;
 
-    this.socket.SendBoardItemUpdate(board_id, group_id, item_id);
+    this.firebase.SendBoardItemUpdate(board_id, group_id, item_id);
     this.monday.GetBoardItem$(board_id, group_id, item_id).pipe(
       take(1)
     ).subscribe(item => {

@@ -6,7 +6,7 @@ import * as _ from 'underscore';
 import { MondayService } from './monday.service';
 import { Issue } from '../models/Issues';
 import { MessageService } from 'primeng/api';
-import { SocketService } from './socket.service';
+import { FirebaseService } from './firebase.service';
 
 const _ISSUE_SETTINGS_ = '1297042574'
 const _PM_Issues_ = '1297738308'
@@ -18,7 +18,7 @@ export class SupportService {
 
   constructor(private projectService:ProjectService, 
     private messenger: MessageService,
-    private socket: SocketService,
+    private firebase: FirebaseService,
     private monday: MondayService) { }
 
   MinBoards$ = this.projectService.MinBoards$;
@@ -38,7 +38,7 @@ export class SupportService {
     map(issues => _.map(issues, i => Issue.parse(i))),
   )
 
-  IssueUpdates$ = this.socket.IssueUpdates$;
+  IssueUpdates$ = this.firebase.IssueUpdates$;
 
   IssueTemplate$ = this.monday.IssueTemplate$;
   StatusOptions$ = this.IssueTemplate$.pipe(
@@ -99,7 +99,7 @@ export class SupportService {
         if (result && result.change_simple_column_value && result.change_simple_column_value.id) {
           this.messenger.add({ severity: 'success', summary: 'Status Updated', detail: item.name });
 
-          this.socket.SendIssueUpdate();
+          this.firebase.SendIssueUpdate();
 
         } else {
           this.messenger.add({ severity: 'error', summary: 'Error Updating Status', detail: item.name })

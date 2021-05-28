@@ -3,7 +3,8 @@ export class BoardItemUpdate {
     group_id: string;
     item_id: string;
     user_id: string;
-
+    updated:string;
+    
     constructor(u: any) {
         this.board_id = u.board_id;
         this.group_id = u.group_id;
@@ -16,7 +17,7 @@ export class BoardUpdate {
     board_id: string;
     group_id: string;
     user_id: string;
-
+    updated: string;
     constructor(u: any) {
         this.board_id = u.board_id;
         this.group_id = u.group_id;

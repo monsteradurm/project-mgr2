@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { Injectable, ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ActionOutletModule } from '@ng-action-outlet/core';
@@ -8,8 +8,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatBadgeModule} from '@angular/material/badge';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatBadgeModule } from '@angular/material/badge';
 
 //directives
 import { TabUnderlineDirective } from './directives/material/tab-underline.directive';
@@ -31,7 +31,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import {MatSidenavModule} from '@angular/material/sidenav';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { ConfirmDlgComponent } from './components/dialog/confirm-dlg/confirm-dlg.component';
 import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hours-dlg.component';
@@ -53,33 +53,31 @@ import { SyncSketchService } from './services/sync-sketch.service';
 import { FilterSyncReviewsByItemPipe } from './directives/elements/FilterSyncReviewsByItem.drective';
 import { FindSyncItemPipe } from './directives/elements/FindSyncItem.directive';
 import { FindBoardItemByIdPipe } from './directives/elements/FindBoardItemById.directive';
-import {SkeletonModule} from 'primeng/skeleton';
+import { SkeletonModule } from 'primeng/skeleton';
 import { MatchSubItemsWithBoardItemPipe } from './directives/elements/MatchSubItemsWithBoardItem.directive';
 import { FindUserFromNamePipe } from './directives/elements/FindUserFromName.drective';
 import { FindUserPhotoFromIdentityPipe } from './directives/elements/FindUserPhotoFromEmail.directive';
 import { FetchUpdatesToSyncItemPipe } from './directives/elements/FetchUpdatesToSyncItem.directive';
 import { TrustResourceURLPipe } from './directives/elements/TrustResourceURL.directive';
-import {MatDividerModule} from '@angular/material/divider';
+import { MatDividerModule } from '@angular/material/divider';
 import { BoxService } from './services/box.service';
 import { ConfluenceService } from './services/confluence.service';
-import {SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule, FlowerSpinnerModule} from 'angular-epic-spinners'
+import { SwappingSquaresSpinnerModule, ScalingSquaresSpinnerModule, FlowerSpinnerModule } from 'angular-epic-spinners'
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { LazyImageComponent } from './components/UI/lazy-image/lazy-image.component';
 import { ReferenceDlgComponent } from './components/dialog/reference-dlg/reference.-dlgcomponent';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { NavBtnDirective } from './directives/material/navbtn.directive';
-import {ColorPickerModule} from 'primeng/colorpicker';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { MondayBoolIsCheckedPipe } from './directives/monday/mondayBool-isChecked.directive';
 import { ReferenceComponent } from './components/reference/reference.component';
 import { MouseWheelDirective } from './directives/mousewheel.directive';
-import {SplitterModule} from 'primeng/splitter';
+import { SplitterModule } from 'primeng/splitter';
 import { FetchSubItemsFromBoardItemPipe } from './directives/elements/FetchSubItemsFromBoardItem.directive';
-import {ToastModule} from 'primeng/toast';
-import {BadgeModule} from 'primeng/badge';
-import {MessageService} from 'primeng/api';
-import {FileUploadModule} from 'primeng/fileupload';
-
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { ToastModule } from 'primeng/toast';
+import { BadgeModule } from 'primeng/badge';
+import { MessageService } from 'primeng/api';
+import { FileUploadModule } from 'primeng/fileupload';
 import { EitherOrValueDirective } from './directives/elements/EitherOrValue.directive';
 import { GroupbyPipe } from './directives/elements/GroupBy.directive';
 import { ParseJSONPipe } from './directives/elements/ParseJSON.directive';
@@ -105,126 +103,129 @@ import { SupportComponent } from './components/support/support.component';
 import { SupportItemComponent } from './components/support/support-item/support-item.component';
 import { PreventContextDirective } from './directives/preventContext.directive';
 import { LayoutModule } from '@angular/cdk/layout';
-
-const config: SocketIoConfig = { url: '/socket', options: {} };
-declare var google:any;
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+import { FirebaseService } from './services/firebase.service';
+declare var google: any;
 
 const declarations = [
-    NavigationComponent,
-    TaskTooltipComponent,
-    LogHoursDlgComponent,
-    ViewTaskDlgComponent,
-    ConfirmDlgComponent,
-    AddTippyDirective,
-    MatBadgeOverrideDirective,
-    TabUnderlineDirective,
-    UserComponent,
-    FocusInputDirective,
-    ArrayToStrDirective,
-    NavBtnDirective,
-    GetTaskStatusDirective,
-    FilterSyncReviewsByItemPipe,
-    FindSyncItemPipe,
-    FindBoardItemByIdPipe,
-    MatchSubItemsWithBoardItemPipe,
-    FindUserFromNamePipe,
-    FindUserPhotoFromIdentityPipe,
-    FetchUpdatesToSyncItemPipe,
-    TrustResourceURLPipe,
-    LazyImageComponent,
-    ReferenceDlgComponent,
-    ReferenceComponent,
-    MondayBoolIsCheckedPipe,
-    MouseWheelDirective,
-    FetchSubItemsFromBoardItemPipe,
-    EitherOrValueDirective,
-    GroupbyPipe,
-    ParseJSONPipe,
-    TimelinePipe,
-    StringSplitPipe,
-    GetLastSubItemByBoardItemPipe,
-    FindSyncReviewPipe,
-    SyncItemComponent,
-    SyncUpdateComponent,
-    MaxCharactersPipe,
-    FilterMilestonesPipe,
-    LogHoursDlgComponent,
-    TimeEntryComponent,
-    pmCalendarDirective,
-    FindUserFromMondayIdentityPipe,
-    UserCanEditPipe,
-    FindByIdPipe,
-    LogComponent,
-    ArtistComponent,
-    AllocationComponent,
-    FilterLogsByDatePipe,
-    SupportComponent,
-    SupportItemComponent,
-    PreventContextDirective,
-    AddTippyDirective
-  ]
-  
+  NavigationComponent,
+  TaskTooltipComponent,
+  LogHoursDlgComponent,
+  ViewTaskDlgComponent,
+  ConfirmDlgComponent,
+  AddTippyDirective,
+  MatBadgeOverrideDirective,
+  TabUnderlineDirective,
+  UserComponent,
+  FocusInputDirective,
+  ArrayToStrDirective,
+  NavBtnDirective,
+  GetTaskStatusDirective,
+  FilterSyncReviewsByItemPipe,
+  FindSyncItemPipe,
+  FindBoardItemByIdPipe,
+  MatchSubItemsWithBoardItemPipe,
+  FindUserFromNamePipe,
+  FindUserPhotoFromIdentityPipe,
+  FetchUpdatesToSyncItemPipe,
+  TrustResourceURLPipe,
+  LazyImageComponent,
+  ReferenceDlgComponent,
+  ReferenceComponent,
+  MondayBoolIsCheckedPipe,
+  MouseWheelDirective,
+  FetchSubItemsFromBoardItemPipe,
+  EitherOrValueDirective,
+  GroupbyPipe,
+  ParseJSONPipe,
+  TimelinePipe,
+  StringSplitPipe,
+  GetLastSubItemByBoardItemPipe,
+  FindSyncReviewPipe,
+  SyncItemComponent,
+  SyncUpdateComponent,
+  MaxCharactersPipe,
+  FilterMilestonesPipe,
+  LogHoursDlgComponent,
+  TimeEntryComponent,
+  pmCalendarDirective,
+  FindUserFromMondayIdentityPipe,
+  UserCanEditPipe,
+  FindByIdPipe,
+  LogComponent,
+  ArtistComponent,
+  AllocationComponent,
+  FilterLogsByDatePipe,
+  SupportComponent,
+  SupportItemComponent,
+  PreventContextDirective,
+  AddTippyDirective
+]
+
 const imports = [
-    CommonModule,
-    HttpClientModule,
+  CommonModule,
+  HttpClientModule,
 
-    MatButtonModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatMenuModule,
-    MatBadgeModule,
-    MatTableModule,
-    MatTabsModule,
-    FlexLayoutModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatMomentDateModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatToolbarModule,
-    FormsModule,
-    MatDividerModule,
-    MatSidenavModule,
-    LayoutModule,
+  MatButtonModule,
+  MatToolbarModule,
+  MatTooltipModule,
+  MatIconModule,
+  MatMenuModule,
+  MatBadgeModule,
+  MatTableModule,
+  MatTabsModule,
+  FlexLayoutModule,
+  MatDatepickerModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatMomentDateModule,
+  MatSelectModule,
+  MatCheckboxModule,
+  MatToolbarModule,
+  FormsModule,
+  MatDividerModule,
+  MatSidenavModule,
+  LayoutModule,
 
-    //prime
-    ScrollPanelModule,
-    DialogModule,
-    SkeletonModule,
-    ColorPickerModule,
-    SplitterModule,
-    ToastModule,
-    BadgeModule,
-    FileUploadModule,
-    ResizeModule, 
+  //prime
+  ScrollPanelModule,
+  DialogModule,
+  SkeletonModule,
+  ColorPickerModule,
+  SplitterModule,
+  ToastModule,
+  BadgeModule,
+  FileUploadModule,
+  ResizeModule,
 
-    SwappingSquaresSpinnerModule,
-    ScalingSquaresSpinnerModule,
-    FlowerSpinnerModule,
-    
-    LazyLoadImageModule,
-    
-    //ng-action-outlet
-    ActionOutletModule,
-    ActionMatModule.forRoot(ICON_TYPE.Font),
+  SwappingSquaresSpinnerModule,
+  ScalingSquaresSpinnerModule,
+  FlowerSpinnerModule,
 
-    SocketIoModule.forRoot(config)
+  LazyLoadImageModule,
+
+  //firebase
+  AngularFireModule.initializeApp(environment.firebase),
+
+  //ng-action-outlet
+  ActionOutletModule,
+  ActionMatModule.forRoot(ICON_TYPE.Font),
 ]
 
 let exports = [...declarations, ...imports];
 
 const providers = [
-    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {strict: false}},
-    UserService,
-    MondayService,
-    NavigationService,
-    SyncSketchService,
-    BoxService,
-    ConfluenceService,
-    MessageService,
-    SupportService,
+  { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { strict: false } },
+  UserService,
+  MondayService,
+  NavigationService,
+  SyncSketchService,
+  BoxService,
+  ConfluenceService,
+  MessageService,
+  SupportService,
+  FirebaseService
 ];
 
 @NgModule({
@@ -233,11 +234,11 @@ const providers = [
   providers: providers,
   exports: [imports, declarations],
 })
-export class SharedModule { 
-    static forRoot(): ModuleWithProviders<SharedModule> {
-        return {
-          ngModule: SharedModule,
-          providers:  providers,
-        };
-      }
+export class SharedModule {
+  static forRoot(): ModuleWithProviders<SharedModule> {
+    return {
+      ngModule: SharedModule,
+      providers: providers,
+    };
+  }
 }
