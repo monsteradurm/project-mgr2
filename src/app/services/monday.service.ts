@@ -11,6 +11,7 @@ import { UserIdentity } from '../models/UserIdentity';
 import { Column, MondayIdentity, ScheduledItem } from '../models/Monday';
 import { Board } from '../models/BoardItem';
 import { TimeEntry } from '../models/TimeLog';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 const monday = mondaySdk();
 
@@ -21,7 +22,7 @@ const _TENMINUTES_ = 1000 * 60 * 10;
 })
 export class MondayService {
 
-  constructor() {
+  constructor(private afs: AngularFirestore) {
     monday.setToken(_ENV_.token);
   }
 
@@ -281,8 +282,6 @@ export class MondayService {
     take(1),
     shareReplay(1)
   )
-
-
 
   Projects$ = combineLatest([
     this.Boards$.pipe(

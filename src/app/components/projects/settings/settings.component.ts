@@ -27,7 +27,7 @@ export class SettingsComponent implements OnInit {
 
   subscriptions = [];
   
-  Settings$ = combineLatest([this.parent.monday.Boards$, this.WorkSpaceId]).pipe(
+  Settings$ = combineLatest([this.parent.projectService.Boards$, this.WorkSpaceId]).pipe(
     tap(t => this.Fetching = true),
     map(([boards, wspace]) => {
       if (!boards || !wspace) return [];

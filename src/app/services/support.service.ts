@@ -21,9 +21,9 @@ export class SupportService {
     private firebase: FirebaseService,
     private monday: MondayService) { }
 
-  MinBoards$ = this.projectService.MinBoards$;
+  //MinBoards$ = this.projectService.MinBoards$;
 
-  IssueBoardsIds$ = this.MinBoards$.pipe(
+  IssueBoardsIds$ = this.projectService.Boards$.pipe(
       map((min:any[]) => {
         if (!min) return;
         return  _.map(_.filter(min, (b) => b.name == '_Issues'), (b) => b.id.toString());

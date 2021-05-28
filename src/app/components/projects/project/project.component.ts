@@ -68,7 +68,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
   )
 
-  Board$ = combineLatest([this.monday.Boards$, this.NavigationParameters$]).pipe(
+  Board$ = combineLatest([this.projectService.Boards$, this.NavigationParameters$]).pipe(
     map(([boards, params]) => {
       if (!params['board']) return null;
       return _.find(boards, b => b.id == params['board']);
@@ -99,9 +99,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
 
-  MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
-  
-  ProjectSettings$ = combineLatest([this.MinBoards$, this.Board$]).pipe(
+  ProjectSettings$ = combineLatest([this.projectService.Boards$, this.Board$]).pipe(
     switchMap(([boards, current]) => {
       if (!current) return of(null);
       let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id.toString() == current.workspace.id.toString());

@@ -11,8 +11,17 @@ export class DropDownMenuGroup {
     title:string;
     use_menu: boolean = true;
     route: string;
-
     id: string;
+    constructor(item: Partial<DropDownMenuGroup>) {
+        this.icon = item.icon;
+        this.background = item.background;
+        this.menu = null;
+        this.title = item.title;
+        this.route = item.route;
+        this.use_menu = item.use_menu;
+        this.id = item.id;
+    }
+    /*
     constructor(id: string, t:string, i: string, b:string, route:string, um:boolean = true) {
         this.id = id;
         this.icon = i;
@@ -21,13 +30,22 @@ export class DropDownMenuGroup {
         this.route = route;
         if (!um)
             this.use_menu = false;
-    }
+    }*/
 }
+
+
 export class NavigationMapping {
     Pages: {[title: string]: DropDownMenuGroup} = {}
 
     Titles: string[] = []
-    constructor(pages: any[]) {
+    constructor(pages: Partial<DropDownMenuGroup>[]) {
+        this.Pages = {};
+        pages.forEach(page => {
+            this.Pages[page.title] = new DropDownMenuGroup(page); 
+            this.Titles.push(page.title);
+        });
+
+        /*
         pages.forEach(page => {
             let icon = _.find(page.column_values, c=> c.title == 'Icon').text;
             let color = _.find(page.column_values, c=> c.title == 'Color').text;
@@ -39,5 +57,6 @@ export class NavigationMapping {
             
             this.Titles.push(page.name);
         })
+        */
     }
 }

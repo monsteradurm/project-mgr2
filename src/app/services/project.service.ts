@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { map, shareReplay, switchMap, take } from 'rxjs/operators';
+import { map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { Board, BoardItem } from '../models/BoardItem';
 import { MondayIdentity, ScheduledItem } from '../models/Monday';
 import { MondayService } from './monday.service';
@@ -8,6 +8,8 @@ import { FirebaseService } from './firebase.service';
 import { UserService } from './user.service';
 import * as _ from 'underscore';
 import { Observable, of } from 'rxjs';
+import { FirebaseUpdate } from '../models/Firebase';
+import { shareReplayUntil } from '../models/shareReplayUntil';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +23,38 @@ export class ProjectService {
   }
 
   User$ = this.userService.User$;
-  
+  Projects$ = this.firebase.Projects$.pipe(
+    switchMap((entry) => {
+      let update = new FirebaseUpdate(entry);
+      if (update.hasExpired()) {
+        return this.monday.Projects$.pipe(
+          tap(projects => 
+            this.firebase.CacheProjects(FirebaseUpdate.create(projects)),
+          )
+        )
+      }
+      console.log("Using cached Projects$")
+      return of(update.asArray());
+    }),
+    shareReplay(1)
+  )
+
+  Boards$ = this.firebase.Boards$.pipe(
+    switchMap((entry) => {
+      let update = new FirebaseUpdate(entry);
+      if (update.hasExpired()) {
+        return this.monday.Boards$.pipe(
+          tap(boards => 
+            this.firebase.CacheBoards(FirebaseUpdate.create(boards)),
+          )
+        )
+      }
+      console.log("Using cached Boards$")
+      return of(update.asArray());
+    }),
+    shareReplay(1)
+  )
+
   QueryStatusChanged(item, column) {
     let label = column.label;
     if (
@@ -40,10 +73,10 @@ export class ProjectService {
     return true;
   }
 
-  MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
+  //MinBoards$ = this.monday.MinBoards$.pipe(shareReplay(1))
 
   GetProjectSettings$(workspace_id) {
-      return this.MinBoards$.pipe(
+      return this.Boards$.pipe(
       switchMap(boards => {
         let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id.toString() == workspace_id.toString());
         if (!board) return of(null)
@@ -53,7 +86,6 @@ export class ProjectService {
     )
   }
 
-  Boards$ : Observable<Board> = this.monday.Boards$.pipe(shareReplay(1));
   GetStatusOptions$(boardid) {
     return this.Boards$.pipe(
       map(boards => _.find(boards, b => b.id == boardid)),

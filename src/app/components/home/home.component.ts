@@ -201,7 +201,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   )
 
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
-  Boards$ = this.monday.Boards$.pipe(shareReplay(1));
+  Boards$ = this.projectService.Boards$.pipe(shareReplay(1));
 
   User$ = this.UserService.User$;
 

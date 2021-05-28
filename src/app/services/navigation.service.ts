@@ -15,6 +15,8 @@ import { ConfluenceService } from './confluence.service';
 import { BoxService } from './box.service';
 import { NavigationComponent } from '../components/navigation/navigation.component';
 import { AppComponent } from '../app.component';
+import { FirebaseService } from './firebase.service';
+import { ProjectService } from './project.service';
 
 
 @Injectable({
@@ -28,14 +30,14 @@ export class NavigationService {
   private SelectedTitle = new BehaviorSubject<string>('Home');
   SelectedTitle$ = this.SelectedTitle.asObservable().pipe(shareReplay(1))
 
-  Projects$ = this.monday.Projects$.pipe(
+  Projects$ = this.projectsService.Projects$.pipe(
     map(projects => _.filter(projects, p=> 
       p.name.indexOf('PM2') < 0 && p.name[0] != '_')),
 
     shareReplay(1)
   )
 
-  System$ = this.monday.Projects$.pipe(
+  System$ = this.projectsService.Projects$.pipe(
     map(projects => _.find(projects, p => p.name.indexOf('PM2') > -1)),
     shareReplay(1)
   )
@@ -43,7 +45,7 @@ export class NavigationService {
   Component: NavigationComponent;
   AppComponent: AppComponent;
 
-  NavigationMenu$ = this.monday.Pages$.pipe(
+  NavigationMenu$ = this.firebase.NavigationItems$.pipe(
      map(pages => {
         if (!pages)
           return null;
@@ -336,9 +338,11 @@ export class NavigationService {
 
   ReferenceFolder$;
   constructor( 
+    private firebase: FirebaseService,
     private location:Location,
     private confluence: ConfluenceService,
     private actionOutlet: ActionOutletFactory,
+    private projectsService: ProjectService,
     private monday: MondayService, 
     private box: BoxService,
     private router: Router) {
