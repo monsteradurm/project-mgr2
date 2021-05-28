@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import * as moment from 'moment';
-import { BehaviorSubject, combineLatest, fromEvent, Observable, of, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, fromEvent, Observable, of, timer } from 'rxjs';
 import { catchError, delay, distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap, timestamp } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ScheduledItem } from 'src/app/models/Monday';
@@ -80,6 +80,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   selectedGroup = new BehaviorSubject<string>('All Groups');
   SelectedGroup$ = this.selectedGroup.asObservable().pipe(shareReplay(1));
+
+  refreshItems = new BehaviorSubject<boolean>(null);
+  RefreshItems$ = this.refreshItems.asObservable();
 
   Dates$ = combineLatest([this.StartDate$, this.EndDate$]).pipe(
     map(([start, end]) => {
@@ -202,8 +205,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   User$ = this.UserService.User$;
 
-  Items$ = combineLatest([this.Boards$, this.Columns$, this.User$]).pipe(
-    switchMap(([boards, c_ids]) => {
+  Items$ = combineLatest([this.Boards$, this.Columns$, this.User$, this.RefreshItems$]).pipe(
+    switchMap(([boards, c_ids, user, refresh]) => {
       let b_ids = _.map(boards, b => b.id);
       return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
     }),
@@ -533,6 +536,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
   }
 
+  
+  BoardItemUpdates$ = combineLatest([this.MyFilteredItems$, this.firebase.BoardItemUpdates$]).pipe(
+    map(([items, update]) => {
+      let ids = _.map(items, i => i.id.toString());
+      let updated_id = update.item_id;
+
+      let updated = ids.indexOf(updated_id) > -1;
+      console.log("THIS WAS UPDATED !");
+
+      return updated ? update : EMPTY;
+    })
+  )
 
   ngOnInit(): void {
     this.navigation.SetPageTitles([])
@@ -558,6 +573,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
           if (tab != params.tab)
             this.SetTab(params.tab);
         })
+      })
+    )
+
+    this.subscriptions.push(
+      this.BoardItemUpdates$.subscribe((update) => {
+        if (update)
+          this.refreshItems.next(true);
       })
     )
     this.subscriptions.push(

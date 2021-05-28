@@ -38,7 +38,6 @@ export class KanbanBoardItemComponent implements OnInit {
   }
 
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
-    console.log("CONTEXT");
     this.contextMenuLeft = evt.x;
     this.contextMenuTop = evt.y - 105;
     this.contextMenuTrigger.toggleMenu()
@@ -75,7 +74,6 @@ export class KanbanBoardItemComponent implements OnInit {
   @Input() set Item(s: ScheduledItem) {
     this._Item = s;
     this.item.next(s);
-    console.log(s);
   }
 
   get Item() { return this._Item; }

@@ -104,6 +104,9 @@ button.mat-menu-item, .mat-menu-item {
 .action-mat-group > .mat-button > .mat-button-wrapper > span {
   margin-left:10px;
 }
+.mat-menu-content {
+  z-index: 1000;
+}
 
 .mat-menu-content > div > mat-divider {
   color: black;
