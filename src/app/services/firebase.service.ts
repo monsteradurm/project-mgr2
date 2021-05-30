@@ -44,7 +44,7 @@ export class FirebaseService {
   IssueUpdates$: Observable<any> = this.LastIssueUpdate$.valueChanges().pipe(
     distinctUntilChanged((a,b) => a && b && a.updated == b.updated && a.user_id == b.user_id),
   )
-
+ 
   user: string;
   constructor(private afs: AngularFirestore, private UserService: UserService) {
       this.UserService.User$.subscribe((user) => {
