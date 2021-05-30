@@ -3,8 +3,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import * as moment from 'moment';
-import { BehaviorSubject, combineLatest, EMPTY, fromEvent, Observable, of, timer } from 'rxjs';
-import { catchError, delay, distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap, timestamp } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, EMPTY, forkJoin, from, fromEvent, merge, Observable, of, timer } from 'rxjs';
+import { catchError, delay, distinctUntilChanged, filter, flatMap, map, mergeMap, mergeMapTo, shareReplay, switchMap, take, tap, timestamp } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { UserIdentity } from 'src/app/models/UserIdentity';
@@ -201,20 +201,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   )
 
   Columns$ = this.monday.ColumnIdsFromTitles$(_SCHEDULE_COLUMNS_).pipe(take(1));
-  Boards$ = this.projectService.Boards$.pipe(shareReplay(1));
-
+  Boards$ = this.projectService.Boards$;
   User$ = this.UserService.User$;
 
-  Items$ = combineLatest([this.Boards$, this.Columns$, this.User$, this.RefreshItems$]).pipe(
-    switchMap(([boards, c_ids, user, refresh]) => {
-      let b_ids = _.map(boards, b => b.id);
-      return this.monday.ColumnValuesFromBoards$(b_ids, c_ids);
+  Groups$ = this.Boards$.pipe(
+    map(boards => _.filter(boards, b => 
+      b.workspace &&
+      b.name.indexOf('Subitems') < 0
+      && b.name[0] != '_')),
+    switchMap(boards => {
+      let result: Observable<any>[] = [];
+      boards.forEach(b => {
+        b.groups.forEach(g => result.push(this.projectService.GetGroupItem$(b.id, g.id)))
+      });
+      return combineLatest(result);
     }),
-    map(items => _.filter(items, i =>
-      i.board.name.indexOf('Subitems') < 0
-      && i.name[0] != '_'
-      && i.board.name[0] != '_')
-    ),
+  );
+
+  Items$ = this.Groups$.pipe(
+    map(groups => _.filter(groups)),
+    map(groups => _.map(groups, g => g.items)),
+    map(items => _.flatten(items)),
+    map(items => _.filter(items, i => i.board && i.board.workspace && i.group)),
     map((items: any[]) => _.map(items, i => new ScheduledItem(i))),
     shareReplay(1)
   )
@@ -532,13 +540,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   )
 
   WorkspacesMenu$ = of(null);
-
+  
+  initialized = false;
   ngAfterViewInit() {
   }
 
   
   BoardItemUpdates$ = combineLatest([this.MyFilteredItems$, this.firebase.BoardItemUpdates$]).pipe(
     map(([items, update]) => {
+      if (!this.initialized)
+      return EMPTY;
+
       let ids = _.map(items, i => i.id.toString());
       let updated_id = update.item_id;
 

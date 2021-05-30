@@ -12,6 +12,7 @@ export class DropDownMenuGroup {
     use_menu: boolean = true;
     route: string;
     id: string;
+    index:number;
     constructor(item: Partial<DropDownMenuGroup>) {
         this.icon = item.icon;
         this.background = item.background;
@@ -20,6 +21,7 @@ export class DropDownMenuGroup {
         this.route = item.route;
         this.use_menu = item.use_menu;
         this.id = item.id;
+        this.index = item.index;
     }
     /*
     constructor(id: string, t:string, i: string, b:string, route:string, um:boolean = true) {
@@ -40,7 +42,7 @@ export class NavigationMapping {
     Titles: string[] = []
     constructor(pages: Partial<DropDownMenuGroup>[]) {
         this.Pages = {};
-        pages.forEach(page => {
+        _.sortBy(pages, p => p.index).forEach(page => {
             this.Pages[page.title] = new DropDownMenuGroup(page); 
             this.Titles.push(page.title);
         });

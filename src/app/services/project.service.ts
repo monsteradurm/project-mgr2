@@ -22,6 +22,7 @@ export class ProjectService {
     private messenger: MessageService) {
   }
 
+  GroupItems$ = {}
   User$ = this.userService.User$;
   Projects$ = this.firebase.Projects$.pipe(
     switchMap((entry) => {
@@ -52,6 +53,23 @@ export class ProjectService {
       console.log("Using cached Boards$")
       return of(update.asArray());
     }),
+    shareReplay(1)
+  )
+
+  GetGroupItem$(board_id: string, group_id: string): Observable<any> {
+    const key = board_id + '_' + group_id;
+    if (!this.GroupItems$[key]) {
+      this.GroupItems$[key] = this.firebase.GetGroupItems$(board_id, group_id);
+    }
+
+    return this.GroupItems$[key];
+  }
+
+  Workspaces$ = this.Boards$.pipe(
+    map((boards: Board[]) => _.map(boards, b => b.workspace)),
+    map((workspaces: any) => _.filter(workspaces, w => w && w.id)),
+    map((workspaces: any) => _.uniq(workspaces, w => w.id)),
+    take(1),
     shareReplay(1)
   )
 

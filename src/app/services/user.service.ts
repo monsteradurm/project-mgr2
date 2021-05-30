@@ -18,6 +18,7 @@ import { MondayService } from './monday.service';
 })
 export class UserService {
 
+  UserPhotos = {};
 
   private IsAuthorized = new BehaviorSubject<boolean>(true);
   IsAuthorized$ = this.IsAuthorized.asObservable();
@@ -43,29 +44,42 @@ export class UserService {
     shareReplay(1)
   )
 
+  GetUserPhoto$(id) {
+    return 
+  }
 
   MyPhoto$ = this.User$.pipe(
-    switchMap((user) =>
-      user ?
+    switchMap((user) => {
+      if (!user) return of(null);
+
+      if (this.UserPhotos[user.id]) return this.UserPhotos[user.id];
+
+      this.UserPhotos[user.id] = 
         this.http.get<Blob>(
           `https://graph.microsoft.com/v1.0/me/photos/48x48/$value`, { observe: 'body', responseType: 'blob' as 'json' }
-        ) : of(null)
-    ),
-    map(blob => {
-      if (blob === null) return null;
-      var binaryData = [];
-      binaryData.push(blob);
-
-      return this.sanitizer.bypassSecurityTrustUrl(
-        window.URL.createObjectURL(new Blob(binaryData, { type: "image/jpg" }))
-      );
+        ).pipe(
+          map(blob => {
+            if (blob === null) return null;
+            var binaryData = [];
+            binaryData.push(blob);
+      
+            return this.sanitizer.bypassSecurityTrustUrl(
+              window.URL.createObjectURL(new Blob(binaryData, { type: "image/jpg" }))
+            );
+          }),
+          shareReplay(1)
+        );
+        return this.UserPhotos[user.id];
     }),
   )
 
 
   UserPhoto$(id) {
-    return this.Token$.pipe(
+    if (!id) return of(null);
 
+    if (this.UserPhotos[id]) return this.UserPhotos[id];
+
+    this.UserPhotos[id] = this.Token$.pipe(
       switchMap(auth =>
         this.http.get<Blob>(
 
@@ -89,8 +103,11 @@ export class UserService {
       }),
       catchError(err => {
         return of(null);
-      })
-    ).pipe(take(1))
+      }),
+      shareReplay(1)
+    )
+
+    return this.UserPhotos[id];
   }
 
   constructor(private http: HttpClient, 

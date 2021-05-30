@@ -15,7 +15,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { TabUnderlineDirective } from './directives/material/tab-underline.directive';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { GoogleChartsModule } from 'angular-google-charts';
 import { ResizeModule } from '@thalesrc/ng-utils/resize';
 import { MatBadgeOverrideDirective } from './directives/material/mat-badge-override.directive'
 
@@ -24,7 +23,6 @@ import { ViewTaskDlgComponent } from './components/dialog/view-task-dlg/view-tas
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DialogModule } from 'primeng/dialog';
 
-import { FullCalendarModule, preventContextMenu } from '@fullcalendar/angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -38,8 +36,6 @@ import { LogHoursDlgComponent } from './components/dialog/log-hours-dlg/log-hour
 import { TaskTooltipComponent } from './components/tooltips/task/task.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { AddTippyDirective } from './directives/addTippy.directive';
 import { MondayService } from './services/monday.service';

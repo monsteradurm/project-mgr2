@@ -430,6 +430,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   BoardItemUpdates$ = this.parent.firebase.BoardItemUpdates$
   ngOnInit(): void {
+    /*
     this.subscriptions.push(
       combineLatest([this.parent.Workspace$, this.Board$, this.Group$, this.User$, this.BoardItemUpdates$]).subscribe(
         ([workspace, board, group, user, update]) => {
@@ -448,7 +449,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.ReceivedItemUpdate(workspace, board, group, user, update);
         })
     );
-
+      */
     this.initializing = false;
   }
 

@@ -233,11 +233,13 @@ export class MondayService {
       map((items: any[]) => _.filter(items, i => i.column_values && i.column_values.length > 0))
     )
   }
+
+  /*
   MinBoards$ = this.Query$(`boards(state:active) {
     id, name, workspace_id
   }`).pipe(
     map(result => result['boards']),
-    take(1))
+    take(1)) */
 
   GetTags$(boardId: string) {
     let query = `boards(ids:${boardId}){
@@ -266,6 +268,7 @@ export class MondayService {
       title
       settings_str
     }
+    
     workspace { name, id } 
     groups { id, title }}`)
     .pipe(

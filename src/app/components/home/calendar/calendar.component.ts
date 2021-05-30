@@ -115,7 +115,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
         )
       ),
       shareReplay(1),
-      tap(t => this.Fetching = false)
+      tap(t => this.Fetching = false),
+      tap(t => this.parent.initialized = true)
     )
 
 

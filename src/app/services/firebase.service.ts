@@ -74,6 +74,10 @@ export class FirebaseService {
     this.StoreCachedUpdate(this.CachedBoards$, update);
   }
 
+  GetGroupItems$(board_id: string, group_id: string) {
+    return this.afs.doc<any>('BoardItems/' + board_id + '_' + group_id).valueChanges();
+  }
+
   SendIssueUpdate() {
     this.LastIssueUpdate$.update({user_id: this.user, updated: this.now})
   }
