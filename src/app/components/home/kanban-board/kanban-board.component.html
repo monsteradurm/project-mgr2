@@ -1,3 +1,22 @@
+<div #contextMenuTrigger (menuClosed)="onContextClosed()"
+[matMenuTriggerFor]="ItemContextMenu" 
+style="visibility: hidden; position: fixed"
+    [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y"
+></div>
+
+<mat-menu #ItemContextMenu="matMenu" preventContext>
+    <ng-template matMenuContent>
+        <button mat-menu-item [matMenuTriggerFor]="statusMenu" preventContext>Status</button>
+    </ng-template>
+  </mat-menu>
+  
+  <mat-menu #statusMenu="matMenu" >
+    <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
+      [style.background]="s.color" style.color="white !important"
+      (click)= "onSetStatus(s)">{{s.label}}</button>
+  </mat-menu>
+  
 <ng-container *ngIf="(Items$ | async) as Items">
     <div class="no-select" style="margin-top:32px;margin-right:32px">
 

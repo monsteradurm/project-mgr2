@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
 import * as _ from 'underscore';
 import { HomeComponent } from '../home.component';
+import { KanbanBoardItemComponent } from '../kanban-board-item/kanban-board-item.component';
 
 
 @Component({
@@ -13,6 +15,22 @@ import { HomeComponent } from '../home.component';
   styleUrls: ['./kanban-board.component.scss']
 })
 export class KanbanBoardComponent implements OnInit {
+  @HostListener('contextmenu', ['$event']) onContextMenu(event) {
+
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+
+    console.log(this.contextMenuPosition, event);
+    this.StatusOptions$ = this.ComponentContext.StatusOptions$;
+
+    this.contextMenuTrigger.toggleMenu()
+    this.ComponentContext.HasContext = true;
+    event.preventDefault();
+  }
+
+  contextMenuPosition = { x: '0px', y: '0px' };
+  @ViewChild(MatMenu, {static:false}) contextMenu:MatMenu;
+  @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
 
   constructor(public parent: HomeComponent) { }
 
@@ -21,9 +39,16 @@ export class KanbanBoardComponent implements OnInit {
   @Input() Status: string;
   @Input() primaryColor;
 
+  StatusOptions$;
   ngOnInit(): void {
     
   }
 
+  ComponentContext: KanbanBoardItemComponent;
+    
+  onContextClosed() {
+    this.ComponentContext.HasContext = false;
+    this.ComponentContext.Hovering = false;
+  }
 
 }

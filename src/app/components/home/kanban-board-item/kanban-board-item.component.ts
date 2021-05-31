@@ -14,11 +14,6 @@ import { SyncItemComponent } from '../../syncsketch/sync-item/sync-item.componen
   styleUrls: ['./kanban-board-item.component.scss']
 })
 export class KanbanBoardItemComponent implements OnInit {
-  contextMenuTop;
-  contextMenuLeft;
-  @ViewChild(MatMenu, {static:false}) contextMenu:MatMenu;
-  @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
-
   @ViewChild(SyncItemComponent, {static:false}) SyncItemComp: SyncItemComponent;
   Hovering = false;
   HasContext = false;
@@ -31,18 +26,11 @@ export class KanbanBoardItemComponent implements OnInit {
   @HostListener('mouseover', ['$event']) onMouseOver(evt) {
     if (this.SyncItemComp)
       this.Hovering = true;
+      this.parent.ComponentContext = this;
   }
   @HostListener('mouseout', ['$event']) onMouseLeave(evt) {
     if (!this.HasContext)
       this.Hovering = false;
-  }
-
-  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
-    this.contextMenuLeft = evt.x;
-    this.contextMenuTop = evt.y - 105;
-    this.contextMenuTrigger.toggleMenu()
-    this.HasContext = true;
-    event.preventDefault();
   }
   
   @HostListener('click', ['$event']) onClick(evt) {
@@ -99,11 +87,7 @@ export class KanbanBoardItemComponent implements OnInit {
     }),
     shareReplay(1)
   )
-  
-  onContextClosed() {
-    this.HasContext = false;
-    this.Hovering = false;
-  }
+
 
   get projectService() { return this.parent.parent.projectService; }
 
