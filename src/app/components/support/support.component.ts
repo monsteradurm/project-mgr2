@@ -29,6 +29,9 @@ export class SupportComponent implements OnInit, OnDestroy {
   private issues = new BehaviorSubject<Issue[]>(null)
   Issues$ = this.issues.asObservable();
 
+  private showCompleted = new BehaviorSubject<boolean>(true);
+  ShowCompleted$ = this.showCompleted.asObservable();
+
   selectedUser = new BehaviorSubject<string>('All Users');
   SelectedUser$ = this.selectedUser.asObservable().pipe(shareReplay(1));
 
@@ -77,6 +80,13 @@ export class SupportComponent implements OnInit, OnDestroy {
       return menu;
     })
   )
+
+  ToggleShowCompleted() {
+    this.ShowCompleted$.pipe(take(1)).subscribe((state) => {
+      console.log(state);
+      this.showCompleted.next(!state)
+    });
+  }
 
   ViewAppMenu$ = this.SelectedApplication$.pipe(
     map(([selected]) => {

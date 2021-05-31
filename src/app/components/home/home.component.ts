@@ -259,7 +259,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         let filtered = items;
         if (user != 'All Users') {
           filtered = _.filter(filtered, (i:ScheduledItem) => {
-            if (i.is_milestone)
+            if (i.is_milestone())
               return true;
 
             let artists = _.pluck(i.artist, 'text').join(', ');
@@ -306,6 +306,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   MyProjects$ = this.MyItems$.pipe(
     map(items => _.map(items, i => i.workspace.name)),
     map(workspaces => _.uniq(workspaces)),
+    distinctUntilChanged((a, b) => a == b),
     shareReplay(1)
   )
 

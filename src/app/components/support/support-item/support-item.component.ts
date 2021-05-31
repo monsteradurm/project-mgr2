@@ -9,8 +9,7 @@ import { SupportComponent } from '../support.component';
   styleUrls: ['./support-item.component.scss']
 })
 export class SupportItemComponent implements OnInit {
-  contextMenuTop;
-  contextMenuLeft;
+  contextMenuPosition = { x: '0px', y: '0px' };
   @ViewChild(MatMenu, {static:false}) contextMenu:MatMenu;
   @ViewChild(MatMenuTrigger, {static:false}) contextMenuTrigger: MatMenuTrigger;
 
@@ -22,9 +21,9 @@ export class SupportItemComponent implements OnInit {
       this.Hovering = false;
   }
 
-  @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
-    this.contextMenuLeft = evt.x;
-    this.contextMenuTop = evt.y - 155;
+  @HostListener('contextmenu', ['$event']) onContextMenu(event) {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuTrigger.toggleMenu()
     this.HasContext = true;
     event.preventDefault();

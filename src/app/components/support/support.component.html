@@ -1,6 +1,8 @@
 
 <nav mat-tab-nav-bar pmTabUnderline [primaryColor]="primaryColor">
     <div style="position:absolute;right:20px;" fxLayout="row" fxLayoutAlign="end end">
+        <mat-checkbox style="height:30px"
+        [ngModel]="ShowCompleted$ | async" (ngModelChange)="ToggleShowCompleted()">Completed</mat-checkbox>
         <ng-container *ngFor="let menu$ of [ViewStatusMenu$, ViewUserMenu$, ViewTeamMenu$,
             ViewAppMenu$, ViewRendererMenu$, ViewServiceMenu$, ViewProjectMenu$, ViewBoardMenu$, ViewGroupMenu$]">
             <ng-container *ngIf="(menu$ | async) as ViewMenu">
@@ -18,7 +20,7 @@
 <div class="support-container">
     <div class="pm-page-wtab">
         <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center start">
-            <ng-container *ngFor="let issue of (Issues$ | async)">
+            <ng-container *ngFor="let issue of (Issues$ | FilterCompleted$ : ShowCompleted$ | async)">
                 <app-support-item [Item]="issue" fxLayout="column" style="align-self:stretch"
                 fxLayoutAlign="stretch stretch"></app-support-item>
             </ng-container>

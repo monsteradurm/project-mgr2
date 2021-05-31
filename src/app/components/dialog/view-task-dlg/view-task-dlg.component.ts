@@ -159,7 +159,7 @@ export class ViewTaskDlgComponent implements OnInit {
     let board_id = this.Item.board.id;
     let workspace_id = this.Item.workspace.id;
 
-    this.firebase.SendBoardItemUpdate(board_id, group_id, item_id);
+    //this.firebase.SendBoardItemUpdate(board_id, group_id, item_id);
     this.monday.GetBoardItem$(board_id, group_id, item_id).pipe(
       take(1)
     ).subscribe(item => {
@@ -301,6 +301,9 @@ export class ViewTaskDlgComponent implements OnInit {
         switch (event.type) {
           case HttpEventType.UploadProgress:
             this.fileInput.progress = Math.round(event.loaded * 100 / event.total);
+            if (this.fileInput.progress >= 100) {
+              this.messager.add({severity: 'info', summary: 'Uploaded. Processing Item.', detail: subitem.name})
+            }
             break;
           case HttpEventType.Response: {
             if (event.status == 200)
@@ -397,7 +400,7 @@ export class ViewTaskDlgComponent implements OnInit {
         this.messager.add({
           severity: 'success',
           detail: subitem.name,
-          summary: "File Uploaded."
+          summary: "File Upload Complete."
         })
       })
     })

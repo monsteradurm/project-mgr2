@@ -403,6 +403,14 @@ p-dialog {
   border: solid 1.5px black !important;
 }
 
+span.mat-checkbox-background > svg > path {
+  stroke-width: 3px;
+}
+
+span.mat-checkbox-background > svg {
+  transform: translate(0px, -1px);
+}
+
 mat-checkbox[ng-reflect-model="false"] > label > .mat-checkbox-inner-container > .mat-checkbox-background > svg > path {
   opacity:0;
   transform: scale(2) translateY(-6px) translateX(-5px);
@@ -488,8 +496,13 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
 
 @mixin set-component-colors($primary, $component) {
   #{$component} {
-    .mat-checkbox-background > svg > path {
-      fill: $primary;
+    .mat-checkbox-background > svg > path, 
+    span.mat-checkbox-inner-container > span.mat-checkbox-background > svg > path {
+      stroke: $primary;
+    }
+    
+    .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element, .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
+      background: $primary;
     }
     .mat-checkbox-checked .mat-checkbox-checkmark-path {
       fill: transparent !important;
@@ -632,6 +645,12 @@ p-scrollpanel.viewTaskScroll > .p-scrollpanel >  .p-scrollpanel-wrapper > .p-scr
   $primary: rgb(0, 152, 118) !important,
   $component: "app-overview",
 );
+
+@include set-component-colors(
+  $primary: rgb(129, 177, 0) !important,
+  $component: "app-support",
+);
+
 
 p-toastitem {
   $success: rgb(0, 152, 118);

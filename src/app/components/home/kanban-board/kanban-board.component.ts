@@ -21,7 +21,6 @@ export class KanbanBoardComponent implements OnInit {
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
 
-    console.log(this.contextMenuPosition, event);
     this.StatusOptions$ = this.ComponentContext.StatusOptions$;
 
     this.contextMenuTrigger.toggleMenu()

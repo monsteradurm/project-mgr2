@@ -102,6 +102,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { FirebaseService } from './services/firebase.service';
+import { FilterCompletePipe } from './directives/elements/FilterCompleted.directive';
 declare var google: any;
 
 const declarations = [
@@ -156,7 +157,8 @@ const declarations = [
   SupportComponent,
   SupportItemComponent,
   PreventContextDirective,
-  AddTippyDirective
+  AddTippyDirective,
+  FilterCompletePipe
 ]
 
 const imports = [
