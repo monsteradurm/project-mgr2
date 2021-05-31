@@ -40,6 +40,9 @@ export class KanbanBoardComponent implements OnInit {
   @Input() primaryColor;
 
   StatusOptions$;
+  onSetStatus(column) {
+    this.ComponentContext.onSetStatus(column);
+  }
   ngOnInit(): void {
     
   }
