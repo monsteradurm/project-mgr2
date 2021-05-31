@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy, Output, ApplicationRef } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, Output, ApplicationRef, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
@@ -15,6 +15,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

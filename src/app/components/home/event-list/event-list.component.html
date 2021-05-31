@@ -1,4 +1,4 @@
-<ng-container *ngIf="!Fetching; else fetching">
+<ng-container *ngIf="!(Fetching$ | async); else fetching">
     <ng-container *ngIf="(ViewMode$ | async) as ViewMode">
         <ng-container *ngIf="ViewMode == 'Week'; else dayCalendar">
             <ng-container *ngIf="(WeekListOptions$ | async) as Options">

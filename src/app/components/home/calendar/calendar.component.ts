@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ComponentFactoryResolver, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { HomeComponent } from '../home.component';
 import { Calendar, compareByFieldSpec, eventTupleToStore } from '@fullcalendar/core';
@@ -11,13 +11,14 @@ import tippy from "tippy.js";
 import * as moment from 'moment';
 import * as _ from 'underscore';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { combineLatest, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { LogHoursDlgComponent } from '../../dialog/log-hours-dlg/log-hours-dlg.component';
 import { TaskTooltipComponent } from '../../tooltips/task/task.component';
 import { CalendarItem, CalendarMilestone } from 'src/app/models/Calendar';
 
 @Component({
   selector: 'app-calendar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
@@ -27,7 +28,9 @@ export class CalendarComponent implements OnInit, OnDestroy {
     const name = Calendar.name;
   }
 
-  Fetching: boolean = false;
+  private fetching = new BehaviorSubject<boolean>(false);
+  Fetching$ = this.fetching.asObservable();
+
   Options:any;
   subscriptions = [];
   primaryColor = this.parent.primaryColor;
@@ -84,7 +87,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   Options$ =
     of(null).pipe(
-      tap(t => this.Fetching = true),
+      tap(t => this.fetching.next(true)),
       switchMap(() =>
         combineLatest([this.parent.Allocations$, this.parent.Milestones$]).pipe(
           map(([items, milestones]) => {
@@ -115,7 +118,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
         )
       ),
       shareReplay(1),
-      tap(t => this.Fetching = false),
+      tap(t => this.fetching.next(false)),
       tap(t => this.parent.initialized = true)
     )
 

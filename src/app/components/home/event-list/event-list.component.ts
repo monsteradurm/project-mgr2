@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChildren, QueryList, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { HomeComponent } from '../home.component';
@@ -18,6 +18,7 @@ import { ArtistComponent } from '../../tooltips/artist/artist.component';
 
 @Component({
   selector: 'app-event-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.scss']
 })
@@ -30,7 +31,9 @@ export class EventListComponent implements OnInit, OnDestroy {
   listPlugin = [listPlugin]
   constructor(private parent: HomeComponent) { }
 
-  Fetching: boolean = false;
+  private fetching = new BehaviorSubject<boolean>(false);
+  Fetching$ = this.fetching.asObservable();
+
   _ViewMode = new BehaviorSubject<string>(null);
   ViewMode$ = this._ViewMode.asObservable().pipe(shareReplay(1));
 
@@ -171,7 +174,7 @@ export class EventListComponent implements OnInit, OnDestroy {
 
   WeekListOptions$ =
     of(null).pipe(
-      tap(t => this.Fetching = true),
+      tap(t => this.fetching.next(true)),
       switchMap(() => this.Events$.pipe(
         map((events) =>
         ({
@@ -185,7 +188,7 @@ export class EventListComponent implements OnInit, OnDestroy {
       )
       ),
       shareReplay(1),
-      tap(t => this.Fetching = false),
+      tap(t => this.fetching.next(false)),
       tap(t => this.parent.initialized = true)
     )
   _

@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { KanbanBoardItemComponent } from '../kanban-board-item/kanban-board-item
 @Component({
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./kanban-board.component.scss']
 })
 export class KanbanBoardComponent implements OnInit {
@@ -40,9 +41,11 @@ export class KanbanBoardComponent implements OnInit {
   @Input() primaryColor;
 
   StatusOptions$;
+
   onSetStatus(column) {
     this.ComponentContext.onSetStatus(column);
   }
+
   ngOnInit(): void {
     
   }

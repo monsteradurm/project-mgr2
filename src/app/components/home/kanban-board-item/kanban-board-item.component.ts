@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { BehaviorSubject, combineLatest, EMPTY, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { SyncItemComponent } from '../../syncsketch/sync-item/sync-item.componen
 @Component({
   selector: 'app-kanban-board-item',
   templateUrl: './kanban-board-item.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./kanban-board-item.component.scss']
 })
 export class KanbanBoardItemComponent implements OnInit {

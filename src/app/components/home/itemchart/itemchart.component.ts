@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ScheduledItem } from 'src/app/models/Monday';
@@ -7,6 +7,7 @@ import * as _ from 'underscore';
 
 @Component({
   selector: 'app-itemchart',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './itemchart.component.html',
   styleUrls: ['./itemchart.component.scss']
 })

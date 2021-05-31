@@ -1,4 +1,4 @@
-<ng-container *ngIf="!Fetching; else fetching">
+<ng-container *ngIf="!(Fetching$ | async); else fetching">
         <full-calendar #month style="position:relative" [options]="Options$ | async">
         </full-calendar>
 </ng-container>

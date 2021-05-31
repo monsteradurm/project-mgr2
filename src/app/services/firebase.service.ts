@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import * as moment from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { distinctUntilChanged, shareReplay, take, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, take, tap } from 'rxjs/operators';
 import { DropDownMenuGroup } from '../components/navigation/navigation-map';
 import { BoardItem } from '../models/BoardItem';
 import { FirebaseUpdate } from '../models/Firebase';
