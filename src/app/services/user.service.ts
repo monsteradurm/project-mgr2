@@ -12,6 +12,7 @@ import * as _ from 'underscore';
 import { MondayIdentity } from '../models/Monday';
 import { MondayService } from './monday.service';
 
+const PMUser = '327c95ba-6ff0-47f3-9c7b-e9b2b296f60d';
 
 @Injectable({
   providedIn: 'root'
