@@ -26,16 +26,17 @@ constructor(private sanitizer: DomSanitizer,
             
             return this.syncSketch.Items$(review.id).pipe(
                 map((items: any[]) => 
-                    _.find(items, i => i.name.indexOf(subitem.id + '_') == 0)
+                    _.filter(items, i => i.name.indexOf(subitem.id + '_') == 0)
                 ),
 
-                map(item => {
-                    if (!item)
-                        return 'NO ITEM';
+                map((items:any) => {
+                    if (!items)
+                        return [];
 
-                    item.reviewURL = review.reviewURL;
-                    return item;
-                })
+                    items.forEach(item => item.reviewURL = review.reviewURL);
+                    return items;
+                }),
+                map((items:any[]) => _.sortBy(items, i => i.created).reverse())
             )
         }),
         catchError(err => {
