@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, from, Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, take, tap } from 'rxjs/operators';
 import { DropDownMenuGroup } from '../components/navigation/navigation-map';
 import { BoardItem } from '../models/BoardItem';
 import { FirebaseUpdate } from '../models/Firebase';
+import { ScheduledItem } from '../models/Monday';
 import { BoardItemUpdate, BoardUpdate } from '../models/Socket';
 import { UserService } from './user.service';
 
@@ -89,4 +90,14 @@ export class FirebaseService {
   SendBoardItemUpdate(board_id:string, group_id:string, item_id) {
     this.LastBoardItemUpdate$.update({ board_id, group_id, item_id, user_id: this.user, updated: this.now });
   }
+
+  SyncSketchReview(item: BoardItem | ScheduledItem) {
+    var review = `${item.board.id}_${item.group.title}/${item.element}`.replace('/', '_._');
+    var project = item.workspace.name + ', ' + item.board.name.replace('/', '_._');
+    return from(this.afs.collection('Syncsketch').doc(project).collection('reviews').doc(review).get()).pipe(
+      map(doc => doc.exists ? doc.data() : null),
+      take(1)
+      );
+  }
 }
+

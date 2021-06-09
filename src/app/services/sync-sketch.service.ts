@@ -6,7 +6,9 @@ import { of } from 'rxjs';
 import { delay, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as _ from 'underscore';
-import { Board } from '../models/BoardItem';
+import { Board, BoardItem } from '../models/BoardItem';
+import { ScheduledItem } from '../models/Monday';
+import { FirebaseService } from './firebase.service';
 
 const _URL_ = environment.syncsketch.url;
 const _ACCOUNT_ = '116681'
@@ -33,7 +35,7 @@ const _BLANKPROJECT_ = 152336;
 export class SyncSketchService {
 
   Authorization = `apikey ${environment.syncsketch.user}:${environment.syncsketch.token}`;
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private firebase: FirebaseService) { 
   }
   AllUsers$ = this.Query$(`/syncsketch/account/${_ACCOUNT_}/`).pipe(
     map((account:any) => account.connections),
@@ -78,11 +80,16 @@ export class SyncSketchService {
   }
 
   Updates$(item_id:string) {
+    if (!item_id) return of(null);
+    
     return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`)
   }
   Items$(review_id: string) {
+    if (!review_id)
+      return of(null);
+
     return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1
-    `)
+    `);
   }
 
   RemoveItems$(ids: string[]) {
@@ -118,10 +125,15 @@ export class SyncSketchService {
     );
   }
 
-  FindReview$(board_id: string, group_title: string, element:string) {
-    return this.QueryArray$(`/syncsketch/review/?name__istartswith=${board_id}_${group_title}/${element}&active=1`).pipe(
+  FindReview$(item: BoardItem | ScheduledItem) {
+    let fb = this.firebase.SyncSketchReview(item);
+    let ss = this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`).pipe(
       map(results => results.length < 1 ? null : results[0]),
       take(1)
+    )
+
+    return fb.pipe(
+      switchMap(review => review ? of(review) : ss)
     )
   }
 

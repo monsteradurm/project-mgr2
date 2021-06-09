@@ -15,6 +15,6 @@ export class FindSyncReviewPipe  {
 constructor(private syncSketch: SyncSketchService) { }
 
   transform(Item: BoardItem | ScheduledItem) {
-    return this.syncSketch.FindReview$(Item.board.id, Item.group.title, Item.element)
+    return this.syncSketch.FindReview$(Item)
   }
 }

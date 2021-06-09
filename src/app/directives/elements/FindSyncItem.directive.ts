@@ -17,7 +17,7 @@ constructor(private sanitizer: DomSanitizer,
    
     return review$.pipe(
         switchMap(review => {
-  
+            
             if (!review || !review.id)
                 throw 'no review item to map';
             if (!subitem || !subitem.id)

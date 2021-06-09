@@ -91,7 +91,7 @@ export class ViewTaskDlgComponent implements OnInit {
   SelectedSubItem;
   SyncReview$ = this.Item$.pipe(
     switchMap(Item => Item ?
-      this.syncSketch.FindReview$(Item.board.id, Item.group.title, Item.element) :
+      this.syncSketch.FindReview$(Item) :
       of(null)),
     switchMap(review => {
       if (review)

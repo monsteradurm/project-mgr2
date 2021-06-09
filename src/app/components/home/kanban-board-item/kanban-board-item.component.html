@@ -23,15 +23,17 @@
                             {{SubItem.name}}
                         </h4>
                         <ng-container
-                            *ngIf="(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async) as SyncItem; else fetchingItems">
-                            <ng-container *ngIf="SyncItem != 'NO ITEM'">
+                            *ngIf="(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async) as SyncItems; else fetchingItems">
+                            <ng-container *ngFor="let SyncItem of SyncItems">
+
                                 <app-sync-item 
                                     [parent]=""
                                     [item]="SyncItem" [Status]="Status" [LastUpdateOnly]="true"
                                     [ShowViewHint]="false">
                                 </app-sync-item>
                             </ng-container>
-                            <ng-container *ngIf="SyncItem == 'NO ITEM'">
+
+                            <ng-container *ngIf="SyncItems.length < 1">
                                 <h4 style="text-align:center;margin: 0px;
             margin-top: 20px;margin-bottom:20px">No <span style="font-weight:bold">"SyncSketch"</span> Items for Review
                     have
