@@ -37,6 +37,8 @@ export class SyncItemComponent implements OnInit {
   }
 
   onClick() {
+    console.log("CLICK");
+    
     this.Updates$.pipe(take(1)).subscribe(updates => {
       if (updates.length < 1) {
         this.NewTab(`${this.item.reviewURL}#/${this.item.id}?offlineMode=1`);

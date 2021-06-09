@@ -24,11 +24,11 @@
                         </h4>
                         <ng-container
                             *ngIf="(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async) as SyncItems; else fetchingItems">
-                            <ng-container *ngFor="let SyncItem of SyncItems">
+                            <ng-container *ngIf="SyncItems.length > 0">
 
                                 <app-sync-item 
                                     [parent]=""
-                                    [item]="SyncItem" [Status]="Status" [LastUpdateOnly]="true"
+                                    [item]="SyncItems[SyncItems.length - 1]" [Status]="Status" [LastUpdateOnly]="true"
                                     [ShowViewHint]="false">
                                 </app-sync-item>
                             </ng-container>
