@@ -919,7 +919,7 @@ div.bp-header-container > div > .bp-default-logo {
 
 .mat-tab-label, .mat-tab-link {
   font-family: unset !important;
-  padding:0px 5px !important;
+  padding:0px 15px !important;
 }
 .p-splitter.p-component.p-splitter-horizontal {
   display:flex;
@@ -1177,6 +1177,10 @@ p-badge.badge-received-feedback > span {
 
 p-badge.badge-requires-assistance > span {
   background: rgb(255, 90, 196);
+}
+
+p-badge.badge-inProgress > span {
+  background: rgb(0, 134, 192);
 }
 
 .kanban-attr {

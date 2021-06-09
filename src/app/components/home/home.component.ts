@@ -59,7 +59,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   InternalRouteParams$ = this.internalRouteParams.asObservable().pipe(shareReplay(1));
 
   showHoursDlg: boolean = false;
-  TabOptions = ['Schedule', 'Review', 'Assist', 'Feedback', 'Chart']
+  TabOptions = ['Schedule', 'Review', 'Assist', 'Feedback', 'In Progress', 'Chart']
 
   private tab = new BehaviorSubject<string>('Schedule')
   Tab$ = this.tab.asObservable().pipe(shareReplay(1));
@@ -393,18 +393,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   RequiresReview$ = this.MyFilteredItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
-    shareReplay(2),
+    shareReplay(1),
   )
 
   RequiresAssistance$ = this.MyFilteredItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Requires Assistance') > -1)),
-    shareReplay(2)
+    shareReplay(1)
   )
 
   ReceivedFeedback$ = this.MyFilteredItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text &&
       i.status.text.indexOf('Received') > -1 && i.status.text.indexOf('Feedback') > -1)),
-    shareReplay(2)
+    shareReplay(1)
+  )
+
+  
+  InProgress$ = this.MyFilteredItems$.pipe(
+    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Progress') > -1)),
+    shareReplay(1)
   )
 
 

@@ -26,9 +26,16 @@
           <p-badge class="badge-received-feedback" [value]="length"></p-badge>
         </ng-container>
       </ng-container>
+
       <ng-container *ngIf="t == 'Assist'">
         <ng-container *ngIf="(RequiresAssistance$ | async)?.length as length">
           <p-badge class="badge-requires-assistance" [value]="length"></p-badge>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="t == 'In Progress'">
+        <ng-container *ngIf="(InProgress$ | async)?.length as length">
+          <p-badge class="badge-inProgress" [value]="length"></p-badge>
         </ng-container>
       </ng-container>
 
@@ -89,6 +96,11 @@
           <div *ngSwitchCase="'Assist'">
             <app-kanban-board [primaryColor]="primaryColor" Status="Requires Assistance" [SubItems$]="SubItems$"
               [Items$]="RequiresAssistance$"></app-kanban-board>
+          </div>
+
+          <div *ngSwitchCase="'In Progress'">
+            <app-kanban-board [primaryColor]="primaryColor" Status="In Progress" [SubItems$]="SubItems$"
+              [Items$]="InProgress$"></app-kanban-board>
           </div>
 
           <div *ngSwitchCase="'Chart'">

@@ -16,7 +16,7 @@ style="visibility: hidden; position: fixed"
       [style.background]="s.color" style.color="white !important"
       (click)= "onSetStatus(s)">{{s.label}}</button>
   </mat-menu>
-  
+
 <ng-container *ngIf="(Items$ | async) as Items">
     <div class="no-select" style="margin-top:32px;margin-right:32px">
 
