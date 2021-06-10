@@ -64,7 +64,6 @@ export class BoxService {
 
   FindNestedFolder(path: string[], anscestor:string, create_if_missing: boolean) {    
     let chain = this.QueryFolderExists_AnscestorId(anscestor, path[0], create_if_missing)
-
     for(let p = 1; p < path.length; p++) {
       
       chain = chain.pipe(
@@ -239,7 +238,9 @@ export class BoxService {
   Root$ = this.GetFolder$('0');
   
   Search$(search, type: string) { 
-    return this.Query$('/box/search?query=' + search + '&type=' + type +'&fields=id,type,name&content_types=name') 
+    return this.Query$('/box/search?query=' + search + '&type=' + type +'&fields=id,type,name&content_types=name').pipe(
+      tap(t => console.log("HERE", search, t))
+    )
   }
 
   Project$(project:string) { //project name aka workspace name

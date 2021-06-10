@@ -96,7 +96,7 @@ export class ProjectService {
   GetProjectSettings$(workspace_id) {
       return this.Boards$.pipe(
       switchMap(boards => {
-        let board = _.find(boards, b=> b.name == "_Settings" && b.workspace_id.toString() == workspace_id.toString());
+        let board = _.find(boards, b=> b.workspace && b.name == "_Settings" && b.workspace.id.toString() == workspace_id.toString());
         if (!board) return of(null)
         return this.monday.ProjectSettings$(board.id)
       }),
