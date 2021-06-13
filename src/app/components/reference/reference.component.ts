@@ -1,7 +1,7 @@
 import { ResizeManager } from '@thalesrc/resize-manager';
 
 import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { delay, map, retryWhen, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
 
@@ -34,16 +34,17 @@ export class ReferenceComponent implements OnInit, OnDestroy {
   _Root:any;
 
   @Input() set Root(r:any) {
+    console.log(r);
     this.root.next(r);
     this._Root = r;
   }
 
   private root = new BehaviorSubject<any>(null);
-
-  private onRefresh = new BehaviorSubject<boolean>(null);
+  private _Root$ = this.root.asObservable();
+  private onRefresh = new BehaviorSubject<boolean>(true);
   Refresh$ = this.onRefresh.asObservable();
 
-  Root$ = combineLatest([this.Refresh$, this.root.asObservable()]).pipe(
+  Root$ = combineLatest([this.Refresh$, this._Root$]).pipe(
     tap(t => this.Fetching = true),
     map(([refresh, root]) => root ? root : null),
       shareReplay(1),
@@ -60,23 +61,18 @@ export class ReferenceComponent implements OnInit, OnDestroy {
     tap(t => this.Fetching = true),
     switchMap(([refresh, current, root]) => current ? 
       this.box.GetFolder$(current) : 
-      root ? this.box.GetFolder$(root.id) : of(null)),
+      root ? 
+      (root.item_collection ? of(root) : this.box.GetFolder$(root.id)) : of(null)),
+    tap(t => this.Fetching = false),
     shareReplay(1),
   )
 
   Contents$ = this.Current$.pipe(
-    tap(console.log),
     map((contents:any) => {
-      if (!contents) return null
-
-      if (!contents.item_collection) return null;
-
-      if (contents.item_collection.total_count < 1) return [];
-
+      if (!contents) throw ('Could not find Box Contents');
       return contents.item_collection.entries;
     }),
     tap(t => {
-      if (t)
       this.Fetching = false
     })
   )
@@ -116,7 +112,6 @@ export class ReferenceComponent implements OnInit, OnDestroy {
   subscriptions = [];
   ngOnInit(): void {
     
-
     this.subscriptions.push(
       this.Folders$.subscribe(contents => this.Folders = contents)
     );

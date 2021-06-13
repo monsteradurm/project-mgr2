@@ -8,6 +8,7 @@ import { SystemComponent } from './components/system/system.component';
 import { ProjectComponent } from './components/projects/project/project.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { SupportComponent } from './components/support/support.component';
+import { BoxWebhooksComponent } from './components/system/box-webhooks/box-webhooks.component';
 
 const routes: Routes = [
   {
@@ -41,7 +42,13 @@ const routes: Routes = [
   },
   {
     path: 'System',
-    component: SystemComponent
+    component: SystemComponent,
+    children: [
+      {
+        path: 'BoxWebhooks',
+        component: BoxWebhooksComponent
+      }
+    ]
   },
   {
     path: 'Gallery',

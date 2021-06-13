@@ -98,6 +98,11 @@ export class NavigationService {
     map(e => e.url.split('/')[1])
   )
 
+  NavigationChildren$ = this.NavigationEndEvent$.pipe(
+    map(e => e.url.split('/')),
+    map(e => e.length < 3 ? null : e.splice(2, e.length - 2))
+  )
+
   NavigationParameters$ = this.NavigationEndEvent$.pipe(
     map(e => {
       let arr = e.url.split(';');
@@ -164,15 +169,15 @@ export class NavigationService {
     let menu = navMenu.Pages['System'].menu;
     menu.removeChildren();
 
-    if (system.children.length < 1) 
-        menu.createButton({ title: "No System Settings to Show" });
-
-        
     system.children.forEach(s => {
         menu.createButton({ title: s.name }).fire$.subscribe((a) => {
         this.Navigate('/System', { board: s.id, name: s.name })
         })
     })
+
+    menu.createButton({title: 'Box WebHooks'}).fire$.subscribe((A) => {
+      this.Navigate('/System/BoxWebhooks', { });
+    });
   }
 
   BuildGalleryDropDown(dropdown:ActionGroup, children: any[], folder:any) {

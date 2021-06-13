@@ -11,7 +11,7 @@
 
     <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
 
-        <ng-container *ngIf="(Departments$ | async) as Departments">
+        <ng-container *ngIf="(Departments$ | async | FlattenDepartments) as Departments">
             <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%"
                 fxLayout="column">
                 <div fxLayout="row" fxLayoutAlign="space-between center" class="task-dlg-header no-select"
@@ -128,6 +128,7 @@
                                                             <ng-container
                                                                 *ngIf="(SyncReview$ | FindSyncItem$ : View | async) as SyncItems; else fetchingItems">
                                                                 <ng-container *ngFor="let SyncItem of SyncItems">
+
                                                                     <app-sync-item [item]="SyncItem" [Status]="Status">
                                                                     </app-sync-item>
                                                                 </ng-container>
@@ -159,12 +160,18 @@
                                                         {{View.text}} Reference</h3>
 
                                                     <ng-container
-                                                        *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
-                                                        <app-reference style="position:relative;width:100%"
-                                                            [Height]="Height" [Root]="ReferenceFolder"
-                                                            [primaryColor]="Status.color">
-                                                        </app-reference>
+                                                        *ngIf="(ReferenceError$ | async) as ReferenceError; else noRefError">
+                                                        <h3>{{ReferenceError}}</h3>
                                                     </ng-container>
+                                                    <ng-template #noRefError>
+                                                        <ng-container
+                                                            *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
+                                                            <app-reference style="position:relative;width:100%"
+                                                                [Height]="Height" [Root]="ReferenceFolder"
+                                                                [primaryColor]="Status.color">
+                                                            </app-reference>
+                                                        </ng-container>
+                                                    </ng-template>
                                                     <ng-template #fetchingBox>
                                                         <div fxLayout="column" fxLayoutAlign="center center"
                                                             style="width:100%;height:100%">

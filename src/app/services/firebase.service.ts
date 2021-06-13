@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot } from '@angular/fire/firestore';
 import * as moment from 'moment';
-import { BehaviorSubject, from, Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { DropDownMenuGroup } from '../components/navigation/navigation-map';
 import { BoardItem } from '../models/BoardItem';
 import { FirebaseUpdate } from '../models/Firebase';
@@ -98,6 +98,45 @@ export class FirebaseService {
       map(doc => doc.exists ? doc.data() : null),
       take(1)
       );
+  }
+  ReferenceFolder$(item: BoardItem | ScheduledItem) : Observable<any> {
+    let ref = this.afs.collection('BoxFolders').doc(item.workspace.name)
+    .collection('folders').doc('Reference');
+    return ref.get().pipe(
+      map(doc => {
+        if (!doc.exists) {
+          throw 'Could not find Reference Folder for Project: ' + item.workspace.name; 
+        }
+        let data = doc.data();
+        if (!data.id) {
+          throw 'Could not find Box "Reference" Folder Id for Project: ' + item.workspace.name; 
+        }
+        return data.id;
+      }),
+      take(1)
+    )
+  }
+  CachedRereferenceFolder(item: BoardItem | ScheduledItem, path:string[]) {
+    let reference = this.afs.collection('BoxFolders').doc(item.workspace.name).collection('folders').doc('Reference');
+    return reference.get().pipe(
+      switchMap(doc => {
+        if (!doc.exists) {
+          throw 'Could not find Reference Folder for Project: ' + item.workspace.name; 
+        }
+        let last = reference;
+        path.forEach(p => {
+          last = last.collection('folders').doc(p); 
+        })
+        return last.get();
+      }),
+      map((doc : DocumentSnapshot<any>) => {
+        if (doc.exists) {
+          return doc.data();
+        }
+        return null;
+      }),
+      take(1)
+    )
   }
 }
 

@@ -103,6 +103,8 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { FirebaseService } from './services/firebase.service';
 import { FilterCompletePipe } from './directives/elements/FilterCompleted.directive';
+import { GetBoxFolderInformationPipe } from './directives/box/GetBoxFolderInformation';
+import { FlattenDepartmentsPipe } from './directives/elements/FlattenDepartments.directive';
 declare var google: any;
 
 const declarations = [
@@ -158,7 +160,9 @@ const declarations = [
   SupportItemComponent,
   PreventContextDirective,
   AddTippyDirective,
-  FilterCompletePipe
+  FilterCompletePipe,
+  GetBoxFolderInformationPipe,
+  FlattenDepartmentsPipe
 ]
 
 const imports = [

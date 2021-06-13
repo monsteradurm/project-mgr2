@@ -1,0 +1,10 @@
+<div *ngFor="let hook of (Webhooks$ | async)" style="margin-left:30px;margin-top:30px;">
+    <ng-container *ngIf="(hook.target.id | GetBoxFolderInfo$ | async) as folder">
+
+        <h2 style="margin-bottom:0px;padding-bottom:0px;font-weight:bold">{{folder.parent.name}}, {{folder.name}}</h2>
+        <div style="margin-left:30px">
+            <div>hook id: {{hook.id}}</div>
+            <div>folder id: {{folder.id}}</div>
+        </div>
+    </ng-container>
+</div>

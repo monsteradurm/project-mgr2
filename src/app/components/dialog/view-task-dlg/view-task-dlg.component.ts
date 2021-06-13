@@ -117,11 +117,17 @@ export class ViewTaskDlgComponent implements OnInit {
     department.ReferenceFolder$ = this.ReferenceFolder$(department.text);
     this.SelectedSubItem = department.id;
   }
+  private referenceError = new BehaviorSubject<string>(null); 
+  ReferenceError$ = this.referenceError.asObservable().pipe(
+    tap(t => console.log("REFERENCE ERROR: ", t)),
+    shareReplay(1)
+    );
+
 
   ReferenceFolder$(department) {
-    return combineLatest([this.ProjectReference$, this.Item$]).pipe(
-      switchMap(([anscestor, item]) => {
-        if (!item || !anscestor) return of(null);
+    return this.Item$.pipe(
+      switchMap((item) => {
+        if (!item) return of(null);
 
         let path = item.board.name.indexOf('/') > -1 ?
           item.board.name.split('/') : [item.board.name];
@@ -130,7 +136,29 @@ export class ViewTaskDlgComponent implements OnInit {
         path.push(item.element);
         path.push(department);
 
-        return this.box.FindNestedFolder(path, anscestor, true);
+        return this.firebase.CachedRereferenceFolder(item, path).pipe(
+          switchMap(doc => {
+            if (doc) {
+              console.log("Found cached Box Folder", doc.id);
+              return this.box.GetFolder$(doc.id);
+            }
+            else {
+              console.log("HERE", item)
+              return this.firebase.ReferenceFolder$(item).pipe(
+                tap(t => console.log("Could not find Cached Box Folder, Creating..", path)),
+                switchMap((anscestor:string) => 
+                  this.box.FindNestedFolder(path, anscestor, true)
+                )
+              )
+            }
+            //;
+            //return 
+          }),
+          catchError(err => {
+            this.referenceError.next(err);
+            return of(null);
+          })
+        )
       })
     ).pipe(take(1))
   }
@@ -341,9 +369,10 @@ export class ViewTaskDlgComponent implements OnInit {
 
   Departments$ = this.Board$.pipe(
     switchMap(board => board ? this.monday.GetTags$(board.id) : [])  
-  )
-
+        )
+  /*
   ProjectReference$ = this.Settings$.pipe(
+
     map(
       settings => {
         if (!settings || !settings['Box Folders'])
@@ -355,7 +384,7 @@ export class ViewTaskDlgComponent implements OnInit {
         return ref.column_values[0].text;
       }
     )
-  )
+  )*/
 
   SyncBoard$ = this.Board$.pipe(
     switchMap(board => this.syncSketch.Project$(board)),

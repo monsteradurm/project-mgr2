@@ -62,7 +62,8 @@ export class BoxService {
     });
   }
 
-  FindNestedFolder(path: string[], anscestor:string, create_if_missing: boolean) {    
+  FindNestedFolder(path: string[], anscestor:string, create_if_missing: boolean) {  
+    console.log("FIND NESTED")
     let chain = this.QueryFolderExists_AnscestorId(anscestor, path[0], create_if_missing)
     for(let p = 1; p < path.length; p++) {
       
@@ -197,17 +198,31 @@ export class BoxService {
   )
 
   Post$(addr:string, body:any) {
-    console.log("POSTING", addr, body)
     return this.Headers$.pipe(
       switchMap(headers => this.http.post(addr, body, headers)),
       take(1)
     )
   }
 
+  DeleteWebhook$(id) {
+    return this.Delete$('/box/webhooks/' + id);
+  }
+
+  AddWebhook$(target, triggers, address) {
+    return this.Post$('/box/webhooks', { target, triggers, address })
+  }
+
   Query$(addr: string) {
     return this.Headers$.pipe(
       switchMap(headers => this.http.get(addr, headers)),
       take(1), 
+    )
+  }
+
+  Delete$(addr: string) {
+    return this.Headers$.pipe(
+      switchMap(headers => this.http.delete(addr, headers)),
+      take(1)
     )
   }
 
@@ -236,7 +251,10 @@ export class BoxService {
           )
   
   Root$ = this.GetFolder$('0');
-  
+  WebHooks$ = this.Query$('/box/webhooks').pipe(
+    map((result: {entries, limit}) => result ? result.entries : null)
+  )
+
   Search$(search, type: string) { 
     return this.Query$('/box/search?query=' + search + '&type=' + type +'&fields=id,type,name&content_types=name').pipe(
       tap(t => console.log("HERE", search, t))

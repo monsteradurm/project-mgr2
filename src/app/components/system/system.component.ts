@@ -1,4 +1,5 @@
 import { Component, OnInit, Output } from '@angular/core';
+import { geoConicConformalRaw } from 'd3-geo';
 import { BehaviorSubject, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
@@ -14,31 +15,42 @@ import * as _ from 'underscore';
 })
 export class SystemComponent implements OnInit {
 
-  constructor(private navigation:NavigationService, 
+  constructor(
+    public navigation:NavigationService, 
     private monday: MondayService) { }
 
+  
   private boardId = new BehaviorSubject<string>(null);
   BoardId$ = this.boardId.asObservable().pipe(shareReplay(1));
 
   Settings$ = this.BoardId$.pipe(
     switchMap(id => id ? this.monday.ProjectSettings$(id) : of(null)),
     map(page => {
+      if (!page) return;
+
       let groups = Object.keys(page);
       return _.map(groups, g=> ({
         title: g,
         items: page[g]
       }))
     }),
-    tap(console.log)
   )
 
   @Output() primaryColor;
   subscriptions = []
+  NavigationChild: string;
+
   ngOnInit(): void {
     this.subscriptions.push(
       this.navigation.PrimaryColor$.subscribe(c => this.primaryColor = c)
      )
 
+     this.subscriptions.push(
+       this.navigation.NavigationChildren$.subscribe(url => {
+         if (url.length > 0)
+          this.NavigationChild = url[0];
+       })
+     )
      this.subscriptions.push(
       this.navigation.NavigationParameters$.subscribe(
         (params:any) => {

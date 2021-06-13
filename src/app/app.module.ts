@@ -88,6 +88,7 @@ import { ChromeService } from './services/chrome.service';
 import { CalendarEventComponent } from './components/tooltips/calendar-event/calendar-event.component';
 import { MobileComponent } from './components/mobile/mobile.component';
 import { CalendarMilestoneComponent } from './components/tooltips/calendar-milestone/calendar-milestone.component';
+import { BoxWebhooksComponent } from './components/system/box-webhooks/box-webhooks.component';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -161,7 +162,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     EventListComponent,
     CalendarEventComponent,
     MobileComponent,
-    CalendarMilestoneComponent
+    CalendarMilestoneComponent,
+    BoxWebhooksComponent
   ],
 
   imports: [
