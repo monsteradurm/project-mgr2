@@ -3,6 +3,7 @@ import { geoConicConformalRaw } from 'd3-geo';
 import { BehaviorSubject, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 import { MondayService } from 'src/app/services/monday.service';
 import { NavigationService } from 'src/app/services/navigation.service';
 
@@ -16,6 +17,7 @@ import * as _ from 'underscore';
 export class SystemComponent implements OnInit {
 
   constructor(
+    public firebase: FirebaseService,
     public navigation:NavigationService, 
     private monday: MondayService) { }
 

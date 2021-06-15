@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot, QueryDocumentSnapshot } from '@angular/fire/firestore';
 import * as moment from 'moment';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { FirebaseUpdate } from '../models/Firebase';
 import { ScheduledItem } from '../models/Monday';
 import { BoardItemUpdate, BoardUpdate } from '../models/Socket';
 import { UserService } from './user.service';
+import * as _ from 'underscore';
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +66,20 @@ export class FirebaseService {
     doc.update({ updated: update.updated, json: update.json }).then(console.log);
   }
 
+  BoxWebhooks$ = this.afs.collection("BoxWebhooks").get().pipe(
+      map(result => result.docs),
+      map((docs: QueryDocumentSnapshot<any>[]) => 
+      _.filter(
+        _.map(docs, (d: QueryDocumentSnapshot<any>) => {
+          let result = d.data()
+          result.id = d.id;
+          return result;
+
+        })), d => d.type == 'box'
+      ),
+      shareReplay(1)
+    )
+
   CacheProjects(update: FirebaseUpdate) {
     console.log("Storing Projects in Firebase...")
     this.StoreCachedUpdate(this.CachedProjects$, update);
@@ -99,6 +114,7 @@ export class FirebaseService {
       take(1)
       );
   }
+
   ReferenceFolder$(item: BoardItem | ScheduledItem) : Observable<any> {
     let ref = this.afs.collection('BoxFolders').doc(item.workspace.name)
     .collection('folders').doc('Reference');
@@ -116,6 +132,7 @@ export class FirebaseService {
       take(1)
     )
   }
+
   CachedRereferenceFolder(item: BoardItem | ScheduledItem, path:string[]) {
     let reference = this.afs.collection('BoxFolders').doc(item.workspace.name).collection('folders').doc('Reference');
     return reference.get().pipe(

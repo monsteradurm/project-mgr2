@@ -1,0 +1,10 @@
+.task-btn-container > button {
+    background:gray !important;
+}
+.task-btn-container > button > .mat-button-wrapper > .mat-icon {
+    color: white !important;
+}
+
+.task-btn-container > button:hover {
+    background:black !important;
+}
