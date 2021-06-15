@@ -33,11 +33,12 @@ export class KanbanBoardItemComponent implements OnInit {
     if (!this.HasContext)
       this.Hovering = false;
   }
-  
+
   @HostListener('click', ['$event']) onClick(evt) {
     if (!this.SyncItemComp)
       return;
 
+    console.log("EVENT ?!")
     this.SyncItemComp.onClick();
   }
   constructor(private parent: KanbanBoardComponent) { }

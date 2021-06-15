@@ -31,14 +31,14 @@ export class SyncItemComponent implements OnInit {
   @Input() Status;
 
   _lastUpdateOnly;
-  @Input() set LastUpdateOnly(l: boolean) { 
+  @Input() set LastUpdateOnly(l: boolean) {
     this._lastUpdateOnly = l;
     this.lastUpdateOnly.next(l);
   }
 
   onClick() {
     console.log("CLICK");
-    
+
     this.Updates$.pipe(take(1)).subscribe(updates => {
       if (updates.length < 1) {
         this.NewTab(`${this.item.reviewURL}#/${this.item.id}?offlineMode=1`);
@@ -64,7 +64,7 @@ export class SyncItemComponent implements OnInit {
 
       else if (!lastUpdateOnly)
         return updates;
-    
+
       return [updates.reverse()[0]];
     }),
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
@@ -74,6 +74,9 @@ export class SyncItemComponent implements OnInit {
   }
 
   NewTab(url) {
+    if (!url) return;
+
+    console.log("OPEN", url);
     window.open(url, "_blank");
   }
 }

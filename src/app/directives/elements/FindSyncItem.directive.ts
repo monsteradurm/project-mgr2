@@ -14,18 +14,18 @@ export class FindSyncItemPipe  {
 constructor(private sanitizer: DomSanitizer,
             private syncSketch: SyncSketchService) { }
   transform(review$: Observable<any>, subitem: SubItem) {
-   
+
     return review$.pipe(
         switchMap(review => {
-            
+
             if (!review || !review.id)
                 throw 'no review item to map';
             if (!subitem || !subitem.id)
                 throw 'no subitem to map';
-            
-            
+
+
             return this.syncSketch.Items$(review.id).pipe(
-                map((items: any[]) => 
+                map((items: any[]) =>
                     _.filter(items, i => i.name.indexOf(subitem.id + '_') == 0)
                 ),
 
@@ -44,6 +44,6 @@ constructor(private sanitizer: DomSanitizer,
             return of([]);
         }),
     )
-    
+
   }
 }
