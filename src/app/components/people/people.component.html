@@ -149,6 +149,8 @@
         </ng-template>
     </div>
     <ng-template #applications>
-      <app-applications></app-applications>
+
+      <app-applications *ngIf="params.page == 'Applications'"></app-applications>
+      <app-typeforms *ngIf="params.page == 'Typeforms'"></app-typeforms>
     </ng-template>
 </div>

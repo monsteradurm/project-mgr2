@@ -17,6 +17,7 @@ import { NavigationComponent } from '../components/navigation/navigation.compone
 import { AppComponent } from '../app.component';
 import { FirebaseService } from './firebase.service';
 import { ProjectService } from './project.service';
+import { TypeformService } from './typeform.service';
 
 
 @Injectable({
@@ -304,16 +305,20 @@ export class NavigationService {
     if (forms.length < 1) {
       appMenu.createButton({ title: "No Typeforms to Show" });
     }
+    let formMenu = appMenu.createGroup();
 
     _.sortBy(forms, f => f.title).forEach(f => {
-      appMenu.createButton({ title: f.title}).fire$.subscribe(a => {
-        this.Navigate('People', {page: "Applications", id: f.typeform_id, title: f.title})
+      formMenu.createButton({ title: f.title}).fire$.subscribe(a => {
+        this.Navigate('People', {page: "Applications", id: f.id, title: f.title})
       });
     });
 
+    appMenu.createGroup().createButton({ title: 'Forms'}).fire$.subscribe(a => {
+      this.Navigate('People', {page: 'Typeforms'});
+    })
   }
 
-  Typeforms$ = this.firebase.TypeForms$;
+  Typeforms$ = this.typeform.Forms$;
 
   SetProjectsMenu(navMenu, projects) {
     if (!navMenu || !projects)
@@ -370,6 +375,7 @@ export class NavigationService {
   ReferenceFolder$;
   constructor(
     private firebase: FirebaseService,
+    private typeform: TypeformService,
     private location:Location,
     private confluence: ConfluenceService,
     private actionOutlet: ActionOutletFactory,

@@ -21,8 +21,13 @@
 </nav>
 <div fxLayout="row" fxLayoutAlign="center center" style="width:100%;margin-top:20px">
   <div fxLayout="column" style="min-width:800px;width:100%;max-width:calc(100vw - 300px)">
-    <div *ngFor="let res of (Responses$ | async)" style="padding:10px">
+    <ng-container *ngIf="(Responses$ | async) as Responses">
+      <div *ngFor="let res of Responses" style="padding:10px">
         <app-application [Applicant]="res"></app-application>
-    </div>
+      </div>
+      <div *ngIf="Responses.length < 1" style="width:100%;text-align:center">
+        <h2>There have been no applications submitted for this Typeform</h2>
+      </div>
+    </ng-container>
   </div>
 </div>

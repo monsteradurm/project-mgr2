@@ -1,0 +1,6 @@
+<div class="pm-page" fxLayoutAlign="start center" fxLayout="column" style="width:100%">
+    <div *ngFor="let form of (Forms$ | async)"
+        fxLayout="column" style="width:calc(100% - 300px);padding:20px" fxLayoutAlign="center center">
+        <app-typeform [Form]="form"></app-typeform>
+    </div>
+</div>

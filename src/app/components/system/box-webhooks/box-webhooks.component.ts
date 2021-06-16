@@ -20,6 +20,7 @@ export class BoxWebhooksComponent implements OnInit {
     private parent: SystemComponent) { }
   
   AllWebhooks$ = combineLatest([this.box.WebHooks$, this.parent.firebase.BoxWebhooks$]).pipe(shareReplay(1));
+  
   get primaryColor() {
     return this.parent.primaryColor;
   }

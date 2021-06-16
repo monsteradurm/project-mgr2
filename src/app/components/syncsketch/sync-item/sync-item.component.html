@@ -1,7 +1,11 @@
 <ng-container *ngIf="item">
     <ng-container *ngIf="(Updates$ | async) as Updates; else fetchingUpdates">
+        <div *ngFor="let u of Updates" class="review-item" [ngClass]="{'last-update-only' : LastUpdateOnly }"
+        [style.border-color]="Status.color" class="no-select">
+            <app-sync-update [update]="u" [Status]="Status" style="width:100%"></app-sync-update>
+        </div>
         <ng-container *ngIf="!LastUpdateOnly || !Updates || (LastUpdateOnly && Updates.length < 1)">
-            <div class="review-item" [style.border-color]="Status.color" fxLayout="column" fxLayoutAlign="end start"
+            <div class="review-item no-select" [style.border-color]="Status.color" fxLayout="column" fxLayoutAlign="end start"
                 [ngClass]="{ 'last-update-only': LastUpdateOnly }" (click)="onClick()">
 
                 <div fxLayout="row" fxLayoutAlign="space-between">
@@ -34,10 +38,7 @@
 
             </div>
         </ng-container>
-        <div *ngFor="let u of Updates" class="review-item" [ngClass]="{'last-update-only' : LastUpdateOnly }"
-        [style.border-color]="Status.color">
-            <app-sync-update [update]="u" [Status]="Status" style="width:100%"></app-sync-update>
-        </div>
+        
     </ng-container>
 
     <ng-template #fetchingUpdates>

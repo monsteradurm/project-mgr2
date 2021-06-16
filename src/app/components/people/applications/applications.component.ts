@@ -69,10 +69,9 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
   )
 
   Responses$ = this.Id$.pipe(
-    tap(t => console.log("ID: ", t)),
     switchMap(id => this.typeform.Form$(id)),
     map((result:any) => result.items ? result.items : []),
-    tap(items => console.log(items)),
+    tap(console.log),
     map((items:any[]) => _.map(items, item => new Application(item))),
     map((items:any[]) => _.sortBy(items, item => item.Name)),
   )

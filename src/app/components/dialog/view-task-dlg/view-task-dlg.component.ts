@@ -143,7 +143,6 @@ export class ViewTaskDlgComponent implements OnInit {
               return this.box.GetFolder$(doc.id);
             }
             else {
-              console.log("HERE", item)
               return this.firebase.ReferenceFolder$(item).pipe(
                 tap(t => console.log("Could not find Cached Box Folder, Creating..", path)),
                 switchMap((anscestor:string) => 

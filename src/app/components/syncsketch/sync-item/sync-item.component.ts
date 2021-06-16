@@ -38,7 +38,7 @@ export class SyncItemComponent implements OnInit {
 
   onClick() {
     console.log("CLICK");
-
+    console.log(this.item);
     this.Updates$.pipe(take(1)).subscribe(updates => {
       if (updates.length < 1) {
         this.NewTab(`${this.item.reviewURL}#/${this.item.id}?offlineMode=1`);
@@ -63,7 +63,7 @@ export class SyncItemComponent implements OnInit {
         return [];
 
       else if (!lastUpdateOnly)
-        return updates;
+        return updates.reverse();
 
       return [updates.reverse()[0]];
     }),

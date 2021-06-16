@@ -56,10 +56,12 @@ export class PeopleComponent implements OnInit, OnDestroy {
   }
 
   Parameters$ = this.nav.NavigationParameters$.pipe(
-    tap(t => console.log("NAV PARAMETRS", t)),
     map((params:any) => params.page ? params: { page: "Personnel"}),
     tap(params => {
-        this.nav.SetPageTitles([params.page, params.title])
+        if(params.title)
+          this.nav.SetPageTitles([params.page, params.title])
+        else 
+        this.nav.SetPageTitles([params.page])
     })
   )
 

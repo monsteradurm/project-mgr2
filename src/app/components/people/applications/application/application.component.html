@@ -21,40 +21,67 @@
   <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
     <div class="applicant-container" [ngClass]="{'hovering' : Hovering }" style="width:100%">
       <div fxLayout="row" fxLayoutAlign="space-between end" style="border-bottom:solid 2px black"
-      [style.border-bottom-color]="primaryColor">
+        [style.border-bottom-color]="primaryColor">
         <h2 style="margin-bottom:0px;font-weight:bold">
           {{res.Name ? res.Name : 'Not Given'}}
         </h2>
         <div style="margin-right:20px;color:gray;padding-bottom:5px">{{res.Submitted | date: 'medium'}}</div>
       </div>
+      <div fxLayout="row" fxLayout="center center" style="width:100%">
+        <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              Email
+            </div>
+            <div *ngIf="res.Email; else noResponse">
+              {{res.Email}}
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              Website
+            </div>
+            <div *ngIf="res.Website; else noResponse">
+              {{res.Website}}
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              Phone
+            </div>
+            <div *ngIf="res.Phone; else noResponse">
+              {{res.Phone}}
+            </div>
+          </div>
+        </div>
 
-      <div fxLayout="column" style="margin-left:50px;margin-top:20px">
-        <div fxLayout="row" fxLayoutGap="10px">
-          <div style="font-weight:bold">
-            Email
+        <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              Location
+            </div>
+            <div *ngIf="res.Location; else noResponse">
+              {{res.Location}}
+            </div>
           </div>
-          <div>
-            {{res.Email}}
+
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              CV
+            </div>
+            <div *ngIf="res.CV; else noResponse" style="cursor:pointer;" [style.color]="primaryColor">
+              Click to View
+            </div>
           </div>
-        </div>
-        <div fxLayout="row" fxLayoutGap="10px">
-          <div style="font-weight:bold">
-            Website
+
+          <div fxLayout="row" fxLayoutGap="10px">
+            <div style="font-weight:bold">
+              Resume
+            </div>
+            <div *ngIf="res.Resume; else noResponse" style="cursor:pointer;" [style.color]="primaryColor">
+              Click to View
+            </div>
           </div>
-          <div>
-            {{res.URL}}
-          </div>
-        </div>
-        <div fxLayout="row" fxLayoutGap="10px">
-          <div style="font-weight:bold">
-            Phone
-          </div>
-          <div *ngIf="res.Phone; else noPhone">
-            {{res.Phone}}
-          </div>
-          <ng-template #noPhone>
-            <div style="font-style:italic;color:Gray">Not Given</div>
-          </ng-template>
         </div>
       </div>
       <!--
@@ -69,3 +96,7 @@
     </div>
   </div>
 </ng-container>
+
+<ng-template #noResponse>
+  <div style="font-style:italic;color:Gray">Not Given</div>
+</ng-template>

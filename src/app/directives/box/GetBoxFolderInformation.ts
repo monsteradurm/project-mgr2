@@ -13,7 +13,6 @@ import { BoxService } from 'src/app/services/box.service';
 export class GetBoxFolderInformationPipe  {
     constructor(private box: BoxService) { }
   transform(id: number) {
-    console.log("ID? ", id)
     if (!id) return null;
 
     return this.box.GetFolder$(id.toString());

@@ -49,7 +49,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
     if (!this.Groups)
       return;
 
-    console.log("HERE", s);
     for(let g = 0; g < this.Groups.length; g++) {
       let group = this.Groups.get(g);
       if (group.actionOutlet.getTitle() == s.title) {
