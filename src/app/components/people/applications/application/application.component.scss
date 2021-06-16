@@ -1,0 +1,13 @@
+.applicant-container {
+  border: solid 1px black;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px -5px rgb(0 0 0 / 50%);
+    padding:20px;
+}
+
+.applicant-container.hovering {
+  border: solid 1px rgb(153, 87, 255);
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px 0px rgb(0 0 0 / 50%), inset 0px 0px 2px 1px rgb(153, 87, 255);
+    padding:20px;
+}

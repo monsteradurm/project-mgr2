@@ -1,0 +1,71 @@
+<div #contextMenuTrigger (menuClosed)="onContextClosed()" [matMenuTriggerFor]="ItemContextMenu"
+  style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x" [style.top]="contextMenuPosition.y">
+</div>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below" preventContext>
+  <ng-template matMenuContent>
+    <button mat-menu-item>Add Comment</button>
+    <button mat-menu-item [matMenuTriggerFor]="ratingsMenu" preventContext>Set Rating</button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #ratingsMenu="matMenu">
+  <button mat-menu-item *ngFor="let s of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" (click)="onSetRating(s)">
+    {{s}}
+    <span *ngIf="s == 0" style="color:gray">(Worst)</span>
+    <span *ngIf="s == 10" style="color:gray">(Best)</span>
+  </button>
+</mat-menu>
+
+<ng-container *ngIf="(Application$ | async) as res">
+  <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
+    <div class="applicant-container" [ngClass]="{'hovering' : Hovering }" style="width:100%">
+      <div fxLayout="row" fxLayoutAlign="space-between end" style="border-bottom:solid 2px black"
+      [style.border-bottom-color]="primaryColor">
+        <h2 style="margin-bottom:0px;font-weight:bold">
+          {{res.Name ? res.Name : 'Not Given'}}
+        </h2>
+        <div style="margin-right:20px;color:gray;padding-bottom:5px">{{res.Submitted | date: 'medium'}}</div>
+      </div>
+
+      <div fxLayout="column" style="margin-left:50px;margin-top:20px">
+        <div fxLayout="row" fxLayoutGap="10px">
+          <div style="font-weight:bold">
+            Email
+          </div>
+          <div>
+            {{res.Email}}
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="10px">
+          <div style="font-weight:bold">
+            Website
+          </div>
+          <div>
+            {{res.URL}}
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="10px">
+          <div style="font-weight:bold">
+            Phone
+          </div>
+          <div *ngIf="res.Phone; else noPhone">
+            {{res.Phone}}
+          </div>
+          <ng-template #noPhone>
+            <div style="font-style:italic;color:Gray">Not Given</div>
+          </ng-template>
+        </div>
+      </div>
+      <!--
+    <div style="margin-top:20px;border-bottom:solid 1px black;width:calc(100% - 20px);"></div>
+    -->
+    </div>
+    <div fxLayout="row" style="color:gray">
+      <mat-icon style="margin-left:20px">comment</mat-icon>
+      <div style="width:120px;margin-left:20px;">
+        No Comments
+      </div>
+    </div>
+  </div>
+</ng-container>

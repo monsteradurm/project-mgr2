@@ -1,39 +1,28 @@
-<div *ngFor="let res of (Responses$ | async)" style="margin:20px 40px;">
-  <div fxLayout="row" fxLayoutAlign="space-between end">
-    <h3 style="margin-bottom:0px;font-weight:bold" [style.color]="primaryColor">
-      {{res.Name}}
-    </h3>
-    <div style="margin-right:20px;color:gray">{{res.Submitted | date: 'medium'}}</div>
+<nav mat-tab-nav-bar pmTabUnderline [primaryColor]="primaryColor">
+  <div fxLayout="row" fxLayoutAlign="end end" style="width:100%;margin-right:30px">
+    <ng-container *ngIf="(SortByMenu$ | async) as SortByMenu">
+      <div class="directors-menu-container">
+        <ng-container *actionOutlet="SortByMenu"></ng-container>
+      </div>
+      <button mat-flat-button class="reverse-sort-btn" (click)="SetReverseSorting()">
+        <ng-container *ngIf="!(ReverseSorting$ | async)">
+          <mat-icon class="reverse-sort-icon">north</mat-icon>
+          Ascending
+        </ng-container>
+        <ng-container *ngIf="(ReverseSorting$ | async)">
+          <mat-icon class="reverse-sort-icon">south</mat-icon>
+          Descending
+        </ng-container>
+      </button>
+    </ng-container>
   </div>
 
-  <div fxLayout="column" style="margin-left:50px">
-    <div fxLayout="row" fxLayoutGap="10px">
-      <div style="font-weight:bold">
-        Email
-      </div>
-      <div>
-        {{res.Email}}
-      </div>
-    </div>
-    <div fxLayout="row" fxLayoutGap="10px">
-      <div style="font-weight:bold">
-        Website
-      </div>
-      <div>
-        {{res.URL}}
-      </div>
-    </div>
-    <div fxLayout="row" fxLayoutGap="10px">
-      <div style="font-weight:bold">
-        Phone
-      </div>
-      <div *ngIf="res.Phone; else noPhone">
-        {{res.Phone}}
-      </div>
-      <ng-template #noPhone>
-        <div style="font-style:italic;color:Gray">Not Given</div>
-      </ng-template>
+
+</nav>
+<div fxLayout="row" fxLayoutAlign="center center" style="width:100%;margin-top:20px">
+  <div fxLayout="column" style="min-width:800px;width:100%;max-width:calc(100vw - 300px)">
+    <div *ngFor="let res of (Responses$ | async)" style="padding:10px">
+        <app-application [Applicant]="res"></app-application>
     </div>
   </div>
-  <div style="margin-top:20px;border-bottom:solid 1px black;width:calc(100% - 20px);"></div>
 </div>
