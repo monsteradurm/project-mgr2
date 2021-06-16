@@ -19,7 +19,7 @@ export class FirebaseService {
   NavigationItems$ = this.afs.collection<Partial<DropDownMenuGroup>>('Navigation').valueChanges().pipe(
     shareReplay(1)
   )
-  
+
   private CachedProjects$ = this.afs.doc<Partial<FirebaseUpdate>>('Projects/yYrxj9Ku0b7weXQWQn5D');
   Projects$ = this.CachedProjects$.valueChanges().pipe(
     shareReplay(1)
@@ -46,13 +46,13 @@ export class FirebaseService {
   IssueUpdates$: Observable<any> = this.LastIssueUpdate$.valueChanges().pipe(
     distinctUntilChanged((a,b) => a && b && a.updated == b.updated && a.user_id == b.user_id),
   )
- 
+
   user: string;
   constructor(private afs: AngularFirestore, private UserService: UserService) {
       this.UserService.User$.subscribe((user) => {
         if (!user)
           return;
-          
+
         this.user = user.id;
         console.log("Setting Firebase for User:", this.user);
       })
@@ -66,9 +66,16 @@ export class FirebaseService {
     doc.update({ updated: update.updated, json: update.json }).then(console.log);
   }
 
+  TypeForms$ = this.afs.collection("Typeforms").get().pipe(
+    map(result => result.docs),
+    map(result => _.map(result, d => d.data())),
+    take(1),
+    shareReplay(1)
+  )
+
   BoxWebhooks$ = this.afs.collection("BoxWebhooks").get().pipe(
       map(result => result.docs),
-      map((docs: QueryDocumentSnapshot<any>[]) => 
+      map((docs: QueryDocumentSnapshot<any>[]) =>
       _.filter(
         _.map(docs, (d: QueryDocumentSnapshot<any>) => {
           let result = d.data()
@@ -121,11 +128,11 @@ export class FirebaseService {
     return ref.get().pipe(
       map(doc => {
         if (!doc.exists) {
-          throw 'Could not find Reference Folder for Project: ' + item.workspace.name; 
+          throw 'Could not find Reference Folder for Project: ' + item.workspace.name;
         }
         let data = doc.data();
         if (!data.id) {
-          throw 'Could not find Box "Reference" Folder Id for Project: ' + item.workspace.name; 
+          throw 'Could not find Box "Reference" Folder Id for Project: ' + item.workspace.name;
         }
         return data.id;
       }),
@@ -138,11 +145,11 @@ export class FirebaseService {
     return reference.get().pipe(
       switchMap(doc => {
         if (!doc.exists) {
-          throw 'Could not find Reference Folder for Project: ' + item.workspace.name; 
+          throw 'Could not find Reference Folder for Project: ' + item.workspace.name;
         }
         let last = reference;
         path.forEach(p => {
-          last = last.collection('folders').doc(p); 
+          last = last.collection('folders').doc(p);
         })
         return last.get();
       }),

@@ -1,0 +1,39 @@
+<div *ngFor="let res of (Responses$ | async)" style="margin:20px 40px;">
+  <div fxLayout="row" fxLayoutAlign="space-between end">
+    <h3 style="margin-bottom:0px;font-weight:bold" [style.color]="primaryColor">
+      {{res.Name}}
+    </h3>
+    <div style="margin-right:20px;color:gray">{{res.Submitted | date: 'medium'}}</div>
+  </div>
+
+  <div fxLayout="column" style="margin-left:50px">
+    <div fxLayout="row" fxLayoutGap="10px">
+      <div style="font-weight:bold">
+        Email
+      </div>
+      <div>
+        {{res.Email}}
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutGap="10px">
+      <div style="font-weight:bold">
+        Website
+      </div>
+      <div>
+        {{res.URL}}
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutGap="10px">
+      <div style="font-weight:bold">
+        Phone
+      </div>
+      <div *ngIf="res.Phone; else noPhone">
+        {{res.Phone}}
+      </div>
+      <ng-template #noPhone>
+        <div style="font-style:italic;color:Gray">Not Given</div>
+      </ng-template>
+    </div>
+  </div>
+  <div style="margin-top:20px;border-bottom:solid 1px black;width:calc(100% - 20px);"></div>
+</div>

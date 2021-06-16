@@ -24,7 +24,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     evt.preventDefault();
   }
-  
+
   @HostBinding('style.display') DisplayNavigation = 'block';
 
   @ViewChildren(ActionOutletDirective) Groups : QueryList<ActionOutletDirective>
@@ -37,18 +37,19 @@ export class NavigationComponent implements OnInit, OnDestroy {
   ShowReference:boolean = false;
   ReferenceFolder$ = this.navigation.ReferenceFolder$;
   constructor(
-    private navigation: NavigationService) { 
+    private navigation: NavigationService) {
     this.navigation.Component = this;
   }
 
   PageTitles$ = this.navigation.PageTitles$;
   Selected$ = this.navigation.Selected$;
   subscriptions = [];
-  
+
   NavSelected(s) {
     if (!this.Groups)
       return;
 
+    console.log("HERE", s);
     for(let g = 0; g < this.Groups.length; g++) {
       let group = this.Groups.get(g);
       if (group.actionOutlet.getTitle() == s.title) {

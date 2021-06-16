@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { AppComponent } from 'src/app/app.component';
 import { UserIdentity } from 'src/app/models/UserIdentity';
 import { ConfluenceService } from 'src/app/services/confluence.service';
@@ -20,7 +20,7 @@ export class PeopleComponent implements OnInit, OnDestroy {
 
   private error = new BehaviorSubject<string>(null);
 
-  @Output() primaryColor: string = 'gray'; 
+  @Output() primaryColor: string = 'gray';
 
   displayedColumns = ['Avatar', 'Email', 'Role', 'Manager', 'Remote', 'Confluence', 'Monday', 'SyncSketch']
   GraphUsers$ = this.UserService.AllUsers$;
@@ -34,26 +34,34 @@ export class PeopleComponent implements OnInit, OnDestroy {
       ([graph, monday, sync, confluence]) => {
 
       let allUsers = _.groupBy(graph, g => g.mail);
-      allUsers = _.map(allUsers, u => ({ 
-          graph: u[0], 
+      allUsers = _.map(allUsers, u => ({
+          graph: u[0],
           photo: this.UserService.UserPhoto$(u[0].mail),
           monday: _.find(monday, m=> m.email == u[0].mail ),
           sync: _.find(sync, s => s.email == u[0].mail),
           confluence: _.find(confluence, c => c.displayName == u[0].givenName + ' ' + u[0].surname)
         })
       )
-      
+
       return _.chain(allUsers).sortBy(a => a.graph.givenName).sortBy(a => a.graph.surname).value();
     })
   )
 
   subscriptions = [];
   constructor(private UserService: UserService,
-    private syncSketh: SyncSketchService, 
+    private syncSketh: SyncSketchService,
     private confluence: ConfluenceService,
-    private monday: MondayService, 
-    private nav: NavigationService) { 
+    private monday: MondayService,
+    private nav: NavigationService) {
   }
+
+  Parameters$ = this.nav.NavigationParameters$.pipe(
+    tap(t => console.log("NAV PARAMETRS", t)),
+    map((params:any) => params.page ? params: { page: "Personnel"}),
+    tap(params => {
+        this.nav.SetPageTitles([params.page, params.title])
+    })
+  )
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
@@ -65,5 +73,5 @@ export class PeopleComponent implements OnInit, OnDestroy {
      )
   }
 
-  
+
 }

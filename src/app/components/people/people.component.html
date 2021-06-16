@@ -1,13 +1,13 @@
-<div class="pm-page">
-    <div class="people-table" fxLayout="row" fxLayoutAlign="center center">
-        <ng-container *ngIf="(AllUsers$ | async) as AllUsers; else loadingUsers">        
+<div class="pm-page" *ngIf="(Parameters$ | async) as params">
+    <div *ngIf="params.page == 'Personnel'; else applications" class="people-table" fxLayout="row" fxLayoutAlign="center center">
+        <ng-container *ngIf="(AllUsers$ | async) as AllUsers; else loadingUsers">
             <table mat-table [dataSource]="AllUsers" class="mat-elevation-z8">
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                
+
             <ng-container matColumnDef="Avatar">
                 <th mat-header-cell *matHeaderCellDef style="text-align:left;padding-left:85px">User</th>
-                <td mat-cell *matCellDef="let p"> 
-                    <app-user [User]="p.graph" [Photo]="p.photo | async" [FlipText]="true" [backgroundColor]="primaryColor" 
+                <td mat-cell *matCellDef="let p">
+                    <app-user [User]="p.graph" [Photo]="p.photo | async" [FlipText]="true" [backgroundColor]="primaryColor"
                         borderColor="black" textColor="white" borderStyle="solid" borderWidth="1px"></app-user>
                 </td>
             </ng-container>
@@ -132,7 +132,7 @@
 
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-        </ng-container> 
+        </ng-container>
 
         <ng-template #loadingUsers>
             <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;height:100%">
@@ -148,4 +148,7 @@
             </div>
         </ng-template>
     </div>
+    <ng-template #applications>
+      <app-applications></app-applications>
+    </ng-template>
 </div>

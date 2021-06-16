@@ -31,7 +31,7 @@ export class NavigationService {
   SelectedTitle$ = this.SelectedTitle.asObservable().pipe(shareReplay(1))
 
   Projects$ = this.projectsService.Projects$.pipe(
-    map(projects => _.filter(projects, p=> 
+    map(projects => _.filter(projects, p=>
       p.name.indexOf('PM2') < 0 && p.name[0] != '_')),
 
     shareReplay(1)
@@ -41,7 +41,7 @@ export class NavigationService {
     map(projects => _.find(projects, p => p.name.indexOf('PM2') > -1)),
     shareReplay(1)
   )
-  
+
   Component: NavigationComponent;
   AppComponent: AppComponent;
 
@@ -59,12 +59,12 @@ export class NavigationService {
           if (page.use_menu) {
             page.menu = this.actionOutlet.createGroup().setTitle(k)
               .enableDropdown()
-              .setIcon(page.icon);       
+              .setIcon(page.icon);
             page.menu.createButton().setTitle('Loading...');
           }
 
           // create button and navigate on press
-          else 
+          else
             page.menu = this.actionOutlet.createButton().setTitle(k)
             .setIcon(page.icon);
               page.menu.fire$.subscribe(
@@ -85,7 +85,7 @@ export class NavigationService {
     shareReplay(1)
   )
   IsMondayReachable$ = this.monday.IsReachable$;
-  
+
 
   private NavigationEndEvent$ = this.router.events
     .pipe(
@@ -135,14 +135,14 @@ export class NavigationService {
 
   Relocate(route, params) {
     let url = route + ';';
-    
+
     if (url[0] != '/')
       url = '/' + url;
 
     Object.keys(params).filter(p => params[p]).forEach(p => url += p + '=' + params[p] + ';')
     this.location.replaceState(url);
   }
-  
+
   AddPageTitle(title:string) {
     let v = this.PageTitles.value;
     v.push(title);
@@ -158,7 +158,7 @@ export class NavigationService {
     let v = [];
     if (titles)
       titles.forEach(t => v.push(t));
-      
+
     this.PageTitles.next(v);
   }
 
@@ -184,15 +184,15 @@ export class NavigationService {
     if (!children || !children.length) {
       console.log("No Children to Expand Dropdown", dropdown)
     }
-    
+
     children.forEach(child => {
       let nameArr = child.name.split('_');
       let name = nameArr.join(' ');
       if (child.parent.id == this.box.Gallery_ID)
         name = nameArr[nameArr.length - 1];
-      
+
       if (child['children'] && child['children'].length > 0) {
-        
+
         let option = dropdown.createGroup()
           .enableDropdown().setTitle(name);
 
@@ -204,7 +204,7 @@ export class NavigationService {
         let names = _.map(entries.splice(index + 1, entries.length - index), e=> e.name);
         let fullpath = names.join('/') + '/' + child.name;
         dropdown.createButton().setTitle(name)
-            .fire$.subscribe(a => this.Navigate('/Gallery', 
+            .fire$.subscribe(a => this.Navigate('/Gallery',
             { folder: child.id, path: fullpath })
           );
       }
@@ -236,7 +236,7 @@ export class NavigationService {
   }
 
 
-  
+
   OnConfluence(p: string) {
     let key = p;
     if (p.indexOf('_') > 0)
@@ -245,7 +245,7 @@ export class NavigationService {
     this.confluence.SpaceOverview$(key).pipe(take(1)).subscribe(space => {
       if (!space)
         this.Navigate('/Projects/NoConfluence', {project: p});
-      else 
+      else
         window.open('https://liquidanimation.atlassian.net/wiki/spaces/' + key + '/overview', "_blank");
     })
   }
@@ -275,7 +275,7 @@ export class NavigationService {
   }
 
   SetGalleryMenu(navMenu, gallery) {
-    if (!navMenu || !gallery) 
+    if (!navMenu || !gallery)
       return;
 
     let page = navMenu.Pages['Gallery'];
@@ -289,6 +289,32 @@ export class NavigationService {
     this.BuildGalleryDropDown(page.menu, gallery, null);
 
   }
+
+  SetPeopleMenu(navMenu, forms) {
+    if (!navMenu || !forms)
+      return;
+    let page = navMenu.Pages['People'];
+    let menu = page.menu;
+    menu.removeChildren();
+    menu.createButton().setTitle('Personnel').fire$.subscribe(a => {
+      this.Navigate('/People', {  })
+    })
+    let appMenu = menu.createGroup().enableDropdown().setTitle('Applications');
+
+    if (forms.length < 1) {
+      appMenu.createButton({ title: "No Typeforms to Show" });
+    }
+
+    _.sortBy(forms, f => f.title).forEach(f => {
+      appMenu.createButton({ title: f.title}).fire$.subscribe(a => {
+        this.Navigate('People', {page: "Applications", id: f.typeform_id, title: f.title})
+      });
+    });
+
+  }
+
+  Typeforms$ = this.firebase.TypeForms$;
+
   SetProjectsMenu(navMenu, projects) {
     if (!navMenu || !projects)
       return;
@@ -320,7 +346,7 @@ export class NavigationService {
         return;
       }
 
-      
+
       let groupB = group.createGroup();
       groupB.createButton().setTitle('Confluence').fire$.subscribe(a => {
         this.OnConfluence(p.name)
@@ -342,13 +368,13 @@ export class NavigationService {
   ShowReferenceDlg$ = this.showReferenceDlg.asObservable().pipe(shareReplay(1));
 
   ReferenceFolder$;
-  constructor( 
+  constructor(
     private firebase: FirebaseService,
     private location:Location,
     private confluence: ConfluenceService,
     private actionOutlet: ActionOutletFactory,
     private projectsService: ProjectService,
-    private monday: MondayService, 
+    private monday: MondayService,
     private box: BoxService,
     private router: Router) {
     this.NavigationUrl$
@@ -361,6 +387,9 @@ export class NavigationService {
     combineLatest([this.NavigationMenu$, this.Projects$]).subscribe(
       ([navMenu, projects]) => this.SetProjectsMenu(navMenu, projects))
 
+    combineLatest([this.NavigationMenu$, this.Typeforms$]).subscribe(
+      ([navMenu, typeforms]) => this.SetPeopleMenu(navMenu, typeforms)
+    )
 
     combineLatest([this.NavigationMenu$, this.System$]).subscribe(
       ([navMenu, sys]) => this.SetSystemMenu(navMenu, sys))

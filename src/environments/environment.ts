@@ -17,6 +17,10 @@ export const environment = {
     token: 'EmzOuD4qnaOpBJLXnstwmx3zKI0wPQQ03OHlVgB8',
     url: 'https://la-bne-clx.la.lan:8843/psa/api/v2/'
   },
+  typeform: {
+    secret: "3JEoJ29wMQ5s4NUgnZeD5tLBUMW1jsr6AxMvXJxYzVNJ",
+    client: "AwiCGFptjijQ8BzpX6dde11PgCerEeCpLmr2iz8y4BQV"
+  },
   confluence: {
     token: 'eLMhONup5waKKjutXAEbE67B',
     user: 'acranch@liquidanimation.com',

@@ -26,6 +26,15 @@
             "^/syncsketch-upload/*": ""
         }
     },
+    "/typeform/*": {
+      "target": "https://api.typeform.com/",
+      "secure": false,
+      "changeOrigin": true,
+      "loglevel": "debug",
+      "pathRewrite": {
+          "^/typeform/*": ""
+      }
+    },
     "/confluence/*": {
         "target": "https://liquidanimation.atlassian.net/wiki/rest/api/",
         "secure": false,
