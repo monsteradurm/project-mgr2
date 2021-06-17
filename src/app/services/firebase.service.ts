@@ -16,6 +16,10 @@ import * as _ from 'underscore';
 })
 export class FirebaseService {
 
+  TypeFormRespondents = {
+
+  }
+
   NavigationItems$ = this.afs.collection<Partial<DropDownMenuGroup>>('Navigation').valueChanges().pipe(
     shareReplay(1)
   )
@@ -66,12 +70,40 @@ export class FirebaseService {
     doc.update({ updated: update.updated, json: update.json }).then(console.log);
   }
 
+  /*
   TypeForms$ = this.afs.collection("Typeforms").get().pipe(
     map(result => result.docs),
     map(result => _.map(result, d => d.data())),
     take(1),
     shareReplay(1)
   )
+  */
+
+  TypeformResponses$(form_id, response_id) {
+    let key = form_id + '_' + response_id;
+
+    if (this.TypeFormRespondents[key])
+      return this.TypeFormRespondents[key];
+
+      this.TypeFormRespondents[key] = this.afs.collection("Typeforms").doc(form_id).get().pipe(
+      switchMap((doc:DocumentSnapshot<any>) => {
+        if (!doc.exists)
+          this.afs.collection("Typeforms").doc(form_id).set({ });
+
+          return this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).get();
+      }),
+      switchMap((doc: DocumentSnapshot<any>) => {
+        if (!doc.exists)
+          this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).set({
+            ratings: { },
+            notes: { }
+          });
+
+        return this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).valueChanges();
+      })
+      )
+      return this.TypeFormRespondents[key];
+    }
 
   BoxWebhooks$ = this.afs.collection("BoxWebhooks").get().pipe(
       map(result => result.docs),

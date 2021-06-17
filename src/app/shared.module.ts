@@ -105,6 +105,7 @@ import { FirebaseService } from './services/firebase.service';
 import { FilterCompletePipe } from './directives/elements/FilterCompleted.directive';
 import { GetBoxFolderInformationPipe } from './directives/box/GetBoxFolderInformation';
 import { FlattenDepartmentsPipe } from './directives/elements/FlattenDepartments.directive';
+import { BarRatingModule } from "ngx-bar-rating";
 declare var google: any;
 
 const declarations = [
@@ -169,6 +170,7 @@ const imports = [
   CommonModule,
   HttpClientModule,
 
+  BarRatingModule,
   MatButtonModule,
   MatToolbarModule,
   MatTooltipModule,
@@ -213,6 +215,8 @@ const imports = [
   //ng-action-outlet
   ActionOutletModule,
   ActionMatModule.forRoot(ICON_TYPE.Font),
+
+
 ]
 
 let exports = [...declarations, ...imports];

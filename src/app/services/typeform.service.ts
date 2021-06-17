@@ -22,7 +22,6 @@ export class TypeformService {
 
   Forms$ = this.Query$('/typeform/forms?workspace_id=' + LiquidWorkspace).pipe(
     map((response:any) => response.items),
-    tap(t => console.log("FORMS", t)),
     take(1)
   )
 
@@ -30,14 +29,22 @@ export class TypeformService {
     let fileArr = answer.file_url.split('/');
     let file = fileArr[fileArr.length - 1];
 
-    return this.Download$('typeform/forms/' + form_id + '/responses/' + 
+    return this.Download$('typeform/forms/' + form_id + '/responses/' +
       response_id + '/fields/' + answer.field.id + '/files/' + file);
-
   }
-  //forms/o8Hxpg5C/responses/31a30adlgisqog2kd31a3mb7xmhd1q0t/fields/WQDqhUVR3yqK/files/ac54e2b09337-Asset_Flow_Diagram.pdf
-  //forms/o8Hxpg5C/responses/31a30adlgisqog2kd31a3mb7xmhd1q0t/fields/WQDqhUVR3yqK/files/ac54e2b09337-Asset_Flow_Diagram.pdf"
+
+  RemoveResponse$(form_id, response_id) {
+    return this.Delete$('/typeform/forms/' + form_id + '/responses?included_response_ids=' + response_id)
+  }
+
   Webhooks$(id: string) {
     return this.Query$('/typeform/forms/' + id + '/webhooks')
+  }
+
+  Delete$(address) {
+    return this.http.delete(address, httpOptions).pipe(
+      take(1)
+    )
   }
 
   Query$(address) {
@@ -55,7 +62,7 @@ export class TypeformService {
     }).pipe(
       map((data:Blob) => {
         var url = window.URL.createObjectURL(data);
-        window.open(url, '_blank', ''); 
+        window.open(url, '_blank', '');
       }),
       take(1)
     )

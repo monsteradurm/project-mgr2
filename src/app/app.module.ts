@@ -94,6 +94,7 @@ import { ApplicationsComponent } from './components/people/applications/applicat
 import { ApplicationComponent } from './components/people/applications/application/application.component';
 import { TypeformsComponent } from './components/people/applications/typeforms/typeforms.component';
 import { TypeformComponent } from './components/people/applications/typeforms/typeform/typeform.component';
+import { ApplicationSortByDirective } from './directives/elements/ApplicationSortBy.directive';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1; // Remove this line to use Angular Universal
 
@@ -173,7 +174,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     ApplicationsComponent,
     ApplicationComponent,
     TypeformsComponent,
-    TypeformComponent
+    TypeformComponent,
+    ApplicationSortByDirective
   ],
 
   imports: [

@@ -6,8 +6,11 @@ import { PeopleComponent } from '../people.component';
 
 import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ActionOutletFactory } from '@ng-action-outlet/core';
+import { MessageService } from 'primeng/api';
+import { FirebaseService } from '../../../services/firebase.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-applications',
@@ -17,14 +20,17 @@ import { ActionOutletFactory } from '@ng-action-outlet/core';
 export class ApplicationsComponent implements OnInit, OnDestroy {
 
   constructor(private nav: NavigationService,
+              private messaging: MessageService,
               private parent: PeopleComponent,
               private actionOutlet: ActionOutletFactory,
-              private typeform: TypeformService) { }
+              private userservice: UserService,
+              public firebase: FirebaseService,
+              public typeform: TypeformService) { }
 
   private sortBy = new BehaviorSubject<string>('Name');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
 
-  SortByOptions = ['Name', 'Email', 'Submitted', 'Location', 'Rating'];
+  SortByOptions = ['Name', 'Email', 'Submitted', 'Location'];
 
   sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By')
     .setIcon('sort_by_alpha');
@@ -34,8 +40,28 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
   private reverseSorting = new BehaviorSubject<boolean>(false);
   ReverseSorting$ = this.reverseSorting.asObservable().pipe(shareReplay(1));
 
+  private refreshResponses = new BehaviorSubject<boolean>(null);
+  RefreshResponses$ = this.refreshResponses.asObservable().pipe(shareReplay(1));
+
+  User$ = this.userservice.User$;
+
   SetReverseSorting() {
     this.ReverseSorting$.pipe(take(1)).subscribe(state => this.reverseSorting.next(!state));
+  }
+
+  RemoveResponse(response_id) {
+    this.Id$.pipe(take(1)).subscribe(
+      form_id => {
+        this.typeform.RemoveResponse$(form_id, response_id).pipe(
+          take(1)
+        ).subscribe((result) => {
+          if (result)
+            this.messaging.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Reponse Removed'})
+        })
+      });
   }
 
   SetSortBy(s) {
@@ -48,9 +74,9 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
   RetrieveFile(answer, response_id) {
     this.Id$.pipe(take(1)).subscribe(
       form_id => {
-        this.typeform.RetrieveFile$(form_id, response_id, answer).pipe(take(1)).subscribe(result => console.log(result));
+        this.typeform.RetrieveFile$(form_id, response_id, answer).pipe(take(1)).subscribe(result => { });
       }
-    ) 
+    )
   }
   SortByMenu$ = this.SortBy$.pipe(
     map((sortBy) => {
@@ -75,11 +101,13 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
     shareReplay(1)
   )
 
-  Responses$ = this.Id$.pipe(
-    switchMap(id => this.typeform.Form$(id)),
+  FormId: string;
+
+  Responses$ = combineLatest([this.Id$, this.RefreshResponses$]).pipe(
+    tap(([id, refresh]) => this.FormId = id),
+    switchMap(([id, refresh]) => this.typeform.Form$(id)),
     map((result:any) => result.items ? result.items : []),
-    tap(console.log),
-    map((items:any[]) => _.map(items, item => new Application(item))),
+    map((items:any[]) => _.map(items, item => new Application(item, this.FormId))),
     map((items:any[]) => _.sortBy(items, item => item.Name)),
   )
   ngOnDestroy() {
@@ -100,17 +128,20 @@ export class Application {
   public Submitted: string;
   public CV: any;
   public Resume: any;
-  
+  public YearsExperience: number;
+  public AdditionalNotes: string;
   public Location: string;
 
+  public form_id: string;
   public response_id: string;
 
   entry: any;
-  constructor(entry: any) {
+  constructor(entry: any, form_id: string) {
+    this.form_id = form_id;
     entry = entry;
 
     this.response_id = entry.response_id;
-    
+
     let answers = entry.answers;
     let name = _.find(answers, a=> a.field.ref == 'Fullname');
     if (name)
@@ -141,6 +172,13 @@ export class Application {
     if (location)
       this.Location = location.text;
 
+    let notes = _.find(answers, a => a.field.ref == 'AdditionalNotes');
+    if (notes)
+      this.AdditionalNotes = notes.text;
+
+    let experience = _.find(answers, a => a.field.ref == 'YearsExperience');
+    if (experience)
+        this.YearsExperience = experience.number;
     this.Submitted = entry.submitted_at;
   }
 }

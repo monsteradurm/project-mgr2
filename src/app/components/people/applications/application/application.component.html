@@ -6,6 +6,9 @@
   <ng-template matMenuContent>
     <button mat-menu-item>Add Comment</button>
     <button mat-menu-item [matMenuTriggerFor]="ratingsMenu" preventContext>Set Rating</button>
+
+    <button mat-menu-item style="border-top:solid 1px gray !important" (click)="RemoveResponse()">Remove
+      Response</button>
   </ng-template>
 </mat-menu>
 
@@ -18,87 +21,120 @@
 </mat-menu>
 
 <ng-container *ngIf="(Application$ | async) as res">
-  <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
-    <div class="applicant-container" [ngClass]="{'hovering' : Hovering }" style="width:100%">
-      <div fxLayout="row" fxLayoutAlign="space-between end" style="border-bottom:solid 2px black"
-        [style.border-bottom-color]="primaryColor">
-        <h2 style="margin-bottom:0px;font-weight:bold">
-          {{res.Name ? res.Name : 'Not Given'}}
-        </h2>
-        <div style="margin-right:20px;color:gray;padding-bottom:5px">{{res.Submitted | date: 'medium'}}</div>
-      </div>
-      <div fxLayout="row" fxLayout="center center" style="width:100%">
-        <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              Email
+  <ng-container *ngIf="(ResponseData$ | async) as responseData">
+    <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
+      <div class="applicant-container" [ngClass]="{'hovering' : Hovering }" style="width:100%;position:relative">
+
+        <div fxLayout="row" fxLayoutAlign="space-between end" style="border-bottom:solid 2px black"
+          [style.border-bottom-color]="primaryColor">
+          <h2 style="margin-bottom:0px;font-weight:bold">
+            {{res.Name ? res.Name : 'Not Given'}}
+          </h2>
+          <div style="margin-right:20px;color:gray;padding-bottom:5px">{{res.Submitted | date: 'medium'}}</div>
+        </div>
+        <div fxLayout="row" fxLayout="center center" style="width:100%">
+          <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Email
+              </div>
+              <div *ngIf="res.Email; else noResponse">
+                {{res.Email}}
+              </div>
             </div>
-            <div *ngIf="res.Email; else noResponse">
-              {{res.Email}}
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Website
+              </div>
+              <div *ngIf="res.Website; else noResponse">
+                {{res.Website}}
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Phone
+              </div>
+              <div *ngIf="res.Phone; else noResponse">
+                {{res.Phone}}
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Years experience
+              </div>
+              <div *ngIf="res.Phone; else noResponse">
+                {{res.YearsExperience}}
+              </div>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              Website
+
+          <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Location
+              </div>
+              <div *ngIf="res.Location; else noResponse">
+                {{res.Location}}
+              </div>
             </div>
-            <div *ngIf="res.Website; else noResponse">
-              {{res.Website}}
+
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                CV
+              </div>
+              <div *ngIf="res.CV?.file_url; else noResponse" (click)="RetrieveFile(res.CV)" style="cursor:pointer;"
+                [style.color]="primaryColor">
+                Click to View
+              </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="10px">
+              <div style="font-weight:bold">
+                Resume
+              </div>
+              <div *ngIf="res.Resume?.file_url; else noResponse" (click)="RetrieveFile(res.Resume)"
+                style="cursor:pointer;" [style.color]="primaryColor">
+                Click to View
+              </div>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              Phone
+          <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
+            <div fxLayout="row" fxLayoutGap="10px" style="font-weight:bold">
+              Additional Notes
             </div>
-            <div *ngIf="res.Phone; else noResponse">
-              {{res.Phone}}
+            <div *ngIf="res.AdditionalNotes" style="width:100%;height:100%">
+              <pre
+                style="font-family:Delius;font-size:14px;margin-top:0px;padding-top:0px">{{res.AdditionalNotes}}</pre>
             </div>
           </div>
         </div>
+        <div style="position:relative">
+          <div fxLayout="row">
+            <bar-rating [rate]="MyRating$ | async" [max]="5"></bar-rating>
 
-        <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              Location
-            </div>
-            <div *ngIf="res.Location; else noResponse">
-              {{res.Location}}
-            </div>
+            <button mat-fab tippyText="View Comments" (click)="ShowComments = !ShowComments">
+              <mat-icon class="app-fab-icon-btn app-center-fab-icon">forum</mat-icon>
+            </button>
           </div>
 
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              CV
-            </div>
-            <div *ngIf="res.CV?.file_url; else noResponse" (click)="RetrieveFile(res.CV)"
-             style="cursor:pointer;" [style.color]="primaryColor">
-              Click to View
-            </div>
-          </div>
-
-          <div fxLayout="row" fxLayoutGap="10px">
-            <div style="font-weight:bold">
-              Resume
-            </div>
-            <div *ngIf="res.Resume?.file_url; else noResponse" (click)="RetrieveFile(res.Resume)"
-            style="cursor:pointer;" [style.color]="primaryColor">
-              Click to View
-            </div>
+          <div *ngIf="ShowComments" fxLayout="column"
+            style="border-top:solid 1px black;width:100%;margin-top:20px;padding-top:10px">
+            <pre>{{responseData | json}}</pre>
           </div>
         </div>
-      </div>
-      <!--
+        <!--
     <div style="margin-top:20px;border-bottom:solid 1px black;width:calc(100% - 20px);"></div>
     -->
-    </div>
-    <div fxLayout="row" style="color:gray">
-      <mat-icon style="margin-left:20px">comment</mat-icon>
-      <div style="width:120px;margin-left:20px;">
-        No Comments
+      </div>
+      <div fxLayout="row" style="color:gray">
+        <mat-icon style="margin-left:20px">comment</mat-icon>
+        <div style="width:120px;margin-left:20px;">
+          No Comments
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </ng-container>
-
 <ng-template #noResponse>
   <div style="font-style:italic;color:Gray">Not Given</div>
 </ng-template>

@@ -21,7 +21,8 @@
 </nav>
 <div fxLayout="row" fxLayoutAlign="center center" style="width:100%;margin-top:20px">
   <div fxLayout="column" style="min-width:800px;width:100%;max-width:calc(100vw - 300px)">
-    <ng-container *ngIf="(Responses$ | async) as Responses">
+    <ng-container *ngIf="(Responses$ | ApplicationSortBy$ : SortBy$ : ReverseSorting$
+    | async) as Responses">
       <div *ngFor="let res of Responses" style="padding:10px">
         <app-application [Applicant]="res"></app-application>
       </div>
