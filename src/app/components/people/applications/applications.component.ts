@@ -45,6 +45,13 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
     })
   }
 
+  RetrieveFile(answer, response_id) {
+    this.Id$.pipe(take(1)).subscribe(
+      form_id => {
+        this.typeform.RetrieveFile$(form_id, response_id, answer).pipe(take(1)).subscribe(result => console.log(result));
+      }
+    ) 
+  }
   SortByMenu$ = this.SortBy$.pipe(
     map((sortBy) => {
       this.initializing = true;
@@ -91,13 +98,19 @@ export class Application {
   public Phone: string;
   public Website: string;
   public Submitted: string;
-  public CV: string;
-  public Resume: string;
+  public CV: any;
+  public Resume: any;
+  
+  public Location: string;
+
+  public response_id: string;
 
   entry: any;
   constructor(entry: any) {
     entry = entry;
 
+    this.response_id = entry.response_id;
+    
     let answers = entry.answers;
     let name = _.find(answers, a=> a.field.ref == 'Fullname');
     if (name)
@@ -118,11 +131,15 @@ export class Application {
 
     let cv = _.find(answers, a => a.field.ref == 'CV');
     if (cv)
-      this.CV = cv.file_url;
+      this.CV = cv;
 
     let resume = _.find(answers, a => a.field.ref == 'Resume');
     if (resume)
-      this.Resume = resume.file_url;
+      this.Resume = resume;
+
+    let location = _.find(answers, a => a.field.ref == 'Location');
+    if (location)
+      this.Location = location.text;
 
     this.Submitted = entry.submitted_at;
   }

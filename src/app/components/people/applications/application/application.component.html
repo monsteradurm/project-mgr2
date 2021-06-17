@@ -69,7 +69,8 @@
             <div style="font-weight:bold">
               CV
             </div>
-            <div *ngIf="res.CV; else noResponse" style="cursor:pointer;" [style.color]="primaryColor">
+            <div *ngIf="res.CV?.file_url; else noResponse" (click)="RetrieveFile(res.CV)"
+             style="cursor:pointer;" [style.color]="primaryColor">
               Click to View
             </div>
           </div>
@@ -78,7 +79,8 @@
             <div style="font-weight:bold">
               Resume
             </div>
-            <div *ngIf="res.Resume; else noResponse" style="cursor:pointer;" [style.color]="primaryColor">
+            <div *ngIf="res.Resume?.file_url; else noResponse" (click)="RetrieveFile(res.Resume)"
+            style="cursor:pointer;" [style.color]="primaryColor">
               Click to View
             </div>
           </div>

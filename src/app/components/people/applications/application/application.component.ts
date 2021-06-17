@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, HostListener } from '@angular/core';
 import { Application, ApplicationsComponent } from '../applications.component';
 import { BehaviorSubject } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { shareReplay, take } from 'rxjs/operators';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
@@ -45,6 +45,7 @@ export class ApplicationComponent implements OnInit {
   Application$ = this.applicant.asObservable().pipe(shareReplay(1));
 
   @Input() set Applicant(s: Application) {
+
     this.applicant.next(s);
   }
   get primaryColor() { return this.parent.primaryColor; }
@@ -52,4 +53,10 @@ export class ApplicationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  RetrieveFile(answer:any) {
+    this.Application$.pipe(take(1)).subscribe(app => {
+      this.parent.RetrieveFile(answer, app.response_id);
+    });
+    
+  }
 }
