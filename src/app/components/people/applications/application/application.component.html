@@ -24,15 +24,16 @@
   <ng-container *ngIf="(ResponseData$ | async) as responseData">
     <div fxLayout="row" fxLayoutAlign="center center" style="width:100%">
       <div class="applicant-container" [ngClass]="{'hovering' : Hovering }" style="width:100%;position:relative">
-
+        
         <div fxLayout="row" fxLayoutAlign="space-between end" style="border-bottom:solid 2px black"
           [style.border-bottom-color]="primaryColor">
           <h2 style="margin-bottom:0px;font-weight:bold">
             {{res.Name ? res.Name : 'Not Given'}}
           </h2>
-          <div style="margin-right:20px;color:gray;padding-bottom:5px">{{res.Submitted | date: 'medium'}}</div>
+          <bar-rating [rate]="MyRating$ | async" [max]="10"></bar-rating>
         </div>
-        <div fxLayout="row" fxLayout="center center" style="width:100%">
+        <div fxLayout="row" fxLayout="center center" style="width:100%;position:relative">
+          <div style="margin-right:20px;color:gray;position:absolute;top:5px;right:-15px;text-align:right">{{res.Submitted | date: 'medium'}}</div>
           <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
             <div fxLayout="row" fxLayoutGap="10px">
               <div style="font-weight:bold">
@@ -96,6 +97,7 @@
                 style="cursor:pointer;" [style.color]="primaryColor">
                 Click to View
               </div>
+
             </div>
           </div>
           <div fxLayout="column" style="margin-left:50px;margin-top:20px" fxLayoutGap="5px">
@@ -109,32 +111,55 @@
           </div>
         </div>
         <div style="position:relative">
-          <div fxLayout="row">
-            <bar-rating [rate]="MyRating$ | async" [max]="5"></bar-rating>
+          <div fxLayout="row" fxLayoutAlign="end end" style="width:100%;height:0px">
 
-            <button mat-fab tippyText="View Comments" (click)="ShowComments = !ShowComments">
-              <mat-icon class="app-fab-icon-btn app-center-fab-icon">forum</mat-icon>
+
+            <button mat-mini-fab tippyText="View Comments" (click)="ShowComments = !ShowComments">
+              <mat-icon class="app-fab-icon-btn app-center-fab-icon" style="font-size: 23px;
+              padding-top: 2px;">forum</mat-icon>
             </button>
+
           </div>
 
-          <div *ngIf="ShowComments" fxLayout="column"
-            style="border-top:solid 1px black;width:100%;margin-top:20px;padding-top:10px">
-            <pre>{{responseData | json}}</pre>
-          </div>
+          <ng-container *ngIf="ShowComments">
+            <ng-container *ngIf="(Notes$ | async) as Notes">
+              <div fxLayout="column" style="width:100%;margin-top:20px;padding-top:10px;position:relative">
+                <ng-container *ngIf="Notes.length > 0; else noComments">
+                  <div *ngFor="let n of Notes" style="border-top: solid 1px gray;padding-top: 20px;padding-bottom:20px">
+                    <div fxLayout="row" fxLayoutGap="10px" *ngIf="(n.user | FindUserById$ | async) as User" 
+                      fxLayoutAlign="start center">
+                      <app-user [User]="User" [Photo]="User | FindUserPhotoFromIdentity$ | async" 
+                        [FlipText]="true" [backgroundColor]="primaryColor" CircleWidth="27px" [CircleOnly]="true"
+                        borderColor="black" textColor="white" borderStyle="solid" borderWidth="1px"></app-user>
+                        <div style="font-weight:bold" [style.color]="primaryColor">{{User.givenName}} {{User.surname}}</div>
+                        <div style="color:gray">{{n.submitted | date : 'medium'}}</div>
+                    </div>
+                    <div [innerHTML]="n.note" style="margin-left:50px"></div>
+                  </div>
+                </ng-container>
+                <angular-editor [placeholder]="'Add a comment for this response...'" [(ngModel)]="newComment" [config]="editorConfig" 
+                style="margin-right: 60px; margin-left: 0px;"></angular-editor>
+                <button mat-mini-fab tippyText="Add Comment" style="position: absolute;right: 0px;bottom: 0px;" (click)="AddComment()">
+                  <mat-icon class="app-fab-icon-btn app-center-fab-icon" style="font-size: 23px;
+                  padding-top: 2px;-webkit-text-stroke-width: 2px;">check</mat-icon>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
         </div>
         <!--
     <div style="margin-top:20px;border-bottom:solid 1px black;width:calc(100% - 20px);"></div>
     -->
-      </div>
-      <div fxLayout="row" style="color:gray">
-        <mat-icon style="margin-left:20px">comment</mat-icon>
-        <div style="width:120px;margin-left:20px;">
-          No Comments
-        </div>
       </div>
     </div>
   </ng-container>
 </ng-container>
 <ng-template #noResponse>
   <div style="font-style:italic;color:Gray">Not Given</div>
+</ng-template>
+<ng-template #noComments>
+  <div fxLayout="row" fxLayoutAlign="center center" style="width:100%;text-align:center">
+    <h3 style="margin-bottom: 0px;
+    margin-top: 10px;">No Comments have been posted for this response.</h3>
+  </div>
 </ng-template>

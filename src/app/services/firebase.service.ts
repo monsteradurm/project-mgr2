@@ -78,8 +78,13 @@ export class FirebaseService {
     shareReplay(1)
   )
   */
+  SetTypeformResponse$(form_id, response_id, data) {
+    console.log(form_id, response_id, data);
+    let key = form_id + '_' + response_id;
+    return from(this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).set(data));
+  }
 
-  TypeformResponses$(form_id, response_id) {
+  TypeformResponses$(form_id, response_id) : Observable<{ratings: any, notes:any[]}>{
     let key = form_id + '_' + response_id;
 
     if (this.TypeFormRespondents[key])
@@ -96,7 +101,7 @@ export class FirebaseService {
         if (!doc.exists)
           this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).set({
             ratings: { },
-            notes: { }
+            notes: []
           });
 
         return this.afs.collection("Typeforms").doc(form_id).collection('responses').doc(response_id).valueChanges();

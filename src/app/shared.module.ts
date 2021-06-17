@@ -106,6 +106,9 @@ import { FilterCompletePipe } from './directives/elements/FilterCompleted.direct
 import { GetBoxFolderInformationPipe } from './directives/box/GetBoxFolderInformation';
 import { FlattenDepartmentsPipe } from './directives/elements/FlattenDepartments.directive';
 import { BarRatingModule } from "ngx-bar-rating";
+import { AngularEditorModule } from '@kolkov/angular-editor';
+import { FindUserByIdPipe } from './directives/elements/FndUserById.directive';
+
 declare var google: any;
 
 const declarations = [
@@ -163,7 +166,8 @@ const declarations = [
   AddTippyDirective,
   FilterCompletePipe,
   GetBoxFolderInformationPipe,
-  FlattenDepartmentsPipe
+  FlattenDepartmentsPipe,
+  FindUserByIdPipe
 ]
 
 const imports = [
@@ -171,6 +175,7 @@ const imports = [
   HttpClientModule,
 
   BarRatingModule,
+  AngularEditorModule,
   MatButtonModule,
   MatToolbarModule,
   MatTooltipModule,

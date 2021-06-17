@@ -128,13 +128,22 @@ export class SyncSketchService {
   FindReview$(item: BoardItem | ScheduledItem) {
     let fb = this.firebase.SyncSketchReview(item);
     let ss = this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`).pipe(
-      map(results => results.length < 1 ? null : results[0]),
+      map(results => {
+        if (results.length < 1)
+          return null;
+        if (results.length > 1) {
+          let sorted = _.sortBy(results, r => r.item_count);
+          return sorted[sorted.length - 1];
+        }
+        return results[0];
+      }),
       take(1)
     )
-
-    return fb.pipe(
-      switchMap(review => review ? of(review) : ss)
-    )
+    return ss;
+    /*
+    return fb.pipe(    
+      switchMap(review => review ? of(review).pipe(tap( t => console.log("Loaded from SS:", t))) : ss)
+    )*/
   }
 
   Patch$(addr:string, body: any) {

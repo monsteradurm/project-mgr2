@@ -20,7 +20,7 @@ import { UserService } from '../../../services/user.service';
 export class ApplicationsComponent implements OnInit, OnDestroy {
 
   constructor(private nav: NavigationService,
-              private messaging: MessageService,
+              public messaging: MessageService,
               private parent: PeopleComponent,
               private actionOutlet: ActionOutletFactory,
               private userservice: UserService,
@@ -110,6 +110,7 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
     map((items:any[]) => _.map(items, item => new Application(item, this.FormId))),
     map((items:any[]) => _.sortBy(items, item => item.Name)),
   )
+
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
