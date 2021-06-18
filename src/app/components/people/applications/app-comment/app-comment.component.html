@@ -1,0 +1,22 @@
+<div #contextMenuTrigger (menuClosed)="onContextClosed()" [matMenuTriggerFor]="ItemContextMenu"
+    style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y">
+</div>
+
+<mat-menu #ItemContextMenu="matMenu" yPosition="below" preventContext>
+    <ng-template matMenuContent>
+        <button mat-menu-item (click)="RemoveComment()">Remove Comment</button>
+    </ng-template>
+</mat-menu>
+
+<div class="comment-container" *ngIf="(Comment$ | async) as c">
+    <div fxLayout="row" fxLayoutGap="10px" *ngIf="(c.user | FindUserById$ | async) as User"
+        fxLayoutAlign="start center">
+        <app-user [User]="User" [Photo]="User | FindUserPhotoFromIdentity$ | async" [FlipText]="true"
+            [backgroundColor]="primaryColor" CircleWidth="27px" [CircleOnly]="true" borderColor="black"
+            textColor="white" borderStyle="solid" borderWidth="1px"></app-user>
+        <div style="font-weight:bold" [style.color]="primaryColor">{{User.givenName}} {{User.surname}}</div>
+        <div style="color:gray">{{c.submitted | date : 'medium'}}</div>
+    </div>
+    <div [innerHTML]="c.note" style="margin-left:50px"></div>
+</div>

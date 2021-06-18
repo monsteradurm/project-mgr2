@@ -40,7 +40,7 @@ export class ApplicationComponent implements OnInit, OnDestroy {
       this.Hovering = false;
   }
 
- @HostListener('contextmenu', ['$event']) onContextMenu(event) {
+  onContextMenu(event) {
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuTrigger.toggleMenu()
@@ -48,21 +48,18 @@ export class ApplicationComponent implements OnInit, OnDestroy {
     event.preventDefault();
   }
 
-
   onContextClosed() {
     this.HasContext = false;
     this.Hovering = false;
   }
 
-  RateResponse(rating: number ) {
 
-  }
   RemoveResponse() {
     this.Application$.pipe(take(1)).subscribe(app => {
       this.parent.RemoveResponse(app.response_id);
     });
   }
-  constructor(private parent: ApplicationsComponent) { }
+  constructor(public parent: ApplicationsComponent) { }
 
   private applicant = new BehaviorSubject<Application>(null);
   Application$ = this.applicant.asObservable().pipe(shareReplay(1));
@@ -94,10 +91,38 @@ export class ApplicationComponent implements OnInit, OnDestroy {
   )
 
   SetRating(r) {
-    console.log(r);
+    if (!r) return;
+    
+    combineLatest([this.MyRating$, this.ResponseData$, this.User$]).pipe(take(1))
+      .subscribe(
+        ([rating, data, user]) => {
+          if (rating == r) return;
+          if (!data.ratings) data.ratings = {};
+
+          data.ratings[user.id] = r;
+          this.SetResponse(data, "Set Rating for Respondent");
+    })
+    
+  }
+
+  SetResponse(data, detail) {
+    this.Application$.pipe(
+      switchMap((app:Application) => 
+        this.parent.firebase.SetTypeformResponse$(app.form_id, app.response_id, data)
+      ),
+      take(1)
+    ).subscribe((result) => {
+      this.parent.messaging.add({severity: 'success', detail, summary: 'Success'});
+      this.newComment = "";
+    });
   }
 
   AddComment() {
+    if (!this.newComment || this.newComment.length < 10) {
+      this.parent.messaging.add({severity: 'error', summary: 'Oops!', 
+      detail: 'A comment must be at least 10 characters long'})
+      return;
+    }
     combineLatest([this.User$, this.ResponseData$]).pipe(
       map(([user, data]) => {
         if (!data.notes) data.notes = [];
@@ -106,18 +131,12 @@ export class ApplicationComponent implements OnInit, OnDestroy {
           submitted: Date.now(),
           note: this.newComment
         });
+        data.notes = _.sortBy(data.notes, n => n.submitted).reverse()
         return data;
       }),
       take(1)
     ).subscribe((data) => {
-      this.Application$.pipe(
-        switchMap((app:Application) => 
-          this.parent.firebase.SetTypeformResponse$(app.form_id, app.response_id, data)
-        ),
-        take(1)
-      ).subscribe((result) => {
-        this.parent.messaging.add({severity: 'success', detail: 'Success', summary: 'Added Comment'});
-      })
+      this.SetResponse(data, 'Added Comment');
     })
   }
   MyRating$ = combineLatest([this.Ratings$, this.AverageRating$, this.User$]).pipe(
