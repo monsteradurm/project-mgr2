@@ -15,7 +15,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { TabUnderlineDirective } from './directives/material/tab-underline.directive';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ResizeModule } from '@thalesrc/ng-utils/resize';
 import { MatBadgeOverrideDirective } from './directives/material/mat-badge-override.directive'
 
 import { FocusInputDirective } from 'src/app/directives/material/focusInput.directive';
@@ -206,8 +205,6 @@ const imports = [
   ToastModule,
   BadgeModule,
   FileUploadModule,
-  ResizeModule,
-
   SwappingSquaresSpinnerModule,
   ScalingSquaresSpinnerModule,
   FlowerSpinnerModule,
