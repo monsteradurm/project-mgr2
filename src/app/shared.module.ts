@@ -214,6 +214,8 @@ const imports = [
 
   LazyLoadImageModule,
   
+  ResizeModule, 
+  
   //firebase
   AngularFireModule.initializeApp(environment.firebase),
 
