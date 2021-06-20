@@ -161,7 +161,7 @@ export class ProjectComponent implements OnInit, OnDestroy
         let grp = _.find(board.groups, g => g.title == 'Milestones');
         if (grp)
           return this.projectService.GetGroupItem$(board.id, grp.id).pipe(
-            map(group => group.items),
+            map(group => group ? group.items : []),
             map(items => _.map(items, i => {
               return new BoardItem(i, board.workspace, grp, board)
             }) 
