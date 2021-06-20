@@ -107,6 +107,7 @@ import { FlattenDepartmentsPipe } from './directives/elements/FlattenDepartments
 import { BarRatingModule } from "ngx-bar-rating";
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FindUserByIdPipe } from './directives/elements/FndUserById.directive';
+import { ResizeModule } from '@thalesrc/ng-utils/resize';
 
 declare var google: any;
 
@@ -166,7 +167,8 @@ const declarations = [
   FilterCompletePipe,
   GetBoxFolderInformationPipe,
   FlattenDepartmentsPipe,
-  FindUserByIdPipe
+  FindUserByIdPipe,
+  
 ]
 
 const imports = [
@@ -205,12 +207,13 @@ const imports = [
   ToastModule,
   BadgeModule,
   FileUploadModule,
+
   SwappingSquaresSpinnerModule,
   ScalingSquaresSpinnerModule,
   FlowerSpinnerModule,
 
   LazyLoadImageModule,
-
+  
   //firebase
   AngularFireModule.initializeApp(environment.firebase),
 
