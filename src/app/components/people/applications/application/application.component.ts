@@ -163,7 +163,9 @@ export class ApplicationComponent implements OnInit, OnDestroy {
 
   subscriptions = [];
 
-
+  NewTab(url) {
+    window.open(url, "_blank")
+  }
   ngOnInit(): void {
 
   }
