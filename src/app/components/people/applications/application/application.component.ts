@@ -5,8 +5,10 @@ import { shareReplay, take, switchMap, map } from 'rxjs/operators';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 
+
 import * as _ from 'underscore';
 import { DateAdapter } from '@angular/material/core';
+
 
 @Component({
   selector: 'app-application',
@@ -92,7 +94,7 @@ export class ApplicationComponent implements OnInit, OnDestroy {
 
   SetRating(r) {
     if (!r) return;
-    
+
     combineLatest([this.MyRating$, this.ResponseData$, this.User$]).pipe(take(1))
       .subscribe(
         ([rating, data, user]) => {
@@ -102,12 +104,12 @@ export class ApplicationComponent implements OnInit, OnDestroy {
           data.ratings[user.id] = r;
           this.SetResponse(data, "Set Rating for Respondent");
     })
-    
+
   }
 
   SetResponse(data, detail) {
     this.Application$.pipe(
-      switchMap((app:Application) => 
+      switchMap((app:Application) =>
         this.parent.firebase.SetTypeformResponse$(app.form_id, app.response_id, data)
       ),
       take(1)
@@ -119,7 +121,7 @@ export class ApplicationComponent implements OnInit, OnDestroy {
 
   AddComment() {
     if (!this.newComment || this.newComment.length < 10) {
-      this.parent.messaging.add({severity: 'error', summary: 'Oops!', 
+      this.parent.messaging.add({severity: 'error', summary: 'Oops!',
       detail: 'A comment must be at least 10 characters long'})
       return;
     }
@@ -160,6 +162,7 @@ export class ApplicationComponent implements OnInit, OnDestroy {
   get primaryColor() { return this.parent.primaryColor; }
 
   subscriptions = [];
+
 
   ngOnInit(): void {
 

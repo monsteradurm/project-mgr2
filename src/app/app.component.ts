@@ -12,6 +12,8 @@ import '@fullcalendar/core';
 import { MondayService } from './services/monday.service';
 import { ChromeService } from './services/chrome.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { BroadcastChannel } from 'broadcast-channel';
+const TAB_MESSAGE = "project-mgr.live/another-tab";
 
 @Component({
   selector: 'app-root',
@@ -30,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (!message)
         return;
 
-      
+
       return message;
     })
   )
@@ -39,9 +41,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private Token = new BehaviorSubject<string>(null);
   Token$ = this.Token.asObservable().pipe(shareReplay(1));
-  
+
   IsChrome$ = this.chrome.IsChrome$;
-  
+
   constructor(
     private chrome: ChromeService,
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
@@ -63,12 +65,22 @@ export class AppComponent implements OnInit, OnDestroy {
   IsMondayReachable: boolean = true;
   IsAuthorized: boolean = true;
   IsAdmin: boolean = false;
-  
+
   @Output() User: UserIdentity = null;
   @Output() MyPhoto: any;
 
+  BroadcastChannel = new BroadcastChannel('tab')
+  private TabError = new BehaviorSubject<boolean>(false);
+  TabError$ = this.TabError.asObservable().pipe(shareReplay(1));
   subscriptions = [];
   ngOnInit(): void {
+    this.BroadcastChannel.postMessage(TAB_MESSAGE);
+    this.BroadcastChannel.onmessage = (message) => {
+      if (message == TAB_MESSAGE)
+        this.TabError.next(true);
+      console.log("EQUALS? ", message == TAB_MESSAGE)
+    }
+
     this.subscriptions.push(
       this.MondayExhausted$.subscribe(e => this.MondayExhausted = e)
     )
