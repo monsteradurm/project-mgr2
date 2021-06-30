@@ -10,6 +10,7 @@ import { GalleryComponent } from './components/gallery/gallery.component';
 import { SupportComponent } from './components/support/support.component';
 import { BoxWebhooksComponent } from './components/system/box-webhooks/box-webhooks.component';
 import { ApplicationsComponent } from './components/people/applications/applications.component';
+import { RepositoriesComponent } from './components/repositories/repositories.component';
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
     path: '',
     component: HomeComponent
   },
+    {
+      path: 'Repositories',
+      component: RepositoriesComponent
+    },
   {
     path: 'Support',
     component: SupportComponent

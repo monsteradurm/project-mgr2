@@ -79,5 +79,14 @@
         "pathRewrite": {
             "^/pm-socket/*": ""
         }
+    },
+    "/lareposync/*": {
+        "target": "https://lareposyncstorage.blob.core.windows.net/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/lareposync/*": ""
+        }
     }
 }
