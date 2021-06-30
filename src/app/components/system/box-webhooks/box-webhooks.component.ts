@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { combineLatest } from 'rxjs';
-import { map, shareReplay, take } from 'rxjs/operators';
+import { map, shareReplay, take, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
 import { SystemComponent } from '../system.component';
 
@@ -26,6 +26,7 @@ export class BoxWebhooksComponent implements OnInit {
   }
 
   Webhooks$ = this.AllWebhooks$.pipe(
+    tap(t => console.log("HERE", t)),
     map(([box, firebase]) => {
       let valid = _.filter(box, b => _.find(firebase, f => f.id == b.id));
       return valid;
@@ -53,14 +54,14 @@ export class BoxWebhooksComponent implements OnInit {
     //this.parent.navigation.SetPageTitles(["Box Webhooks"])
 
     //this.box.DeleteWebhook$("514664230").subscribe();
-
-    /*this.Webhooks$.pipe(take(1)).subscribe(
+    /*
+    this.Webhooks$.pipe(take(1)).subscribe(
       (hooks:any) => {
         if (hooks && hooks > 0)
           return;
         
         var target = {
-          "id": "135380066515",
+          "id": "136031968653",
           "type": "folder"
         };
         var triggers = [
@@ -73,8 +74,8 @@ export class BoxWebhooksComponent implements OnInit {
         ]
         var address = "https://us-central1-pm-websocket.cloudfunctions.net/CacheBoxPaths";
         this.box.AddWebhook$(target, triggers, address).pipe(take(1)).subscribe((result) => console.log("POSTED", result));
-      });*/
-      
+      });
+      */
   }
 
 }

@@ -46,8 +46,8 @@
     </ng-container>
 
     <ng-template #showContent>
-        <div style="position:absolute;width:100%;height:100%">
-            <div class="reference-back-container" fxLayout="column">
+        <div style="position:absolute;width:100%;height:100%;visibility:hidden">
+            <div class="reference-back-container" fxLayout="column" style="visibility:visible">
                 <button mat-fab tippyText="Back" (click)="drawer.toggle()">
                     <mat-icon class="app-fab-icon-btn app-center-fab-icon">file_upload</mat-icon>
                 </button>
@@ -71,12 +71,12 @@
                     </div>
                 </div>
             </div>
-            <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:40px;margin-bottom:320px">
+            <div fxLayout="column" fxLayoutAlign="center center" style="width:100%;margin-top:40px;margin-bottom:320px;pointer-events: visible !important;">
                 <div fxLayout="row wrap" fxLayoutGap="32px grid" fxLayoutAlign="center center">
                     <div *ngFor="let file of Files">
                         <ng-container *ngIf="(file.Thumbnail$ | async) as thumbnail; else thumbnailError">
                             <img class="reference-thumbnail" (click)="onSelect(file.id, file.name)"
-                                [src]="thumbnail | TrustResourceURL">
+                                [src]="thumbnail | TrustResourceURL" (load)="onImageLoad()">
                         </ng-container>
                         <ng-template #thumbnailError>
                             <div class="reference-thumbnail" fxLayout="column" fxLayoutAlign="center center">

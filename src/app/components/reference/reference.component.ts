@@ -1,6 +1,6 @@
 import { ResizeManager } from '@thalesrc/resize-manager';
 
-import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { delay, map, retryWhen, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { BoxService } from 'src/app/services/box.service';
@@ -14,18 +14,26 @@ declare var Box:any;
   templateUrl: './reference.component.html',
   styleUrls: ['./reference.component.scss']
 })
-export class ReferenceComponent implements OnInit, OnDestroy {
+export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   DrawerVisible: boolean = false;
-  _Height;
-  @Input() set Height(s) {
-    if (s)
-      this._Height = s - 115 ;
 
-      console.log("SETTING HEIGHT", this.Height)
+  height = new BehaviorSubject<number>(0);
+  Height$ = this.height.asObservable().pipe(
+    map(h => h - 115)
+  );
+
+  @Input() set Height(s) {
+    this.height.next(s);
+    console.log("HEIGHT", s)
   }
-  get Height() { return this._Height; }
+  
+  @Output() requestHeight = new EventEmitter<boolean>();
+
+  ngAfterViewInit() {
+    this.requestHeight.next(true);
+  }
 
   @Output() Fetching: boolean = true;
   @Input() primaryColor; 
@@ -37,6 +45,10 @@ export class ReferenceComponent implements OnInit, OnDestroy {
     console.log(r);
     this.root.next(r);
     this._Root = r;
+  }
+
+  onImageLoad() {
+    this.requestHeight.next(true);
   }
 
   private root = new BehaviorSubject<any>(null);

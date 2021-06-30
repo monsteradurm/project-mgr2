@@ -38,21 +38,26 @@ export class ViewTaskDlgComponent implements OnInit {
     this.onResize(null);
   }
 
-  @Output() TaskHeight;
-  @Output() FetchHeight;
+  HeightRequested() {
+    this.onResize(null);
+  }
+  height = new BehaviorSubject<number>(0);
 
+  Height$ = this.height.asObservable().pipe(shareReplay(1))
+  TaskHeight$ = this.Height$.pipe(
+    map(h => h - 40)
+  )
+  
   onResize(evt) {
     if (!this.DlgContainer)
       return;
 
     let el = this.DlgContainer.nativeElement as HTMLElement;
     let dlg = el.firstElementChild.firstElementChild;
-    this.Height = dlg.clientHeight;
-    this.TaskHeight = this.Height - 40;
+    this.height.next(dlg.clientHeight);
   }
 
   _Item;
-  @Output() Height;
   @ViewChild(Dialog, { static: false, read: ElementRef }) DlgContainer;
 
   //REQUIRED INPUTS

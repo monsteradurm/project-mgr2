@@ -31,7 +31,7 @@
                 </div>
                 <ng-container *ngIf="(Item$ | FetchSubItemsFromBoardItem$ | async) as SubItems">
                     <ng-container *ngIf="(Item | FindBoardItemById : SubItems : Departments : SelectedSubItem) as View">
-                        <div class="view-task-scroll" [style.height.px]="TaskHeight">
+                        <div class="view-task-scroll" [style.height.px]="TaskHeight$ | async">
                             <div class="task-btn-container" fxLayout="column">
 
                                 <button mat-fab tippyText="Delete SubItem" *ngIf="View.type == 'revision'"
@@ -103,7 +103,7 @@
                                                         [style.border-color]="Status.color">
                                                         {{View.task}}</h3>
                                                     <div style="position:relative;width:100%;"
-                                                        [style.height.px]="FetchHeight" fxLayout="column"
+                                                        [style.height.px]="Height$ | async" fxLayout="column"
                                                         fxLayoutAlign="start start">
                                                         <ng-container *ngIf="View.type == 'task'">
                                                             <h4 style="margin-bottom:5px" [style.color]="Status.color">
@@ -166,7 +166,8 @@
                                                         <ng-container
                                                             *ngIf="(View.ReferenceFolder$ | async) as ReferenceFolder; else fetchingBox">
                                                             <app-reference style="position:relative;width:100%"
-                                                                [Height]="Height" [Root]="ReferenceFolder"
+                                                                (requestHeight)="HeightRequested()"
+                                                                [Height]="Height$ | async" [Root]="ReferenceFolder"
                                                                 [primaryColor]="Status.color">
                                                             </app-reference>
                                                         </ng-container>
