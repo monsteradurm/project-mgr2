@@ -19,6 +19,8 @@ export class ApplicationSortByDirective  {
               case "Email": return this.sortByAttribute(items, 'Email', reverse);
               case "Submitted": return this.sortByAttribute(items, 'Submitted', reverse);
               case "Location": return this.sortByAttribute(items, 'Location', reverse);
+              case "Experience": return this.sortByAttribute(items, "YearsExperience", reverse);
+              case "Rating": return this.sortByAttribute(items, "Rating", reverse);
             }
             return items;
         }));

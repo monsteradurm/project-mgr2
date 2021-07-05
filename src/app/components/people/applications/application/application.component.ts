@@ -64,7 +64,9 @@ export class ApplicationComponent implements OnInit, OnDestroy {
   constructor(public parent: ApplicationsComponent) { }
 
   private applicant = new BehaviorSubject<Application>(null);
-  Application$ = this.applicant.asObservable().pipe(shareReplay(1));
+  Application$ = this.applicant.asObservable().pipe(
+    shareReplay(1));
+
   ResponseData$: Observable<{ratings: any, notes:any[]}> = this.Application$.pipe(
     switchMap(app => app ?
       this.parent.firebase.TypeformResponses$(app.form_id, app.response_id)
@@ -141,16 +143,23 @@ export class ApplicationComponent implements OnInit, OnDestroy {
       this.SetResponse(data, 'Added Comment');
     })
   }
-  MyRating$ = combineLatest([this.Ratings$, this.AverageRating$, this.User$]).pipe(
-    map(([ratings, avg, user]) => {
+  MyRating$ = combineLatest([this.Ratings$, this.AverageRating$, this.User$, this.Application$]).pipe(
+    map(([ratings, avg, user, app]) => {
       if (!ratings) return 0;
 
-      if (!user) return avg;
+      if (!user) { 
+        app.Rating = avg;
+        return avg;
+      }
 
-      if (ratings[user.id])
+      if (ratings[user.id]) {
+        app.Rating = ratings[user.id];
         return ratings[user.id];
+      }
+      app.Rating = avg ? avg : 0;
       return avg;
-    })
+    }),
+    shareReplay(1)
   )
 
 

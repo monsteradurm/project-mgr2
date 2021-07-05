@@ -110,6 +110,11 @@ export class FirebaseService {
       return this.TypeFormRespondents[key];
     }
 
+  AddBoxWebhook$(id, name) { 
+    return this.afs.collection("BoxWebhooks").doc(id).set({
+    folder_id: id, name:name, type:"box"
+  })
+}
   BoxWebhooks$ = this.afs.collection("BoxWebhooks").get().pipe(
       map(result => result.docs),
       map((docs: QueryDocumentSnapshot<any>[]) =>

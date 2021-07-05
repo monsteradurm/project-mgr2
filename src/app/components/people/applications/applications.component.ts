@@ -6,7 +6,7 @@ import { PeopleComponent } from '../people.component';
 
 import * as _ from 'underscore';
 import { _getOptionScrollPosition } from '@angular/material/core';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { ActionOutletFactory } from '@ng-action-outlet/core';
 import { MessageService } from 'primeng/api';
 import { FirebaseService } from '../../../services/firebase.service';
@@ -30,7 +30,7 @@ export class ApplicationsComponent implements OnInit, OnDestroy {
   private sortBy = new BehaviorSubject<string>('Name');
   SortBy$ = this.sortBy.asObservable().pipe(shareReplay(1));
 
-  SortByOptions = ['Name', 'Email', 'Submitted', 'Location'];
+  SortByOptions = ['Name', 'Email', 'Submitted', 'Location', 'Experience', 'Rating'];
 
   sortByMenu = this.actionOutlet.createGroup().enableDropdown().setTitle('Sort By')
     .setIcon('sort_by_alpha');
@@ -132,7 +132,7 @@ export class Application {
   public YearsExperience: number;
   public AdditionalNotes: string;
   public Location: string;
-
+  public Rating: number = 0;
   public form_id: string;
   public response_id: string;
 
