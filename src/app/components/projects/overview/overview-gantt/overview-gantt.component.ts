@@ -188,7 +188,7 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     let end = itemRange[1];
     let due = parent ? parent.mEnd : itemRange[1];
     if (i.due && i.due.value) {
-      due = moment(i.due.value);
+      due = moment(i.due.value).add(1, 'days');
     }
 
     let hasArtist = i.artist && i.artist.length > 0;
