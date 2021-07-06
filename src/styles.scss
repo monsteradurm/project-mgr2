@@ -966,7 +966,7 @@ div.bp-header-container > div > .bp-default-logo {
 }
 .p-splitter.p-component.p-splitter-horizontal {
   display:flex;
-  height:100%;
+  //height:100%;
 }
 div.gantt_layout_cell.scrollVer_cell {
   display:none !important;
@@ -1004,9 +1004,10 @@ nav {
 }
 app-overview {
 
+  /*
   app-overview-gantt > div > div, app-overview-gantt > div, app-overview-gantt {
     height:100% !important;
-  }
+  }*/
 
   .gantt_task_row.gantt_selected .gantt_task_cell {
     border-right-color: #ddd;
@@ -1081,7 +1082,7 @@ app-overview {
 
   .p-splitter {
     border: none !important;
-    height:100%;
+    //height:100%;
     }
 
     .p-splitter .p-splitter-gutter {

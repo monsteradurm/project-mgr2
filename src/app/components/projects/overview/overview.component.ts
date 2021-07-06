@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, ViewChild, AfterViewChecked, ChangeDetectorRef, ApplicationRef, ViewChildren, QueryList, HostListener, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectComponent } from '../project/project.component';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
@@ -24,7 +24,7 @@ import { ViewTaskDlgComponent } from '../../dialog/view-task-dlg/view-task-dlg.c
 export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
   @ViewChild(ViewTaskDlgComponent) ViewTaskDlg: ViewTaskDlgComponent;
-
+  @ViewChild('boardsLayout', {static: false, read: ElementRef}) BoardsLayout : ElementRef;
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     evt.preventDefault();
   }
@@ -189,9 +189,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   BoardWidth;
   GanttWidth;
+  GanttHeight;
   onBoardsResize(evt) {
     this.BoardWidth = evt.width;
     this.GanttWidth = window.innerWidth - evt.width;
+    this.GanttHeight = evt.height;
   }
 
   onItemClicked(item) {

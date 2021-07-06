@@ -76,6 +76,16 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
   get Width() {
     return this._Width;
   }
+  _Height;
+  @Input() set Height(w) {
+
+    gantt.config.grid_height = w + 75;
+    this._Height = w + 75;
+  }
+
+  get Height() {
+    return this._Height;
+  }
 
   @Output() _Expanded: string[] = [];
   @Input() set Expanded(e: string[]) {
