@@ -151,11 +151,11 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
 
     _.forEach(_.filter(items, i => !i.is_milestone()), i => {
       result.push(this.ProcessItem(i))
+      
       let isExpanded = this.Expanded.indexOf(i.id) > -1;
-
       if (isExpanded && i.subitems && i.subitems.length > 0) {
         _.forEach(i.subitems, s => {
-          let sd = this.ProcessItem(s);
+          let sd = this.ProcessItem(s, i);
           result.push(sd);
         });
       }
@@ -171,39 +171,71 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     this.LoadData();
   }
 
-  ProcessItem(i) {
+  ProcessItem(i, parent=null) {
     let itemRange = this.GetItemRange(i);
 
     let start = itemRange[0];
     let end = itemRange[1];
+    let due = parent ? parent.mEnd : itemRange[1];
+    if (i.due && i.due.value) {
+      due = moment(i.due.value);
+    }
 
     let hasArtist = i.artist && i.artist.length > 0;
     let hasTimeline = start && end;
 
-    let isRevision = i.type != 'task';
-    if (isRevision && !hasTimeline) {
-      let parent = _.find(this.Data, b => b.subitem_ids && b.subitem_ids.indexOf(i.id) > -1);
-      start = moment(parent.mStart)
+    let isRevision = parent != null;
+    if (isRevision) {
+      i.due = parent.due;
+      i.status = parent.status;
+      if (!hasArtist && parent.artist && parent.artist.length > 0) {
+        i.artist = parent.artist;
+        hasArtist = true;
+      }
+
+      if (!hasTimeline) {
+        start = moment(parent.mStart);
+      }
     }
-    else if (!hasTimeline)
+
+    if (!isRevision && !hasTimeline) 
       start = this.MinViewValue;
 
     let finished = this.QueryItemFinished(i);
-    let color;
+    let color = "black";
+    let textColor = 'white';
     let artist;
 
     artist = (hasArtist ?
       _.map(i.artist, a => a.text).join(". ") : 'Unassigned') + (hasTimeline ? '' : ', No Timeline')
 
-    color = i.status && i.status.additional_info ? i.status.additional_info.color : 'black';
-    if (!hasTimeline || isRevision) color = 'transparent';
+    color = 'black';
+    if (!hasTimeline) {
+      color = 'transparent';
+      textColor = 'black';
+    }
+
+    else if (i.status && i.status.additional_info)
+      color = i.status.additional_info.color;
+    
+    let hasChildren = i.subitem_ids && i.subitem_ids.length > 0;
+
+    let lastChildEnds;
+    if (hasChildren) {
+      let wTimeline = _.filter(i.subitems, s => s.timeline && s.timeline.value);
+      let ends = _.map(wTimeline, s => s.timeline.value.to).sort();
+      if (ends.length > 0) {
+        lastChildEnds = moment(ends[ends.length - 1]);
+      }
+    }
+
 
     let result = {
-      hasTimeline: hasTimeline, hasArtist: hasArtist, isRevision: isRevision, hasChildren: i.subitem_ids && i.subitem_ids.length > 0,
+      hasTimeline: hasTimeline, hasArtist: hasArtist, isRevision: isRevision, hasChildren,
       isExpanded: isRevision && this.Expanded.indexOf(i) > -1, mStart: start, mEnd: end,
-      id: i.id, text: artist, start_date: start.toDate(),
+      id: i.id, text: artist, start_date: start.toDate(), due, lastChildEnds,
       duration: hasTimeline ? end.diff(start, 'days') : 5, finished: finished, subitem_ids: _.map(i.subitem_ids, i => i.toString()),
-      row_height: 40, bar_height: 33, progress: 0, color: color, textColor: hasTimeline && !isRevision ? 'white' : 'black'
+      row_height: 40, bar_height: 33, progress: 0, color, textColor
     };
     return result;
   }
@@ -314,23 +346,27 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
     gantt.config.show_tasks_outside_timescale = true;
     gantt.templates.rightside_text = function (start, end, task) {
       if (task.hasTimeline && !task.finished) {
+        
         let today = moment();
-        var overdue = moment().diff(task.mEnd, 'days');
+        var overdue = moment().diff(task.due ? task.due : task.mEnd, 'days');
+        
+        let from = task.lastChildEnds ? task.lastChildEnds : task.mEnd;
+
         if (overdue < 0)
           return;
 
-        var first = task.mEnd.clone().endOf('week'); // end of first week
+        var first = from.clone().endOf('week'); // end of first week
         var last = today.clone().startOf('week'); // start of last week
         var days = last.diff(first, 'days') * 5 / 7; // this will always multiply of 7
-        var wfirst = first.day() - task.mEnd.day(); // check first week
-        if (task.mEnd.day() == 0) --wfirst; // -1 if start with sunday 
+        var wfirst = first.day() - from.day(); // check first week
+        if (from.day() == 0) --wfirst; // -1 if start with sunday 
         var wlast = today.day() - last.day(); // check last week
         if (today.day() == 6) --wlast; // -1 if end with saturday
         overdue = wfirst + Math.floor(days) + wlast; // get the total
 
         if (overdue < 1) return;
 
-        var text = `<b style="color:black;padding:2px 5px;margin-left:-10px;font-size:12px;border-bottom:solid 2px ${task.color}">${overdue} Days Overdue</b>`;
+        var text = `<b style="color:black;padding:2px 5px;margin-left:-10px;font-size:13px;font-weight:bold !important">${overdue} Days Overdue</b>`;
         return text;
       }
     };
@@ -346,32 +382,59 @@ export class OverviewGanttComponent implements OnInit, AfterViewInit {
       let sizes;
       if (task.isRevision) {
         let parent = _.find(this.Data, d => d.subitem_ids && d.subitem_ids.indexOf(task.id) > -1);
-
         if (!parent || !parent.hasTimeline) return false;
+          sizes = gantt.getTaskPosition(parent, parent.mStart.toDate(),
+          parent.finished ?
 
-        sizes = gantt.getTaskPosition(parent, parent.mStart.toDate(),
-          parent.finished ? parent.mEnd.toDate() : moment().toDate());
+          //finished 
+          parent.mEnd.toDate() : 
+
+          //not finished
+          ( parent.due ? parent.due : moment().toDate() )
+          );
+
+        if (parent.due && !parent.finished) {
+
+          sizes[1] = parent.due.toDate();
+        }
 
         let offset = (1 + _.findIndex(parent.subitem_ids, i => i == task.id)) * 40;
         sizes.top += offset;
         color = parent.color;
       }
-      else if (task.hasTimeline && !task.finished && task.mEnd) {
+      else if (task.hasTimeline && !task.finished) {
         let end = moment().toDate();
-        sizes = gantt.getTaskPosition(task, task.mStart.toDate(), end);
+        sizes = gantt.getTaskPosition(task, task.mStart.toDate(), task.due ? task.due : end);
       }
       if (!sizes)
         return false;
 
-      let el = document.createElement('div');
-      el.style.cssText =
+      let dueRange = document.createElement('div');
+      
+      dueRange.style.cssText =
         [
           "background:" + color,
           "left:" + sizes.left + 'px',
           "width:" + sizes.width + 'px',
           "top:" + sizes.top + 'px'].join(";");
-      el.className = 'gantt-status-bg';
+      dueRange.className = 'gantt-status-bg';
+      let el = document.createElement('div');
+
+      if (!task.isRevision && task.lastChildEnds) {
+        let fullRange = document.createElement('div');
+        let fullSize = gantt.getTaskPosition(task, task.mStart.toDate(), task.lastChildEnds.toDate());
+        fullRange.style.cssText = [
+          "border-bottom-color:" + color,
+          "left:" + fullSize.left + 'px',
+          "width:" + fullSize.width + 'px',
+          "top:" + fullSize.top + 'px'].join(";");
+        fullRange.className = 'gantt-range-bg';
+        el.appendChild(fullRange);
+      }
+      
+      el.appendChild(dueRange);
       return el;
+
     });
 
     gantt.templates.task_class = (start, end, task) => {

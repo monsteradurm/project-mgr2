@@ -248,7 +248,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     shareReplay(1)
   )
 
-
   MyFilteredItems$ = combineLatest([this.MyItems$,
   this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
     .pipe(

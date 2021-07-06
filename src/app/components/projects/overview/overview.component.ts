@@ -86,7 +86,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Output() Expanded: string[] = [];
 
 
-  SubItems$ =
+  SubItems$ : Observable<SubItem[]> =
     of(null).pipe(
       switchMap(t => {
         this.Fetching = true;

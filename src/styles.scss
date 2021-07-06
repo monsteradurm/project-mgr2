@@ -1040,12 +1040,14 @@ app-overview {
     border-right: 1px solid #ddd;
   }
   .gantt_side_content.gantt_right {
-    margin-top: -4px;
+    margin-top: -0px;
+    font-weight:bold;
   }
   .gantt_empty_task > .gantt_task_content {
     width: auto !important;
     opacity:0.35;
   }
+
   .gantt_empty_task.last-revision > .gantt_task_content {
     opacity: 1;
   }
@@ -1148,6 +1150,12 @@ app-overview {
     background: red;
     height: 40px;
     position:absolute;
+  }
+  .gantt-range-bg {
+    background: transparent !important;
+    border-bottom: double 4px;
+    position:absolute;
+    transform:translateY(32px)
   }
 }
 

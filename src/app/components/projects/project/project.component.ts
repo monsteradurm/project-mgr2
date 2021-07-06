@@ -178,14 +178,13 @@ export class ProjectComponent implements OnInit, OnDestroy
       return of([]);
   
     return this.projectService.GetGroupItem$(board.id, group.id).pipe(
-      map(group => group.items),
+      map(group => group && group.items ? group.items : []),
       map((items) => _.map(items, i => new BoardItem(i, board.workspace, group, board))),
       map(items => milestones.concat(items))
     );
 
     }),
     catchError(msg => {
-      console.log("HERE BOARDITEMS ERROR", msg)
       this.errorMessage.next(msg)
       return of([])
     }),

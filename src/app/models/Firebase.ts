@@ -42,6 +42,8 @@ export class FirebaseUpdate {
             return true;
 
         let now = moment();
+        console.log("Last Cached" + now.diff(this.moment, 'minutes') + " Minutes ago...");
+        console.log("Caching every " + environment.cache.minutes + " Minutes");
         return now.diff(this.moment, 'minutes') > environment.cache.minutes;
     }
 }

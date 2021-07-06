@@ -9,7 +9,7 @@ import * as _ from 'underscore';
 import { UserService } from './user.service';
 import { UserIdentity } from '../models/UserIdentity';
 import { Column, MondayIdentity, ScheduledItem } from '../models/Monday';
-import { Board } from '../models/BoardItem';
+import { Board, SubItem } from '../models/BoardItem';
 import { TimeEntry } from '../models/TimeLog';
 import { AngularFirestore } from '@angular/fire/firestore';
 
@@ -101,14 +101,14 @@ export class MondayService {
     )
   }
 
-  GetSubItem$(id: string) {
+  GetSubItem$(id: string) : Observable<SubItem> | any{
     let query = `items(ids:[${id}] limit:1) {
       id name 
       column_values { title text id additional_info value } }`
 
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data: any) => data.items),
-      map((items: any[]) => items[0]),
+      map((items: any[]) => new SubItem(items[0])),
       take(1),
       catchError(err => {
         console.log(err);
@@ -125,6 +125,7 @@ export class MondayService {
 
     return this.Query$(query.split('\n').join('').trim()).pipe(
       map((data: any) => data.items),
+      map(items => _.map(items, i => new SubItem(i))),
       take(1),
       catchError(err => {
         console.log(err);
