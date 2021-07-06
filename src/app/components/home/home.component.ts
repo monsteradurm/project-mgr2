@@ -490,24 +490,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   RequiresReview$ = this.MyItems$.pipe(
-    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
+    map(items => _.filter(items, i => i.type != 'revision' && i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
     shareReplay(1),
   )
 
   RequiresAssistance$ = this.MyItems$.pipe(
-    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Requires Assistance') > -1)),
+    map(items => _.filter(items, i =>  i.type != 'revision' && i.status && i.status.text && i.status.text.indexOf('Requires Assistance') > -1)),
     shareReplay(1)
   )
 
   ReceivedFeedback$ = this.MyItems$.pipe(
-    map(items => _.filter(items, i => i.status && i.status.text &&
+    map(items => _.filter(items, i =>  i.type != 'revision' && i.status && i.status.text &&
       i.status.text.indexOf('Received') > -1 && i.status.text.indexOf('Feedback') > -1)),
     shareReplay(1)
   )
 
   
   InProgress$ = this.MyItems$.pipe(
-    map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Progress') > -1)),
+    map(items => _.filter(items, i =>  i.type != 'revision' && i.status && i.status.text && i.status.text.indexOf('Progress') > -1)),
     shareReplay(1)
   )
 
