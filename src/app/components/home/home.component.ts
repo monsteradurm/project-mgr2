@@ -19,7 +19,7 @@ import { ActionGroup, ActionOutletFactory } from '@ng-action-outlet/core';
 import { TaskTooltipComponent } from './../tooltips/task/task.component';
 
 import tippy from "tippy.js";
-import { Board, BoardItem, Workspace } from 'src/app/models/BoardItem';
+import { Board, BoardItem, SubItem, Workspace } from 'src/app/models/BoardItem';
 import { ProjectService } from 'src/app/services/project.service';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { LogHoursDlgComponent } from '../dialog/log-hours-dlg/log-hours-dlg.component';
@@ -228,26 +228,129 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     shareReplay(1)
   )
 
-  MyItems$ = combineLatest([this.Me$, this.Items$]).pipe(
-    map(([me, items]) => {
-      let name = me.name;
-      if (me.teams.indexOf('Managers') > -1)
-        return items;
-
-      let filtered = _.filter(items, (i:ScheduledItem) =>
-        (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0) || i.is_milestone()
-      );
-
-      filtered = _.filter(filtered, i =>
-        i.is_milestone() ||
-        _.find(i.artist, a => a.text.indexOf(name) > -1) ||
-        _.find(i.director, d => d.text.indexOf(name) > -1)
+  FilteredItems$ = combineLatest([this.Items$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
+      .pipe(
+        map(([items, project, board, group]) => {
+          if (project == 'All Projects')
+            return items;
+  
+          let filtered = items;
+          if (project != 'All Projects') {
+            filtered = _.filter(filtered, i => i.workspace.name.indexOf(project) > -1);
+          }
+  
+          if (board != 'All Boards') {
+            filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1)
+          }
+  
+          if (group != 'All Groups') {
+            filtered = _.filter(filtered, i => i.group.title.indexOf(group) > -1)
+          }
+          return filtered;
+        }),
+        distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
+        shareReplay(1),
       )
+
+  /*
+  SubItems$ = this.Items$.pipe(
+    map((items: ScheduledItem[]) => {
+      let subgroups = _.map(items, i => i.subitem_ids);
+      let flattened = _.flatten(subgroups);
+      if (flattened.length < 1)
+        return of([]);
+        
+      return this.monday.SubItems$(flattened);
+    })
+  )*/
+
+  
+  SubItems$ = this.FilteredItems$.pipe(
+    map(items => _.map(items, i => i.subitem_ids)),
+    map(nestedIds => _.map(nestedIds, ids => ids && ids.length > 0 ?
+      ids[ids.length - 1] : [])),
+    map(nested => _.flatten(nested)),
+    switchMap((ids: string[]) => this.monday.SubItems$(ids)),
+    shareReplay(1)
+  )
+
+  MySubItems$ = combineLatest([this.FilteredItems$, this.SubItems$, this.Me$]).pipe(
+    map(([items, subitems, me]) => {
+      let name = me.name;
+      _.forEach(subitems, (i:SubItem) => {
+        let parent:ScheduledItem = _.find(items, (s:ScheduledItem) => _.map(s.subitem_ids, (id) => id.toString()).indexOf(i.id.toString()) > -1);
+        i.parent = parent;
+        i['board'] = parent.board;
+        i['workspace'] = parent.workspace;
+        i['department_text'] = parent.department_text;
+        i['department'] = parent.department;
+        i['director'] = parent.director;
+        i['element'] = parent.element;
+        i['task'] = parent.task + ', ' + i.name;
+        i['status'] = parent.status;
+        i['due'] = parent.due;
+        i['itemcode'] = parent.itemcode;
+        i['selection'] = parent.selection + ": " + i.name;
+        i['group'] = parent.group;
+      })
+      
+      let manager = (me.teams.indexOf('Managers') > -1)
+
+      let filtered = _.filter(subitems, (i:any) => {
+        let parent = i.parent;
+
+        let parentArtists = _.pluck(parent.artist, 'text').join(', ');
+        let artists = _.pluck(i.artist, 'text').join(', ');
+
+        let emptyParent = !parent.artist || parent.artist.length < 1;
+        let emptyArtist = !i.artist || i.artist.length < 1;
+
+        if (emptyArtist) {
+          artists = parentArtists;
+          i.artist = parent.artist;
+        }
+
+        return manager || artists.indexOf(name) > -1;
+      });
       return filtered;
     }),
     shareReplay(1)
   )
 
+  MyItems$ = combineLatest([this.Me$, this.SelectedUser$, this.FilteredItems$, this.MySubItems$]).pipe(
+    map(([me, user, items, subitems]) => {
+      let name = me.name;
+
+      let filtered = items;
+      if (user != 'All Users') {
+        filtered = _.filter(filtered, (i:ScheduledItem) => {
+          if (i.is_milestone())
+            return true;
+
+          let artists = _.pluck(i.artist, 'text').join(', ');
+          let directors = _.pluck(i.director, 'text').join(', ');
+          return artists.indexOf(user) > -1 || directors.indexOf(user) > -1
+        });
+      }
+
+      filtered = _.filter(items, (i:ScheduledItem) =>
+        (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0) || i.is_milestone()
+      );
+
+      if (me.teams.indexOf('Managers') < 0) {
+        filtered = _.filter(filtered, i =>
+          i.is_milestone() ||
+          _.find(i.artist, a => a.text.indexOf(name) > -1) ||
+          _.find(i.director, d => d.text.indexOf(name) > -1)
+        )
+      }
+
+      return filtered.concat(subitems);
+    }),
+    shareReplay(1)
+  )
+  
+  /*
   MyFilteredItems$ = combineLatest([this.MyItems$,
   this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
     .pipe(
@@ -295,15 +398,18 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       )),
       distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
       shareReplay(1),
-    )
+    )*/
 
-  MyTimelineItems$ = this.MyFilteredItems$.pipe(
+  MyTimelineItems$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.timeline)),
     shareReplay(1)
   )
 
   MyProjects$ = this.MyItems$.pipe(
-    map(items => _.map(items, i => i.workspace.name)),
+  
+    map(items => 
+      _.map(_.filter(items, i => i.workspace), i => i.workspace.name)
+    ),
     map(workspaces => _.uniq(workspaces)),
     distinctUntilChanged((a, b) => a == b),
     shareReplay(1)
@@ -359,6 +465,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   )
 
+
   MyUsers$ = this.MyItems$.pipe(
     map(items => {
       let artists =
@@ -376,38 +483,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       directors = _.map(directors, cols => _.map(cols, a => a.text.split(', ')));
 
       return _.filter(
-        _.uniq(_.flatten(artists.concat(directors))), u => u.length > 0)
+        _.uniq(_.flatten(artists.concat(directors))), u => u.length > 0).sort();
     }),
     shareReplay(1)
   )
 
-  SubItems$ = this.MyItems$.pipe(
-    map(items => _.map(items, i => i.subitem_ids)),
-    map(nestedIds => _.map(nestedIds, ids => ids && ids.length > 0 ?
-      ids[ids.length - 1] : [])),
-    map(nested => _.flatten(nested)),
-    switchMap((ids: string[]) => this.monday.SubItems$(ids)),
-    shareReplay(1)
-  )
 
-  RequiresReview$ = this.MyFilteredItems$.pipe(
+  RequiresReview$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Internal Review') > -1)),
     shareReplay(1),
   )
 
-  RequiresAssistance$ = this.MyFilteredItems$.pipe(
+  RequiresAssistance$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Requires Assistance') > -1)),
     shareReplay(1)
   )
 
-  ReceivedFeedback$ = this.MyFilteredItems$.pipe(
+  ReceivedFeedback$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text &&
       i.status.text.indexOf('Received') > -1 && i.status.text.indexOf('Feedback') > -1)),
     shareReplay(1)
   )
 
   
-  InProgress$ = this.MyFilteredItems$.pipe(
+  InProgress$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.status && i.status.text && i.status.text.indexOf('Progress') > -1)),
     shareReplay(1)
   )
@@ -467,7 +566,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   LastDate: moment.Moment;
 
   Allocations$ = this.MyTimelineItems$.pipe(
-    map(items => _.filter(items, i => !i.is_milestone())),
+    map((items) => _.filter(items, i => !i.is_milestone || !i.is_milestone())),
     map(items => _.map(items, i => new CalendarItem(i))),
     switchMap(allocations => {
 
@@ -498,12 +597,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   )
 
-  Milestones$ = this.MyTimelineItems$.pipe(
+  Milestones$ = of([]); /*this.MyTimelineItems$.pipe(
     map(items => _.filter(items, i => i.is_milestone())),
     map(items => _.map(items, i => new CalendarMilestone(i))),
     map(items => _.uniq(items, (i:CalendarMilestone) => i.start + i.title)),
     shareReplay(1)
-  )
+  ) */
 
   last;
   LastEvent$ = this.MyItems$.pipe(
@@ -553,7 +652,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   
-  BoardItemUpdates$ = combineLatest([this.MyFilteredItems$, this.firebase.BoardItemUpdates$]).pipe(
+  BoardItemUpdates$ = combineLatest([this.MyItems$, this.firebase.BoardItemUpdates$]).pipe(
     map(([items, update]) => {
       if (!this.initialized)
       return EMPTY;

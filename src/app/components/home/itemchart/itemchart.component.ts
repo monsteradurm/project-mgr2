@@ -15,7 +15,7 @@ export class ItemchartComponent implements OnInit {
 
   constructor(private parent: HomeComponent) { }
 
-  Items$ = this.parent.MyFilteredItems$;
+  Items$ = this.parent.MyItems$;
   ChartData$ = this.Items$.pipe(
     map(items => _.map(items, i => i.status)
     ),

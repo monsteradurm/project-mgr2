@@ -1,6 +1,6 @@
 import { ColumnType, ColumnValues } from "./Columns";
 import * as _ from 'underscore';
-import { Column } from "./Monday";
+import { Column, ScheduledItem } from "./Monday";
 
 export class BoardItem {
     id: number;
@@ -151,6 +151,7 @@ export class SubItem {
     artist: ColumnValues[];
     timetracking: ColumnValues[];
     timeline: ColumnValues[];
+    parent: ScheduledItem | BoardItem;
     type: string = 'revision';
     updates: {
         id: string;

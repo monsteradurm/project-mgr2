@@ -1,4 +1,4 @@
-import { BoardItem } from "./BoardItem";
+import { BoardItem, SubItem } from "./BoardItem";
 import { MondayIdentity, ScheduledItem } from "./Monday";
 import * as _ from 'underscore';
 import * as moment from 'moment';
@@ -13,7 +13,7 @@ export class CalendarItem {
     end: string;
     backgroundColor: string
 
-    constructor(i: ScheduledItem) {
+    constructor(i) {
         let status = new ItemStatus(i);
         this.id = i.id;
         this.extendedProps.tooltipId = i.id;
@@ -22,6 +22,7 @@ export class CalendarItem {
         this.extendedProps.artist = _.map(i.artist, d => d.text).join(", ");
         this.extendedProps.users = _.map(i.artist, d => d.id);
         this.extendedProps.director = _.map(i.director, d => d.text).join(", ");
+
         this.extendedProps.department = i.department_text.join(', ');
         this.extendedProps.workspace = i.workspace.name;
         this.extendedProps.timeline = i.timeline.text;
@@ -41,7 +42,7 @@ export class CalendarItem {
         if (i.itemcode && i.itemcode.text)
             this.title = this.title;
 
-        if (i.subitem_ids.length > 0) {
+        if (i.subitem_ids && i.subitem_ids.length > 0) {
             this.extendedProps.subitems = _.map(i.subitems, (sub) => ({id: sub.id, name: sub.name}))
         }
 
