@@ -423,10 +423,15 @@ export class ViewTaskDlgComponent implements OnInit {
       this.Upload$(review, subitem, file, description).pipe(
         skipWhile(result => !result),
         switchMap(() => this.syncSketch.Items$(review.id)),
-        map((items) => _.find(items, i => i.name + i.extension == file.name)),
+        tap(t => console.log("Uploaded File", t, file)),
+        map((items) => _.find(items, i => file.name.toLowerCase().indexOf(
+          i.name.toLowerCase())
+          == 0)
+        ),
         switchMap(item => this.syncSketch.RenameItem$(item.id,
           subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name)
-        )
+        ),
+        tap(t => console.log("Renamed File", t))
       ).subscribe(result => {
         this.fileInput.clear();
         this.UpdateItem(null)
