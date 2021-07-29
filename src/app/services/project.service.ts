@@ -37,6 +37,7 @@ export class ProjectService {
       console.log("Using cached Projects$")
       return of(update.asArray());
     }),
+    tap(console.log),
     shareReplay(1)
   )
 

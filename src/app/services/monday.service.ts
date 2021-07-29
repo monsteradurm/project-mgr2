@@ -273,7 +273,6 @@ export class MondayService {
     workspace { name, id } 
     groups { id, title }}`)
     .pipe(
-      tap(console.log),
       map((data: any) => data && data.boards ? data.boards : []),
       map((boards: any) => _.filter(boards, b => b.workspace)),
       map((boards: any) => _.map(boards, b => new Board(b))),
@@ -290,7 +289,8 @@ export class MondayService {
 
   Projects$ = combineLatest([
     this.Boards$.pipe(
-      map((boards: any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0))
+      map((boards: any) => _.filter(boards, b => b.name.indexOf('Subitems of') < 0 &&
+      b.workspace && b.workspace.name[0] != "_"))
     ),
     this.Workspaces$]).pipe(
       map(([boards, workspaces]) => {
@@ -330,6 +330,7 @@ export class MondayService {
         return workspaces;
       }),
       take(1),
+      tap(console.log),
       shareReplay()
     )
 

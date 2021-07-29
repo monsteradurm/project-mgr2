@@ -49,6 +49,6 @@ export const environment = {
     measurementId: "G-0JDT91CJT0"
   },
   cache: {
-    minutes: 10
+    minutes: 3
   }
 };
