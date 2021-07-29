@@ -24,10 +24,9 @@ export class ProjectService {
 
   GroupItems$ = {}
   User$ = this.userService.User$;
-  Projects$ = this.monday.Projects$.pipe(shareReplay(1)); /*this.firebase.Projects$.pipe(
+  Projects$ = this.firebase.Projects$.pipe(
     switchMap((entry) => {
       let update = new FirebaseUpdate(entry);
-      
       if (update.hasExpired()) {
         return this.monday.Projects$.pipe(
           tap(projects => 
@@ -38,9 +37,8 @@ export class ProjectService {
       console.log("Using cached Projects$")
       return of(update.asArray());
     }),
-    tap(console.log),
     shareReplay(1)
-  )*/
+  )
 
   Boards$ = this.firebase.Boards$.pipe(
     switchMap((entry) => {
