@@ -86,9 +86,7 @@ class NewLog {
   hour: string = '09';
   minute: string = '00';
   half: string = 'AM';
-
   duration_hours: string = '01';
   duration_minutes: string = '00';
-
   revision: string;
 }

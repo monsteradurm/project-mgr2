@@ -69,7 +69,6 @@ export class TypeformService {
   }
   Form$(id: string) {
     return this.Query$('/typeform/forms/' + id + '/responses?page_size=1000').pipe(
-      tap(t => console.log("HERE TYPEFORM", t)),
       take(1)
     )
   }

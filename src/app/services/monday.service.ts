@@ -262,7 +262,7 @@ export class MondayService {
     )
   }
 
-  Boards$ = this.Query$(`boards(state:active, limit:200) 
+  Boards$ = this.Query$(`boards(state:active, limit:1000) 
   { id, name, 
     columns {
       id
@@ -273,6 +273,7 @@ export class MondayService {
     workspace { name, id } 
     groups { id, title }}`)
     .pipe(
+      tap(console.log),
       map((data: any) => data && data.boards ? data.boards : []),
       map((boards: any) => _.filter(boards, b => b.workspace)),
       map((boards: any) => _.map(boards, b => new Board(b))),

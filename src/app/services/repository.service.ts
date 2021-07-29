@@ -73,6 +73,7 @@ export class RepositoryService {
     map(res => this.parseXml(res)),
     map(xml => this.xmlToJson(xml)),
     map((data:any) => data.EnumerationResults.Blobs.Blob ? data.EnumerationResults.Blobs.Blob : null),
+	
     map((blobs: any[]) => _.sortBy(blobs, b=> b.LastModified).reverse()[0]),
     map((blob:any) => blob.Url['#text']),
     take(1));

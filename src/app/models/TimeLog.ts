@@ -10,6 +10,7 @@ export class TimeEntry {
     editing: boolean=false;
     isNew:boolean = false;
 
+    
     object() {
         return { user: this.user, date: this.date, duration: this.duration, item: this.item, type: 'TimeEntry' }
     }
