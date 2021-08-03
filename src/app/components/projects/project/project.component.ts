@@ -218,6 +218,8 @@ export class ProjectComponent implements OnInit, OnDestroy
 Please request the production data be extended to include this column.`)
     ),
     map(values => _.uniq(_.flatten(values), v => v.id)),
+    tap(console.log),
+    map(values => _.sortBy(values, (v) => this.DepartmentOrder(v.text))),
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
     shareReplay(1),
     catchError(
@@ -263,6 +265,45 @@ Please request the production data be extended to include this column.`)
     shareReplay(1),
   )
 
+  DepartmentOrder(x:string) {
+    console.log(x);
+    var y = x.toLowerCase();
+
+    if (y.indexOf('design') >= 0 || y.indexOf('concept') >= 0) 
+      return -2;
+
+    if (y.indexOf('translation') >= 0)
+      return -1;
+
+    if (y.indexOf('model') >= 0)
+      return 0;
+
+    if (y.indexOf('previz') >= 0  || x.indexOf('previs') >= 0 )
+      return 1;
+
+    if (y.indexOf('block') >= 0)
+      return 1;
+
+    if (y.indexOf('textur') >= 0)
+      return 2;
+    
+    if (y.indexOf('rig') >= 0)
+      return 3;
+
+    if (y.indexOf('anim') >= 0)
+      return 4;
+
+    if (y.indexOf('polish') >= 0)
+      return 5;
+
+    if (y.indexOf('comp') >= 0)
+      return 6;
+
+    if (y.indexOf('final') >= 0)
+      return 7;
+
+    return 10;
+  }
 
   Department$ = combineLatest([this.Departments$, this.NavigationParameters$]).pipe(
     map(([departments, params]) => {

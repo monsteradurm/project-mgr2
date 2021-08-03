@@ -119,7 +119,7 @@ export class MondayService {
 
   SubItems$(ids: string[]) {
 
-    let query = `items(ids:[${ids.join(' ')}] limit:200) {
+    let query = `items(ids:[${ids.join(' ')}] limit:1000) {
         id name 
         column_values { title text id additional_info value } }`
 

@@ -34,9 +34,12 @@ const _BLANKPROJECT_ = 152336;
 })
 export class SyncSketchService {
 
+  CACHED_PROJECTS = {};
+
   Authorization = `apikey ${environment.syncsketch.user}:${environment.syncsketch.token}`;
   constructor(private http: HttpClient, private firebase: FirebaseService) { 
   }
+
   AllUsers$ = this.Query$(`/syncsketch/account/${_ACCOUNT_}/`).pipe(
     map((account:any) => account.connections),
     map((connections: any[]) => _.map(connections, c=> c.user)),
@@ -51,6 +54,7 @@ export class SyncSketchService {
     return this.Projects$.pipe(
       map(projects => _.find(projects ? projects : [], p => p.name == board.selection)),
       switchMap((project:any) => project ? this.Query$(`/syncsketch/project/${project.id}/`) : of(null)),
+      take(1)
     )
   }
 
@@ -61,7 +65,8 @@ export class SyncSketchService {
           "name": review_name,
           "description": "",
           "group": "",
-          "isPublic" : true
+          "isPublic" : true,
+          "can_download" : true
       }
     ).pipe(
       take(1))
@@ -108,7 +113,10 @@ export class SyncSketchService {
     );
   }
   RenameItem$(item_id: string, name: string) {
-    return this.Patch$(`syncsketch/item/${item_id}/`, {name: name});
+    return this.Patch$(`syncsketch/item/${item_id}/`, {
+      name: name,
+      can_download: true
+    });
   }
 
   UploadURL(review_id: string) {
@@ -127,23 +135,49 @@ export class SyncSketchService {
 
   FindReview$(item: BoardItem | ScheduledItem) {
     let fb = this.firebase.SyncSketchReview(item);
-    let ss = this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`).pipe(
-      map(results => {
+
+    let sel = item.workspace.name + ", " + item.board.name
+
+    if (!this.CACHED_PROJECTS[sel]) {
+      this.CACHED_PROJECTS[sel] = 
+      this.Projects$.pipe(
+        map(projects => _.find(projects, p => p.name == sel)),
+        switchMap(project => this.Reviews$(project.id)),
+        shareReplay(1)
+      )
+    }
+    
+    let name =  `${item.board.id}_${item.group.title}/${item.element}`;
+
+    let cached_reviews = this.CACHED_PROJECTS[sel].pipe(
+      map((reviews:any[]) => _.filter(reviews, r => r.name.indexOf(name) == 0)),
+      tap(t => console.log("SYNC PROJECT", t))
+    )
+
+    let ss = cached_reviews.pipe(
+      switchMap((reviews:any[]) => reviews.length > 0 ? 
+        of(reviews) : this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`)
+      )
+    ).pipe(
+      map((results:any[]) => {
+        results = _.filter(results, r => r.item_count > 0);
+
         if (results.length < 1)
           return null;
+
         if (results.length > 1) {
           let sorted = _.sortBy(results, r => r.item_count);
+          
           return sorted[sorted.length - 1];
         }
         return results[0];
       }),
       take(1)
     )
-    return ss;
-    /*
-    return fb.pipe(    
-      switchMap(review => review ? of(review).pipe(tap( t => console.log("Loaded from SS:", t))) : ss)
-    )*/
+    return fb; /*.pipe(    
+      switchMap(review => review ? of(review).pipe(
+        tap( t => console.log("Loaded from SS:", t))) : ss)
+    ) */
   }
 
   Patch$(addr:string, body: any) {

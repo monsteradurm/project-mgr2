@@ -14,7 +14,6 @@ export class FindSyncItemPipe  {
 constructor(private sanitizer: DomSanitizer,
             private syncSketch: SyncSketchService) { }
   transform(review$: Observable<any>, subitem: SubItem) {
-
     return review$.pipe(
         switchMap(review => {
 

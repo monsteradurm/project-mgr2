@@ -15,7 +15,7 @@ export class GetLastSubItemByBoardItemPipe  {
 
   transform(SubItems$: Observable<SubItem[]>, Item: BoardItem | ScheduledItem) {
 
-
+    
     return SubItems$.pipe(
       map(SubItems => {
         if (!SubItems || SubItems.length < 1 || !Item || !Item.subitem_ids || Item.subitem_ids.length < 1)

@@ -25,6 +25,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild(LogHoursDlgComponent) LogHoursDlg: LogHoursDlgComponent;
   @ViewChild(ViewTaskDlgComponent) ViewTaskDlg: ViewTaskDlgComponent;
   @ViewChild('boardsLayout', {static: false, read: ElementRef}) BoardsLayout : ElementRef;
+
   @HostListener('contextmenu', ['$event']) onContextMenu(evt) {
     evt.preventDefault();
   }
@@ -190,10 +191,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   BoardWidth;
   GanttWidth;
   GanttHeight;
-  onBoardsResize(evt) {
+  onBoardsResize(evt, el:HTMLElement) {
     this.BoardWidth = evt.width;
     this.GanttWidth = window.innerWidth - evt.width;
-    this.GanttHeight = evt.height;
+    if (window.innerHeight > el.clientHeight)
+      this.GanttHeight = window.innerHeight - 115; 
+    else this.GanttHeight = el.clientHeight;
   }
 
   onItemClicked(item) {

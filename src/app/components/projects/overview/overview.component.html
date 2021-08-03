@@ -35,11 +35,11 @@
           <button mat-flat-button class="reverse-sort-btn" (click)="SetReverseSorting()">
             <ng-container *ngIf="!(ReverseSorting$ | async)">
               <mat-icon class="reverse-sort-icon" >north</mat-icon>
-              Ascending 
+              <span style="font-size:12px">Ascending</span> 
             </ng-container>
             <ng-container *ngIf="(ReverseSorting$ | async)">
               <mat-icon class="reverse-sort-icon" >south</mat-icon>
-              Descending
+              <span style="font-size:12px">Descending</span>
             </ng-container>
           </button>
         </ng-container>
@@ -81,8 +81,9 @@
             <p-scrollPanel [style]="{width: '100%', height: '100%'}">
               <p-splitter layout="horizontal" [panelSizes]="[50,50]">
                 <ng-template pTemplate>
-                  <div #boardsLayout thaResize (onResize)="onBoardsResize($event)" fxLayout="column" fxLayoutAlign="stretch stretch"
-                    style="width:100%;margin-top:50px">
+                  <div #boardsLayout thaResize 
+                  (onResize)="onBoardsResize($event, boardsLayout)" fxLayout="column" fxLayoutAlign="stretch stretch"
+                    style="width:100%;margin-top:50px" [style.height.px]="GanttHeight">
                     <ng-container *ngFor="let item of (items | FilterMilestones)">
                       <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
                         [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
@@ -92,7 +93,7 @@
                 </ng-template>
 
                 <ng-template pTemplate>
-                  <div fxLayout="column" fxLayoutAlign="stretch stretch" (mousewheel)="$event.preventDefault()">
+                  <div fxLayout="column" fxLayoutAlign="stretch stretch">
                     <app-overview-gantt [BoardItems]="items" style="min-width:550px" [Width]="GanttWidth"
                       [style.height.px]="GanttHeight"
                       [Expanded]="Expanded" [Height]="GanttHeight">

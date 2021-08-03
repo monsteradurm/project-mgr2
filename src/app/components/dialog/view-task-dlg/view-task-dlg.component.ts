@@ -43,7 +43,7 @@ export class ViewTaskDlgComponent implements OnInit {
   }
   height = new BehaviorSubject<number>(0);
 
-  Height$ = this.height.asObservable().pipe(shareReplay(1))
+  Height$ = this.height.asObservable();
   TaskHeight$ = this.Height$.pipe(
     map(h => h - 40)
   )
@@ -54,7 +54,11 @@ export class ViewTaskDlgComponent implements OnInit {
 
     let el = this.DlgContainer.nativeElement as HTMLElement;
     let dlg = el.firstElementChild.firstElementChild;
-    this.height.next(dlg.clientHeight);
+    let result = dlg.clientHeight;
+    if (result < 20)
+      result = 20;
+
+    this.height.next(result);
   }
 
   _Item;
@@ -70,7 +74,7 @@ export class ViewTaskDlgComponent implements OnInit {
     this.SelectedSubItem = this.Item.subitem_ids.length > 0 ?
       this.Item.subitem_ids[this.Item.subitem_ids.length - 1] : this.Item.id;
     this.Show = true;
-
+    this.onResize(null);
   }
 
 
@@ -98,7 +102,7 @@ export class ViewTaskDlgComponent implements OnInit {
     switchMap(Item => Item ?
       this.syncSketch.FindReview$(Item) :
       of(null)),
-    switchMap(review => {
+    switchMap((review:any) => {
       if (review)
         return of(review);
       
@@ -107,6 +111,7 @@ export class ViewTaskDlgComponent implements OnInit {
         switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),
       )
     }),
+    tap(t => this.onResize(null)),
     shareReplay(1),
   )
 
@@ -202,6 +207,7 @@ export class ViewTaskDlgComponent implements OnInit {
     })
   }
   Refresh() {
+    this.onResize(null);
     this.UpdateItem();
   }
 
@@ -400,6 +406,7 @@ export class ViewTaskDlgComponent implements OnInit {
           switchMap(board => this.syncSketch.CreateProject(board.selection))
       )
     }),
+    tap(t => this.onResize(null)),
     shareReplay(1)
   )
 

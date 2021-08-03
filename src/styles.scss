@@ -73,9 +73,15 @@ button.mat-menu-item, .mat-menu-item {
 .br {
   margin:8px 0px !important;
 }
+.mat-tab-links {
+
+}
+
 .mat-tab-link {
   height:35px !important;
-  min-width: 100px !important;
+  width:105px;
+  min-width: 105px !important;
+  font-size:12px !important;
   //font-weight:bold;
   //color:black;
 }
@@ -1004,6 +1010,14 @@ nav {
 }
 app-overview {
 
+  action-mat-group > button > .mat-button-wrapper  {
+    font-size:12px !important;
+  }
+
+  action-mat-group > button > span.mat-button-wrapper > mat-icon {
+    font-size:19px;
+    height:19px;
+  }
   /*
   app-overview-gantt > div > div, app-overview-gantt > div, app-overview-gantt {
     height:100% !important;
