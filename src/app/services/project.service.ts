@@ -127,20 +127,20 @@ export class ProjectService {
     )
   }
   SetItemStatus(boardid: string, item: BoardItem | ScheduledItem, column: any) {
-    if (!this.QueryStatusChanged(item, column))
-      return;
-
-    this.monday.SetBoardItemStatus$(boardid, item.id.toString(), column.column_id, column.index)
-      .pipe(take(1))
-      .subscribe((result: any) => {
-        if (result && result.change_simple_column_value && result.change_simple_column_value.id) {
-          this.messenger.add({ severity: 'success', summary: 'Status Updated', detail: item.name });
-
-          this.firebase.SendBoardItemUpdate(boardid, item.group.id, item.id);
-
-        } else {
-          this.messenger.add({ severity: 'error', summary: 'Error Updating Status', detail: item.name })
-        }
-      })
+    return this.monday.SetBoardItemStatus$(boardid, item.id.toString(), column.column_id, column.index)
+      .pipe(
+        take(1),
+        map((result:any) => {
+          if (result && result.change_simple_column_value && result.change_simple_column_value.id) {
+            this.messenger.add({ severity: 'success', summary: 'Status Updated', detail: item.name });
+  
+            this.firebase.SendBoardItemUpdate(boardid, item.group.id, item.id);
+            return true;
+          } else {
+            this.messenger.add({ severity: 'error', summary: 'Error Updating Status', detail: item.name })
+            return false;
+          }
+        })
+      )
   }
 }

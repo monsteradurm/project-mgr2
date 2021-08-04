@@ -36,18 +36,23 @@ export class ColumnValues {
     title: string;
     text: string;
     id: string;
-    additional_info: string; // json
+    additional_info: any; // json
     value: any; //json
 
     constructor(cv: any) {
-        this.title = cv.title;
-        this.text = cv.text;
-        this.id = cv.id;
-        this.additional_info = JSON.parse(cv.additional_info);
-        this.value = JSON.parse(cv.value);
+        if (cv) {
+          this.title = cv.title;
+          this.text = cv.text;
+          this.id = cv.id;
+          this.additional_info = JSON.parse(cv.additional_info);
+          this.value = JSON.parse(cv.value);
 
-        if (this.value && this.value.date)
-          this.value = this.value.date;
+          if (this.value && this.value.date)
+            this.value = this.value.date;
+        }
+        else {
+          this.additional_info = {};
+        }
     }
 
     public static ParseDistinct(tags: any[], type:ColumnType) {

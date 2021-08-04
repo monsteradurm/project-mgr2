@@ -8,7 +8,7 @@
 <p-dialog [(visible)]="Show" [modal]="true" [dismissableMask]="true" [showHeader]="false"
     [style]="{width: '75vw', height:'85vh', overflow: 'hidden', 'border-radius':'10px'}" *ngIf="Item">
 
-    <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
+    <ng-container *ngIf="(Item$ | GetTaskStatus$ | async) as Status">
 
         <ng-container *ngIf="(Departments$ | async | FlattenDepartments) as Departments">
             <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%"

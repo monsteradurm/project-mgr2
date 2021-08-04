@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { BehaviorSubject, combineLatest, EMPTY, of } from 'rxjs';
-import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { KanbanBoardComponent } from '../kanban-board/kanban-board.component';
@@ -94,7 +94,7 @@ export class KanbanBoardItemComponent implements OnInit {
   get projectService() { return this.parent.parent.projectService; }
 
   onSetStatus(column) {
-    this.projectService.SetItemStatus(this.Item.board.id, this.Item, column);
+    this.projectService.SetItemStatus(this.Item.board.id, this.Item, column).pipe(take(1)).subscribe((result) => { });
 
     this.Item.status['additional_info']['color'] = column.color;
     this.Item.status['additional_info']['label'] = column.label;

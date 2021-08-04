@@ -53,6 +53,9 @@ export class ViewTaskDlgComponent implements OnInit {
       return;
 
     let el = this.DlgContainer.nativeElement as HTMLElement;
+
+    if (!el) return;
+
     let dlg = el.firstElementChild.firstElementChild;
     let result = dlg.clientHeight;
     if (result < 20)
@@ -67,7 +70,6 @@ export class ViewTaskDlgComponent implements OnInit {
   //REQUIRED INPUTS
   //Item
   User: UserIdentity;
-
   OpenDialog(Item: BoardItem, User: UserIdentity) {
     this.Item = Item;
     this.User = User;
@@ -100,8 +102,7 @@ export class ViewTaskDlgComponent implements OnInit {
   SelectedSubItem;
   SyncReview$ = this.Item$.pipe(
     switchMap(Item => Item ?
-      this.syncSketch.FindReview$(Item) :
-      of(null)),
+      this.syncSketch.FindReview$(Item) : of(null)),
     switchMap((review:any) => {
       if (review)
         return of(review);
@@ -310,7 +311,7 @@ export class ViewTaskDlgComponent implements OnInit {
   }
 
   onSetStatus(column) {
-    this.projectService.SetItemStatus(this.Item.board.id, this.Item, column);
+    this.projectService.SetItemStatus(this.Item.board.id, this.Item, column).pipe(take(1)).subscribe((result) => {})
 
     this.Item.status['additional_info']['color'] = column.color;
     this.Item.status['additional_info']['label'] = column.label;
@@ -398,6 +399,7 @@ export class ViewTaskDlgComponent implements OnInit {
 
   SyncBoard$ = this.Board$.pipe(
     switchMap(board => this.syncSketch.Project$(board)),
+    tap(console.log),
     switchMap((syncBoard:any) => {
       if (syncBoard)
         return of(syncBoard);

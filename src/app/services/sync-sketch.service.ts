@@ -46,9 +46,7 @@ export class SyncSketchService {
     shareReplay(1)
   )
 
-  Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name').pipe(
-    shareReplay(1)
-  )
+  Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name')
 
   Project$(board: Board) {
     return this.Projects$.pipe(
@@ -153,12 +151,15 @@ export class SyncSketchService {
       map((reviews:any[]) => _.filter(reviews, r => r.name.indexOf(name) == 0)),
       tap(t => console.log("SYNC PROJECT", t))
     )
-
+    /*
     let ss = cached_reviews.pipe(
       switchMap((reviews:any[]) => reviews.length > 0 ? 
         of(reviews) : this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`)
       )
     ).pipe(
+*/
+      return this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`)
+      .pipe(
       map((results:any[]) => {
         results = _.filter(results, r => r.item_count > 0);
 
@@ -174,7 +175,8 @@ export class SyncSketchService {
       }),
       take(1)
     )
-    return fb; /*.pipe(    
+
+    /*return fb; .pipe(    
       switchMap(review => review ? of(review).pipe(
         tap( t => console.log("Loaded from SS:", t))) : ss)
     ) */

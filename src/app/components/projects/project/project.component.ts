@@ -218,7 +218,6 @@ export class ProjectComponent implements OnInit, OnDestroy
 Please request the production data be extended to include this column.`)
     ),
     map(values => _.uniq(_.flatten(values), v => v.id)),
-    tap(console.log),
     map(values => _.sortBy(values, (v) => this.DepartmentOrder(v.text))),
     distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
     shareReplay(1),
@@ -266,7 +265,6 @@ Please request the production data be extended to include this column.`)
   )
 
   DepartmentOrder(x:string) {
-    console.log(x);
     var y = x.toLowerCase();
 
     if (y.indexOf('design') >= 0 || y.indexOf('concept') >= 0) 

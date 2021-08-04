@@ -6,7 +6,7 @@
   overflow: 'hidden', 'background' : 'white',
   'border-radius':'10px'}" class="no-select">
   <div style="width:100%">
-    <ng-container *ngIf="(Item?.status | GetTaskStatus) as Status">
+    <ng-container *ngIf="(Item?.status | GetTaskStatus$ | async) as Status">
       <div #viewTaskDlg style="background: white !important;overflow:hidden !important;width:100%;height:100%"
         fxLayout="column">
         <div fxLayout="row" fxLayoutAlign="space-between center" class="loghours-header"

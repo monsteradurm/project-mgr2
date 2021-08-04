@@ -2,7 +2,7 @@
 <ng-container *ngIf="Item">
     <div class="kanban-item-container no-select;position:relative" fxFlex="grow" fxLayout="column" fxLayoutAlign="stretch stretch"
     [ngClass]="{'hovering' : Hovering}">
-        <ng-container *ngIf="(Item.status | GetTaskStatus) as Status">
+        <ng-container *ngIf="(Item$ | GetTaskStatus$ | async) as Status">
             <div fxLayout="column" class="kanban-header" [style.background]="Status.color">
                 <div fxLayout="row" fxLayoutAlign="space-between">
                     <div class="kanban-workspace" style="opacity:0.5">{{Item.workspace.name}}</div>

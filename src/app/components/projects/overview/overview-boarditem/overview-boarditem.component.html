@@ -1,71 +1,68 @@
-<span #contextMenuTrigger (menuClosed)="onContextClosed()"
-[matMenuTriggerFor]="ItemContextMenu"
-style="position:absolute !important"
-[style.left.px]="contextMenuLeft"
-[style.top.px]="contextMenuTop"></span>
+<span #contextMenuTrigger (menuClosed)="onContextClosed()" [matMenuTriggerFor]="ItemContextMenu"
+  style="position:absolute !important" [style.left.px]="contextMenuLeft" [style.top.px]="contextMenuTop"></span>
 
 <mat-menu #ItemContextMenu="matMenu" yPosition="below">
   <ng-template matMenuContent>
-      <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
-      <button mat-menu-item (click)="onHoursDlg(true)">Time Logging</button>
+    <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
+    <button mat-menu-item (click)="onHoursDlg(true)">Time Logging</button>
   </ng-template>
 </mat-menu>
 
-<mat-menu #statusMenu="matMenu" >
-  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)"
-    [style.background]="s.color" style.color="white !important"
-    (click)= "onSetStatus(s)">{{s.label}}</button>
+<mat-menu #statusMenu="matMenu">
+  <button class="status-option" mat-menu-item *ngFor="let s of (StatusOptions$ | async)" [style.background]="s.color"
+    style.color="white !important" (click)="onSetStatus(s)">{{s.label}}</button>
 </mat-menu>
 
-<ng-container *ngIf="(boarditem?.status | GetTaskStatus) as Status">
-  <div #container class="element-row" (click)="onClick(boarditem)">
-    <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
-      <div #outplug></div>
+<ng-container *ngIf="(BoardItem$ | async) as boarditem">
+  <ng-container *ngIf="(BoardItem$ | GetTaskStatus$ | async) as Status">
+    <div #container class="element-row" (click)="onClick(boarditem)">
+      <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
+        <div #outplug></div>
+      </div>
+      <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
+        <div class="subitem-control" fxLayout="row" fxLayoutAlign="center center">
+
+          <button mat-icon-button class="v-mini-fab" (click)="OnExpandButton(boarditem)" [primaryColor]="Status.color"
+            top="7.5px" fontSize="10px">
+            <mat-icon class="v-mini-fab-icon">more_vert</mat-icon>
+          </button>
+          <p-badge styleClass="subitem-badge" [value]="boarditem.subitem_ids.length"
+            [style]="{background: Status.color, 'margin-left':'-10px'}"></p-badge>
+        </div>
+      </ng-container>
+
+      <div class="element-container no-select" [ngClass]="{'hovering' : Hovering}" fxLayout="row"
+        fxLayoutAlign="start stretch" (dblclick)="onSelect()">
+        <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
+          <div class="element-code" *ngIf="ItemCodeVisible">{{ boarditem.itemcode?.text }}</div>
+          <div class="element-title">{{ boarditem.element }}</div>
+        </div>
+
+
+        <div class="status-container no-select" [style.background]="Status.color">
+          <div class="task-status">
+            {{Status.text}}
+          </div>
+        </div>
+
+        <div class="task-container no-select" fxLayout="row" fxLayoutAlign="center space-between">
+
+          <div class="task-description">
+            {{ boarditem.task }}
+          </div>
+          <div class="task-caption" *ngIf="CaptionVisible" [style.color]="Status.color">
+            {{ boarditem.caption?.text }}
+          </div>
+        </div>
+
+      </div>
     </div>
-    <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
-      <div class="subitem-control" fxLayout="row" fxLayoutAlign="center center">
-        
-        <button mat-icon-button class="v-mini-fab" 
-          (click)="OnExpandButton(boarditem)" [primaryColor]="Status.color" top="7.5px"
-          fontSize="10px">
-          <mat-icon class="v-mini-fab-icon">more_vert</mat-icon>
-        </button>
-        <p-badge styleClass="subitem-badge" [value]="boarditem.subitem_ids.length" 
-          [style]="{background: Status.color, 'margin-left':'-10px'}"></p-badge>
-      </div>
-    </ng-container>
-
-    <div class="element-container no-select" [ngClass]="{'hovering' : Hovering}"
-      fxLayout="row" fxLayoutAlign="start stretch" (dblclick)="onSelect()">
-      <div class="title-container" fxLayout="row" fxLayoutAlign="center space-between">
-        <div class="element-code" *ngIf="ItemCodeVisible">{{ boarditem.itemcode?.text }}</div>
-        <div class="element-title">{{ boarditem.element }}</div>
-      </div>
-
-
-      <div class="status-container no-select" [style.background]="Status.color">
-        <div class="task-status">
-          {{Status.text}}
-        </div>
-      </div>
-
-      <div class="task-container no-select" fxLayout="row" fxLayoutAlign="center space-between">
-
-        <div class="task-description">
-          {{ boarditem.task }}
-        </div>
-        <div class="task-caption" *ngIf="CaptionVisible" [style.color]="Status.color">
-          {{ boarditem.caption?.text }}
-        </div>
-      </div>
-
-    </div>
-  </div>
-  <ng-container *ngIf="boarditem.isExpanded && boarditem.subitems && boarditem.subitems.length > 0">
-    <ng-container *ngFor="let subitem of boarditem.subitems; let s = index;">
-      <app-overview-subitem [subitem]="subitem" [last]="boarditem.subitems.length - 1" [color]="Status.color" [index]="s"
-        [boarditemContainer]="boardItemContainer">
-      </app-overview-subitem>
+    <ng-container *ngIf="boarditem.isExpanded && boarditem.subitems && boarditem.subitems.length > 0">
+      <ng-container *ngFor="let subitem of boarditem.subitems; let s = index;">
+        <app-overview-subitem [subitem]="subitem" [last]="boarditem.subitems.length - 1" [color]="Status.color"
+          [index]="s" [boarditemContainer]="boardItemContainer">
+        </app-overview-subitem>
+      </ng-container>
     </ng-container>
   </ng-container>
 </ng-container>
