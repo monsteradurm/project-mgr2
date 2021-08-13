@@ -423,13 +423,13 @@ export class ViewTaskDlgComponent implements OnInit {
       this.Item.task + '\n' + subitem.name;
 
     this.SyncReview$.pipe(
-      map(review => {
+      switchMap(review => {
         if (!review) {
           this.messager.add({severity: 'error', summary: 'Could not find syncSketch Review!', detail: 'Could not upload!' });
 
           throw 'Could not upload'
         }
-        
+
         return this.SyncBoard$
           .pipe(
             switchMap((project: any) => review ? of(review) :
