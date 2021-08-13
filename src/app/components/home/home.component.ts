@@ -191,7 +191,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       menu.setTitle(selected);
       menu.removeChildren();
       return this.MyProjects$.pipe(
-        map((projects: any[]) => ['All Projects'].concat(projects)),
+        map((projects: any[]) => ['All Projects'].concat(_.uniq(projects))),
         map((projects: any[]) => projects.forEach(p =>
           menu.createButton().setTitle(p)
             .fire$.subscribe(a => this.selectedProject.next(p))))
@@ -279,19 +279,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       let name = me.name;
       _.forEach(subitems, (i:SubItem) => {
         let parent:ScheduledItem = _.find(items, (s:ScheduledItem) => _.map(s.subitem_ids, (id) => id.toString()).indexOf(i.id.toString()) > -1);
-        i.parent = parent;
-        i['board'] = parent.board;
-        i['workspace'] = parent.workspace;
-        i['department_text'] = parent.department_text;
-        i['department'] = parent.department;
-        i['director'] = parent.director;
-        i['element'] = parent.element;
-        i['task'] = parent.task + ', ' + i.name;
-        i['status'] = parent.status;
-        i['due'] = parent.due;
-        i['itemcode'] = parent.itemcode;
-        i['selection'] = parent.selection + ": " + i.name;
-        i['group'] = parent.group;
+        if (parent) {
+          i.parent = parent;
+          i['board'] = parent.board;
+          i['workspace'] = parent.workspace;
+          i['department_text'] = parent.department_text;
+          i['department'] = parent.department;
+          i['director'] = parent.director;
+          i['element'] = parent.element;
+          i['task'] = parent.task + ', ' + i.name;
+          i['status'] = parent.status;
+          i['due'] = parent.due;
+          i['itemcode'] = parent.itemcode;
+          i['selection'] = parent.selection + ": " + i.name;
+          i['group'] = parent.group;
+        }
       })
       
       let manager = (me.teams.indexOf('Managers') > -1)
@@ -319,9 +321,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   MyItems$ = combineLatest([this.Me$, this.SelectedUser$, this.FilteredItems$, this.MySubItems$]).pipe(
     map(([me, user, items, subitems]) => {
-      let name = me.name;
 
+      let name = me.name;
       let filtered = items;
+
       if (user != 'All Users') {
         filtered = _.filter(filtered, (i:ScheduledItem) => {
           if (i.is_milestone())
@@ -333,7 +336,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
 
-      filtered = _.filter(items, (i:ScheduledItem) =>
+      filtered = _.filter(filtered, (i:ScheduledItem) =>
         (i.artist && i.artist.length > 0) || (i.director && i.director.length > 0) || i.is_milestone()
       );
 
@@ -347,59 +350,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       return filtered.concat(subitems);
     }),
+    tap(t => console.log(t)),
     shareReplay(1)
   )
   
-  /*
-  MyFilteredItems$ = combineLatest([this.MyItems$,
-  this.SelectedUser$, this.SelectedProject$, this.SelectedBoard$, this.SelectedGroup$])
-    .pipe(
-      map(([items, user, project, board, group]) => {
-        if (user == 'All Users' && project == 'All Projects')
-          return items;
-
-        let filtered = items;
-        if (user != 'All Users') {
-          filtered = _.filter(filtered, (i:ScheduledItem) => {
-            if (i.is_milestone())
-              return true;
-
-            let artists = _.pluck(i.artist, 'text').join(', ');
-            let directors = _.pluck(i.director, 'text').join(', ');
-            return artists.indexOf(user) > -1 || directors.indexOf(user) > -1
-          });
-        }
-
-        if (project != 'All Projects') {
-          filtered = _.filter(filtered, i => i.workspace.name.indexOf(project) > -1);
-        }
-
-        if (board != 'All Boards') {
-          filtered = _.filter(filtered, i => i.board.name.indexOf(board) > -1)
-        }
-
-        if (group != 'All Groups') {
-          filtered = _.filter(filtered, i => i.group.title.indexOf(group) > -1)
-        }
-        return filtered;
-      }),
-      switchMap(items => this.SubItems$.pipe(
-        map(subitems => {
-          _.forEach(items, (i) => {
-            let ids = _.map(i.subitem_ids, (s) => s.toString());
-            if (ids.length < 1)
-              return;
-
-            i.subitems = _.filter(subitems, sub => ids.indexOf(sub.id.toString()) > -1);
-          });
-
-          return items;
-        })
-      )),
-      distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)),
-      shareReplay(1),
-    )*/
-
+  
   MyTimelineItems$ = this.MyItems$.pipe(
     map(items => _.filter(items, i => i.timeline)),
     shareReplay(1)
@@ -662,7 +617,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let updated = ids.indexOf(updated_id) > -1;
       console.log("THIS WAS UPDATED !");
-
+      
       return updated ? update : EMPTY;
     })
   )
@@ -696,6 +651,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.subscriptions.push(
       this.BoardItemUpdates$.subscribe((update) => {
+
         if (update)
           this.refreshItems.next(true);
       })

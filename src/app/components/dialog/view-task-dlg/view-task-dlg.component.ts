@@ -108,8 +108,10 @@ export class ViewTaskDlgComponent implements OnInit {
         return of(review);
       
       let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
+      console.log(name, this.Item);
       return this.SyncBoard$.pipe(
-        switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),
+        map(result =>{  throw "CREATING BOARD / ERROR ON PURPOSE" })
+        /*switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),*/
       )
     }),
     tap(t => this.onResize(null)),
@@ -420,15 +422,20 @@ export class ViewTaskDlgComponent implements OnInit {
       this.Item.task + '\n' + subitem.name;
 
     this.SyncReview$.pipe(
-      switchMap(review => {
-        return this.SyncBoard$
+      map(review => {
+        if (!review) {
+          this.messager.add({severity: 'error', summary: 'Could not find syncSketch Review!', detail: 'Could not upload!' });
+
+          throw 'Could not upload'
+        }
+        /*return this.SyncBoard$
           .pipe(
             switchMap((project: any) => review ? of(review) :
               this.syncSketch.CreateReview(project.id, name))
-          )
+          )*/
       }),
       take(1)
-    ).subscribe((review) => {
+    ).subscribe((review:any) => {
       this.Upload$(review, subitem, file, description).pipe(
         skipWhile(result => !result),
         switchMap(() => this.syncSketch.Items$(review.id)),
