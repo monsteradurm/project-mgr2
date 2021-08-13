@@ -110,8 +110,8 @@ export class ViewTaskDlgComponent implements OnInit {
       let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
       console.log(name, this.Item);
       return this.SyncBoard$.pipe(
-        map(result =>{  throw "CREATING BOARD / ERROR ON PURPOSE" })
-        /*switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),*/
+        //map(result =>{  throw "CREATING BOARD / ERROR ON PURPOSE" })
+        switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),
       )
     }),
     tap(t => this.onResize(null)),
