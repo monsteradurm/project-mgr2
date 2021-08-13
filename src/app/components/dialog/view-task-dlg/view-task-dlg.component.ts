@@ -322,6 +322,7 @@ export class ViewTaskDlgComponent implements OnInit {
   }
 
   Upload$(review, subitem, file, description) {
+    console.log(review);
     let url = this.syncSketch.UploadURL(review.id);
     this.fileInput.showUploadButton = false;
     this.messager.add({
@@ -428,14 +429,16 @@ export class ViewTaskDlgComponent implements OnInit {
 
           throw 'Could not upload'
         }
-        /*return this.SyncBoard$
+        
+        return this.SyncBoard$
           .pipe(
             switchMap((project: any) => review ? of(review) :
               this.syncSketch.CreateReview(project.id, name))
-          )*/
+          )
       }),
       take(1)
     ).subscribe((review:any) => {
+      console.log(review);
       this.Upload$(review, subitem, file, description).pipe(
         skipWhile(result => !result),
         switchMap(() => this.syncSketch.Items$(review.id)),
