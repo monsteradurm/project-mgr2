@@ -108,6 +108,7 @@ import { BarRatingModule } from "ngx-bar-rating";
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FindUserByIdPipe } from './directives/elements/FndUserById.directive';
 import { ResizeModule } from '@thalesrc/ng-utils/resize';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 declare var google: any;
 
@@ -207,7 +208,8 @@ const imports = [
   ToastModule,
   BadgeModule,
   FileUploadModule,
-
+  ProgressBarModule,
+  
   SwappingSquaresSpinnerModule,
   ScalingSquaresSpinnerModule,
   FlowerSpinnerModule,

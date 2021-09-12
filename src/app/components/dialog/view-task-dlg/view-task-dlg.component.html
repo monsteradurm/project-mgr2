@@ -143,8 +143,29 @@
                                                                     <p-fileUpload #fileInput name="myfile[]"
                                                                         fileLimit="true" [url]="UploadURL$ | async"
                                                                         customUpload=true
+                                                                        showCancelButton=true
+                                                                        (onSelect)="OnSelectedFile($event)"
                                                                         (uploadHandler)="handleUploads($event, View)"
-                                                                        withCredentials=true></p-fileUpload>
+                                                                        withCredentials=true style="width:100%">
+                                                                        <ng-template pTemplate="toolbar">
+                                                                            <p-progressBar [value]="fileInput.progress"></p-progressBar>
+                                                                        </ng-template>
+                                                                        <ng-template let-file pTemplate="file">
+                                                                            
+                                                                            <div fxLayout="row" style="width:100%" fxLayoutGap="15px">
+                                                                                <div *ngIf="fileInput.progress == 0" 
+                                                                                    style="width:80px;text-align:center;font-weight:bold">
+                                                                                    {{UploadStatus}}
+                                                                                </div>
+                                                                                <div *ngIf="fileInput.progress > 0 && fileInput.progress < 100">{{fileInput.progress}} %</div>
+                                                                                
+                                                                                <div>{{FileToUpload}}</div>
+                                                                                <div>{{SizeToUpload}} MB</div>
+                                                                                <div>{{TypeToUpload}}</div>
+                                                                            </div>
+                                                                            
+                                                                        </ng-template>
+                                                                    </p-fileUpload>
                                                                 </div>
                                                             </ng-container>
                                                         </ng-container>

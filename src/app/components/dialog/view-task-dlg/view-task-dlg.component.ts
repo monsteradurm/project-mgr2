@@ -320,7 +320,18 @@ export class ViewTaskDlgComponent implements OnInit {
     this.Item.status['text'] = column.label;
     this.Item = JSON.parse(JSON.stringify(this.Item));
   }
-
+  public SizeToUpload: number;
+  public FileToUpload: string;
+  public UploadProgress: number;
+  public UploadStatus: string = "Ready";
+  public TypeToUpload: string;
+  
+  OnSelectedFile(evt) {
+    let file = evt.currentFiles[0];
+    this.SizeToUpload = Math.round(file.size / 1024 / 10.24) / 100 ;
+    this.FileToUpload = file.name;
+    this.TypeToUpload = file.type;
+  }
   Upload$(review, subitem, file, description) {
     console.log(review);
     let url = this.syncSketch.UploadURL(review.id);
@@ -337,19 +348,24 @@ export class ViewTaskDlgComponent implements OnInit {
         data.append('artist', user.displayName);
         data.append('reviewFile', file, file.name);
         data.append('description', subitem.name);
+        this.UploadStatus = "Starting";
+
         return this.syncSketch.Upload$(url, data)
       }),
       map(event => {
+        console.log(event);
         switch (event.type) {
           case HttpEventType.UploadProgress:
             this.fileInput.progress = Math.round(event.loaded * 100 / event.total);
-            console.log(this.fileInput.progress);
+            this.UploadProgress = this.fileInput.progress;
+            
             if (this.fileInput.progress >= 100) {
+              this.UploadStatus = "Processing";
               this.messager.add({severity: 'info', summary: 'Uploaded. Processing Item.', detail: subitem.name})
             }
             break;
           case HttpEventType.Response: {
-            if (event.status == 200)
+            if (event.status == 200) 
               return event;
           }
         }
@@ -455,6 +471,7 @@ export class ViewTaskDlgComponent implements OnInit {
       ).subscribe(result => {
         this.fileInput.clear();
         this.UpdateItem(null)
+        this.UploadStatus = 'Ready';
         this.messager.add({
           severity: 'success',
           detail: subitem.name,
