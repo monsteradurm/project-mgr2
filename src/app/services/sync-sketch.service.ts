@@ -118,7 +118,7 @@ export class SyncSketchService {
   }
 
   UploadURL(review_id: string) {
-    return `/syncsketch-upload/items/uploadToReview/${review_id}/?noConvertFlag=0`
+    return `/syncsketch-upload/items/uploadToReview/${review_id}/?noConvertFlag=1`
   }
 
   Upload$(addr:string, data:FormData) {
@@ -167,7 +167,7 @@ export class SyncSketchService {
           return null;
 
         if (results.length > 1) {
-          let sorted = _.sortBy(results, r => r.item_count);
+          let sorted = _  .sortBy(results, r => r.item_count);
           
           return sorted[sorted.length - 1];
         }

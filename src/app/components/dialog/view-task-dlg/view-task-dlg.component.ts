@@ -343,6 +343,7 @@ export class ViewTaskDlgComponent implements OnInit {
         switch (event.type) {
           case HttpEventType.UploadProgress:
             this.fileInput.progress = Math.round(event.loaded * 100 / event.total);
+            console.log(this.fileInput.progress);
             if (this.fileInput.progress >= 100) {
               this.messager.add({severity: 'info', summary: 'Uploaded. Processing Item.', detail: subitem.name})
             }
