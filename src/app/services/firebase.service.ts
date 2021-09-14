@@ -158,9 +158,10 @@ export class FirebaseService {
   SyncSketchReview(item: BoardItem | ScheduledItem) {
     var review = `${item.board.id}_${item.group.title}/${item.element}`.replace('/', '_._');
     var project = item.workspace.name + ', ' + item.board.name.replace('/', '_._');
-    return from(this.afs.collection('Syncsketch').doc(project).collection('reviews').doc(review).get()).pipe(
-      map(doc => doc.exists ? doc.data() : null),
-      take(1)
+
+    return from(this.afs.collection('SyncSketchProjects').doc(project).collection('reviews').doc(review).valueChanges())
+    .pipe(
+      map(doc => doc ? doc : null),
       );
   }
 

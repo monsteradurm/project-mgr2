@@ -109,6 +109,7 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FindUserByIdPipe } from './directives/elements/FndUserById.directive';
 import { ResizeModule } from '@thalesrc/ng-utils/resize';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { FindSyncItemFromReviewPipe } from './directives/elements/FindSyncItemFromReview';
 
 declare var google: any;
 
@@ -169,7 +170,7 @@ const declarations = [
   GetBoxFolderInformationPipe,
   FlattenDepartmentsPipe,
   FindUserByIdPipe,
-  
+  FindSyncItemFromReviewPipe
 ]
 
 const imports = [
@@ -209,7 +210,7 @@ const imports = [
   BadgeModule,
   FileUploadModule,
   ProgressBarModule,
-  
+
   SwappingSquaresSpinnerModule,
   ScalingSquaresSpinnerModule,
   FlowerSpinnerModule,

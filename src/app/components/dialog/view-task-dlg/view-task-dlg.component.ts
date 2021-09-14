@@ -1,8 +1,8 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActionButton, ActionGroup, ActionOutletFactory } from '@ng-action-outlet/core';
 import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of } from 'rxjs';
-import { catchError, concatMap, delay, map, mergeMap, shareReplay, skipUntil, skipWhile, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, delay, distinctUntilChanged, map, mergeMap, shareReplay, skipUntil, skipWhile, switchMap, take, tap } from 'rxjs/operators';
 import { Board, BoardItem, SubItem } from 'src/app/models/BoardItem';
 import { ScheduledItem } from 'src/app/models/Monday';
 import { BoxService } from 'src/app/services/box.service';
@@ -20,13 +20,14 @@ import { FileUpload } from 'primeng/fileupload'
 import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 import { ProjectService } from 'src/app/services/project.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-view-task-dlg',
   templateUrl: './view-task-dlg.component.html',
   styleUrls: ['./view-task-dlg.component.scss']
 })
-export class ViewTaskDlgComponent implements OnInit {
+export class ViewTaskDlgComponent implements OnInit, OnDestroy {
   Show: boolean = false;
   contextMenuTop;
   contextMenuLeft;
@@ -87,11 +88,12 @@ export class ViewTaskDlgComponent implements OnInit {
     private projectService: ProjectService,
     private sanitizer: DomSanitizer,
     private firebase: FirebaseService,
+    private afs: AngularFirestore,
     private messager: MessageService,
     private actionOutlet: ActionOutletFactory) { }
 
   item = new BehaviorSubject<BoardItem>(null);
-
+  
   private refreshView = new EventEmitter<boolean>(true);
   ViewMenu;
 
@@ -108,7 +110,6 @@ export class ViewTaskDlgComponent implements OnInit {
         return of(review);
       
       let name = this.Item.board.id + '_' + this.Item.group.title + '/' + this.Item.element;
-      console.log(name, this.Item);
       return this.SyncBoard$.pipe(
         //map(result =>{  throw "CREATING BOARD / ERROR ON PURPOSE" })
         switchMap((project:any) => this.syncSketch.CreateReview(project.id, name)),
@@ -281,7 +282,7 @@ export class ViewTaskDlgComponent implements OnInit {
           this.UpdateItem(setSelected);
           this.messager.add({
             severity: 'success',
-            summary: 'Deleeted Review "' + subitem.name + '"',
+            summary: 'Deleted Review "' + subitem.name + '"',
             life: 3000,
             detail: this.Item.name,
           });
@@ -332,10 +333,16 @@ export class ViewTaskDlgComponent implements OnInit {
     this.FileToUpload = file.name;
     this.TypeToUpload = file.type;
   }
+
   Upload$(review, subitem, file, description) {
-    console.log(review);
-    let url = this.syncSketch.UploadURL(review.id);
-    this.fileInput.showUploadButton = false;
+    let reviewId = review.reviewid ? review.reviewid : review.id;
+    if (!reviewId) {
+      this.messager.add({
+        severity : 'error', detail : 'The review Id could not be found for processing!', summary: 'Unable to Upload!'
+      })
+      throw 'Could not find Review Id'
+    }
+    let url = this.syncSketch.UploadURL(review.reviewid ? review.reviewid : review.id);
     this.messager.add({
       severity: 'info',
       detail: subitem.name,
@@ -354,16 +361,18 @@ export class ViewTaskDlgComponent implements OnInit {
       }),
       map(event => {
         console.log(event);
+        try {
+          this.fileInput.progress = Math.round(event['loaded'] * 100 / event['total']);
+          this.UploadProgress = this.fileInput.progress;
+
+          if (this.fileInput.progress >= 100) {
+            this.UploadStatus = "Processing";
+            this.messager.add({severity: 'info', summary: 'Uploaded. Processing Item.', detail: subitem.name})
+          }
+
+        } catch { }
+
         switch (event.type) {
-          case HttpEventType.UploadProgress:
-            this.fileInput.progress = Math.round(event.loaded * 100 / event.total);
-            this.UploadProgress = this.fileInput.progress;
-            
-            if (this.fileInput.progress >= 100) {
-              this.UploadStatus = "Processing";
-              this.messager.add({severity: 'info', summary: 'Uploaded. Processing Item.', detail: subitem.name})
-            }
-            break;
           case HttpEventType.Response: {
             if (event.status == 200) 
               return event;
@@ -455,22 +464,29 @@ export class ViewTaskDlgComponent implements OnInit {
       }),
       take(1)
     ).subscribe((review:any) => {
-      console.log(review);
+      let id = review.reviewid ? review.reviewid : review.id;
+      if (!id) {
+        this.messager.add({severity: 'error', summary: ' Could not process upload!', 
+        detail: 'Could not find review id for processing'})
+      }
+
       this.Upload$(review, subitem, file, description).pipe(
         skipWhile(result => !result),
-        switchMap(() => this.syncSketch.Items$(review.id)),
+        switchMap(() => this.syncSketch.Items$(id)),
         tap(t => console.log("Uploaded File", t, file)),
         map((items) => _.find(items, i => file.name.toLowerCase().indexOf(
           i.name.toLowerCase())
           == 0)
         ),
+        tap(t => this.UploadStatus = 'Ready'),
         switchMap(item => this.syncSketch.RenameItem$(item.id,
           subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name)
         ),
-        tap(t => console.log("Renamed File", t))
+        tap(t => console.log("Renamed File", t)),
+        switchMap(r => this.SyncReview$),
+        tap( t=> this.syncSketch.PostReviewUpdate(this.Item, t.reviewid ? t.reviewid : t.id))
       ).subscribe(result => {
         this.fileInput.clear();
-        this.UpdateItem(null)
         this.UploadStatus = 'Ready';
         this.messager.add({
           severity: 'success',
@@ -488,4 +504,7 @@ export class ViewTaskDlgComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
 }

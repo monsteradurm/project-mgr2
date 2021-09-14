@@ -22,8 +22,10 @@
                         border-bottom:solid 2px gray" [style.border-color]="Status.color">
                             {{SubItem.name}}
                         </h4>
+                        <!-- below was "(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async)
+                                switching to cached syncsketch -->
                         <ng-container
-                            *ngIf="(Item | FindSyncReview$ | FindSyncItem$ : SubItem | async) as SyncItems; else fetchingItems">
+                            *ngIf="(Item | FindSyncItem$ : SubItem | async) as SyncItems; else fetchingItems">
                             <ng-container *ngIf="SyncItems.length > 0">
 
                                 <app-sync-item style="pointer-events: none;"

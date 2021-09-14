@@ -125,7 +125,7 @@
                                                             <!---->
 
                                                             <ng-container
-                                                                *ngIf="(SyncReview$ | FindSyncItem$ : View | async) as SyncItems; else fetchingItems">
+                                                                *ngIf="(SyncReview$ | FindSyncItemFromReview$ : View | async) as SyncItems; else fetchingItems">
                                                                 <ng-container *ngFor="let SyncItem of SyncItems">
 
                                                                     <app-sync-item [item]="SyncItem" [Status]="Status">
@@ -144,6 +144,7 @@
                                                                         fileLimit="true" [url]="UploadURL$ | async"
                                                                         customUpload=true
                                                                         showCancelButton=true
+                                                                        [showUploadButton]="UploadStatus == 'Ready'"
                                                                         (onSelect)="OnSelectedFile($event)"
                                                                         (uploadHandler)="handleUploads($event, View)"
                                                                         withCredentials=true style="width:100%">
@@ -153,11 +154,10 @@
                                                                         <ng-template let-file pTemplate="file">
                                                                             
                                                                             <div fxLayout="row" style="width:100%" fxLayoutGap="15px">
-                                                                                <div *ngIf="fileInput.progress == 0" 
-                                                                                    style="width:80px;text-align:center;font-weight:bold">
+                                                                                <div style="width:80px;text-align:center;font-weight:bold">
                                                                                     {{UploadStatus}}
                                                                                 </div>
-                                                                                <div *ngIf="fileInput.progress > 0 && fileInput.progress < 100">{{fileInput.progress}} %</div>
+                                                                                <div>{{fileInput.progress}} %</div>
                                                                                 
                                                                                 <div>{{FileToUpload}}</div>
                                                                                 <div>{{SizeToUpload}} MB</div>

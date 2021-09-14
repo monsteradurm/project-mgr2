@@ -80,6 +80,17 @@
             "^/pm-socket/*": ""
         }
     },
+
+    "/cloud-functions/*" :{
+        "target": "https://us-central1-pm-websocket.cloudfunctions.net/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/cloud-functions/*": ""
+        }
+    },
+
     "/lareposync/*": {
         "target": "https://lareposyncstorage.blob.core.windows.net/",
         "secure": false,

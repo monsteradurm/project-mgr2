@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse, HttpEventType } 
 import { analyzeNgModules } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { ControlContainer } from '@angular/forms';
-import { of } from 'rxjs';
+import { of, pipe } from 'rxjs';
 import { delay, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as _ from 'underscore';
@@ -87,6 +87,7 @@ export class SyncSketchService {
     
     return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`)
   }
+
   Items$(review_id: string) {
     if (!review_id)
       return of(null);
@@ -132,54 +133,7 @@ export class SyncSketchService {
   }
 
   FindReview$(item: BoardItem | ScheduledItem) {
-    let fb = this.firebase.SyncSketchReview(item);
-
-    let sel = item.workspace.name + ", " + item.board.name
-
-    if (!this.CACHED_PROJECTS[sel]) {
-      this.CACHED_PROJECTS[sel] = 
-      this.Projects$.pipe(
-        map(projects => _.find(projects, p => p.name == sel)),
-        switchMap(project => this.Reviews$(project.id)),
-        shareReplay(1)
-      )
-    }
-    
-    let name =  `${item.board.id}_${item.group.title}/${item.element}`;
-
-    let cached_reviews = this.CACHED_PROJECTS[sel].pipe(
-      map((reviews:any[]) => _.filter(reviews, r => r.name.indexOf(name) == 0)),
-      tap(t => console.log("SYNC PROJECT", t))
-    )
-    /*
-    let ss = cached_reviews.pipe(
-      switchMap((reviews:any[]) => reviews.length > 0 ? 
-        of(reviews) : this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`)
-      )
-    ).pipe(
-*/
-      return this.QueryArray$(`/syncsketch/review/?name__istartswith=${item.board.id}_${item.group.title}/${item.element}&active=1`)
-      .pipe(
-      map((results:any[]) => {
-        results = _.filter(results, r => r.item_count > 0);
-
-        if (results.length < 1)
-          return null;
-
-        if (results.length > 1) {
-          let sorted = _  .sortBy(results, r => r.item_count);
-          
-          return sorted[sorted.length - 1];
-        }
-        return results[0];
-      }),
-      take(1)
-    )
-
-    /*return fb; .pipe(    
-      switchMap(review => review ? of(review).pipe(
-        tap( t => console.log("Loaded from SS:", t))) : ss)
-    ) */
+    return  this.firebase.SyncSketchReview(item);
   }
 
   Patch$(addr:string, body: any) {
@@ -188,6 +142,28 @@ export class SyncSketchService {
     );
   }
 
+  PostReviewUpdate(item: BoardItem | ScheduledItem, review_id) {
+    let ws = item.workspace.name;
+    let board = item.board.name;
+    let boardid = item.board.id;
+    let group = item.group.title;
+
+    let project_name = ws +', ' + board;
+    let review_name = boardid + "_" + group + '/' + item.element;
+
+    let data = {
+      review: {name: review_name, id: review_id },
+      project: {name: project_name },
+    }
+
+    this.http.post('/cloud-functions/SSUpdateItem', 
+      data, { 
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          },
+      }).pipe(take(1)).subscribe((res) => console.log("CLOUD: ", res) )
+  }
   Query$(addr: string) {
     return this.http.get(
       `${addr}`, httpOptions).pipe(
