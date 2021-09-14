@@ -110,6 +110,7 @@ import { FindUserByIdPipe } from './directives/elements/FndUserById.directive';
 import { ResizeModule } from '@thalesrc/ng-utils/resize';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FindSyncItemFromReviewPipe } from './directives/elements/FindSyncItemFromReview';
+import { GetSyncThumbnail } from './directives/elements/GetSyncThumbnail';
 
 declare var google: any;
 
@@ -170,7 +171,8 @@ const declarations = [
   GetBoxFolderInformationPipe,
   FlattenDepartmentsPipe,
   FindUserByIdPipe,
-  FindSyncItemFromReviewPipe
+  FindSyncItemFromReviewPipe,
+  GetSyncThumbnail
 ]
 
 const imports = [

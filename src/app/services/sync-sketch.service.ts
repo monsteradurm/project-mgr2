@@ -141,7 +141,12 @@ export class SyncSketchService {
       take(1)
     );
   }
-
+  GetThumbnail$(id) {
+    return this.Query$('/syncsketch/item/' + id  +'/?active=1&fields=thumbnail_url').pipe(
+      take(1),
+      map((item:any) => item.thumbnail_url)
+    )
+  }
   PostReviewUpdate(item: BoardItem | ScheduledItem, review_id) {
     let ws = item.workspace.name;
     let board = item.board.name;

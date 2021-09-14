@@ -350,7 +350,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       return filtered.concat(subitems);
     }),
-    tap(t => console.log(t)),
     shareReplay(1)
   )
   
@@ -616,8 +615,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       let updated_id = update.item_id;
 
       let updated = ids.indexOf(updated_id) > -1;
-      console.log("THIS WAS UPDATED !");
-      
+
       return updated ? update : EMPTY;
     })
   )

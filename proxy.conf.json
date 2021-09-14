@@ -90,7 +90,24 @@
             "^/cloud-functions/*": ""
         }
     },
-
+    "/item-data-cdn-syncsketch-com/*": {
+        "target": "https://item-data-cdn.syncsketch.com/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "/item-data-cdn-syncsketch-com/*": ""
+        }
+    },
+    "/media-cdn-syncsketch-com/*": {
+        "target": "https://media-cdn.syncsketch.com/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "/media-cdn-syncsketch-com/*": ""
+        }
+    },
     "/lareposync/*": {
         "target": "https://lareposyncstorage.blob.core.windows.net/",
         "secure": false,

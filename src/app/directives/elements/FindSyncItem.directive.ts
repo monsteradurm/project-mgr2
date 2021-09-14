@@ -35,6 +35,7 @@ constructor(private sanitizer: DomSanitizer,
                     let data = t.data();
                     let url = data.reviewURL;
                     data.items.forEach(i => i.reviewURL = url);
+                    
                     return _.filter(data.items, i => i.name.indexOf(subitem.id + '_') == 0);
                 }
                 return [];
@@ -44,10 +45,10 @@ constructor(private sanitizer: DomSanitizer,
             catchError(err => {
                 console.log(err);
                 return of([]);
-            }),     
+            }),   
         )
     }
-    
+
   /*
   transform(review$: Observable<any>, subitem: SubItem) {
     return review$.pipe(

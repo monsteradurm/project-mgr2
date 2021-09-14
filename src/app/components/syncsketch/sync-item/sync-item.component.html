@@ -11,7 +11,7 @@
                 <div fxLayout="row" fxLayoutAlign="space-between">
 
                     <div style="margin-right:10px" fxLayout="column" fxLayoutAlign="center center">
-                        <img [src]="item.thumbnail_url" style="cursor:pointer" (click)="NewTab(item.review)">
+                        <img [src]="item | GetSyncThumbnail$ | async" style="cursor:pointer" (click)="NewTab(item.review)">
 
                         <div class="img-caption" (click)="NewTab(item.review)" *ngIf="ShowViewHint">
                             Click
