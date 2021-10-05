@@ -24,7 +24,9 @@ export class ProjectService {
 
   GroupItems$ = {}
   User$ = this.userService.User$;
-  Projects$ = this.firebase.Projects$.pipe(
+  Projects$ = this.monday.Projects$.pipe(shareReplay(1));
+  
+  /*this.firebase.Projects$.pipe(
     switchMap((entry) => {
       let update = new FirebaseUpdate(entry);
       if (update.hasExpired()) {
@@ -39,9 +41,12 @@ export class ProjectService {
     }),
     tap(console.log),
     shareReplay(1)
-  )
+  )*/
+  
+  Boards$ = this.monday.Boards$.pipe(shareReplay(1));
 
-  Boards$ = this.firebase.Boards$.pipe(
+  /*
+  this.firebase.Boards$.pipe(
     switchMap((entry) => {
       let update = new FirebaseUpdate(entry);
       if (update.hasExpired()) {
@@ -55,7 +60,7 @@ export class ProjectService {
       return of(update.asArray());
     }),
     shareReplay(1)
-  )
+  ) */
 
   GetGroupItem$(board_id: string, group_id: string): Observable<any> {
     const key = board_id + '_' + group_id;
