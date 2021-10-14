@@ -261,6 +261,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
 
 
     this.SyncReview$.pipe(
+      tap(t => console.log("SYNC REVIEW!?", t)),
       switchMap(review => this.syncSketch.Items$(review.id)),
       map(items => _.filter(items, i => i.name.indexOf(subitem.name > -1))),
       switchMap(items => items.length > 0 ?

@@ -45,12 +45,21 @@ export class SyncSketchService {
     map((connections: any[]) => _.map(connections, c=> c.user)),
     shareReplay(1)
   )
-
-  Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name')
+  
+  //LADUS0021_MagicMoments, HollywoodStudios/Character
+  //LADUS0021_MagicMoments, HollywoodStudios/Characters
+  Projects$ = this.QueryArray$('/syncsketch/project/?active=1&fields=id,name&limit=999')
 
   Project$(board: Board) {
+    
+    let selection = board.selection;
+    if (selection.length > 50)
+      selection = selection.substr(0, 50);
+
     return this.Projects$.pipe(
-      map(projects => _.find(projects ? projects : [], p => p.name == board.selection)),
+      map(projects => _.filter(projects ? projects : [], p => p.name == selection)),
+      map(projects => _.sortBy(projects, p => p.review_count)),
+      map(projects => projects.length > 0 ? projects[projects.length - 1] : null),
       switchMap((project:any) => project ? this.Query$(`/syncsketch/project/${project.id}/`) : of(null)),
       take(1)
     )
@@ -79,20 +88,20 @@ export class SyncSketchService {
   }
 
   Reviews$(project_id:string) {
-    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1`)
+    return this.QueryArray$(`/syncsketch/review/?project__id=${project_id}&active=1&limit=999`)
   }
 
   Updates$(item_id:string) {
     if (!item_id) return of(null);
     
-    return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=100`)
+    return this.QueryArray$(`/syncsketch/frame/?item__id=${item_id}&limit=999`)
   }
 
   Items$(review_id: string) {
     if (!review_id)
       return of(null);
 
-    return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1
+    return this.QueryArray$(`/syncsketch/item/?reviews__id=${review_id}&active=1&limit=999
     `);
   }
 

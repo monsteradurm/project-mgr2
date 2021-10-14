@@ -88,6 +88,10 @@ export class ScheduledItem {
         this.board = { id: i.board.id, name: i.board.name };
         this.group = { id: i.group.id, title: i.group.title };
         this.selection = this.group.title + ', ' + this.name;
+        
+        if (this.selection.length > 50)
+            this.selection = this.selection.substr(0, 50);
+
         this.workspace = { id: i.board.workspace.id, name: i.board.workspace.name};
 
         this.column_ids[ColumnType.Department] = ColumnValues.FindColumnId(i.column_values, ColumnType.Department)

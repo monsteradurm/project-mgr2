@@ -156,13 +156,23 @@ export class FirebaseService {
   }
 
   SyncSketchReview(item: BoardItem | ScheduledItem) {
-    var review = `${item.board.id}_${item.group.title}/${item.element}`.replace('/', '_._');
-    var project = item.workspace.name + ', ' + item.board.name.replace('/', '_._');
+    var review = `${item.board.id}_${item.group.title}/${item.element}`;
+    
+    if (review.length > 50)
+      review = review.substr(0, 50)
+    review = review.replace('/', '_._');
+
+    var project = item.workspace.name + ', ' + item.board.name
+    
+    if (project.length > 50)
+      project = project.substr(0, 50);
+    
+    project = project.replace('/', '_._');
 
     return from(this.afs.collection('SyncSketchProjects').doc(project).collection('reviews').doc(review).valueChanges())
     .pipe(
       map(doc => doc ? doc : null),
-      );
+    );
   }
 
   ReferenceFolder$(item: BoardItem | ScheduledItem) : Observable<any> {

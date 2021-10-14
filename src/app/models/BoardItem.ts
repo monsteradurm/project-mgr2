@@ -99,6 +99,10 @@ export class BoardItem {
         this.due = ColumnValues.ParseFirst(i.column_values, ColumnType.Due);
         this.expected_days = ColumnValues.ParseFirst(i.column_values, ColumnType.ExpectedDays);
         this.selection = this.group.title + ', ' + this.name;
+
+        if (this.selection.length > 50)
+            this.selection = this.selection.substr(0, 50);
+            
         this.workspace = { id: w.id, name: w.name};
 
         this.updates = i.updates;

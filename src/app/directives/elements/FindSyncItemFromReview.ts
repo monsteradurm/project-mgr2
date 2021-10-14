@@ -20,12 +20,14 @@ constructor(private sanitizer: DomSanitizer,
   transform(review$: Observable<any>, subitem: SubItem) {
     return review$.pipe(
         switchMap(review => {
+            console.log("FOUND REVIEW: ", review);
 
             if (!review || !review.reviewid)
                 throw 'no review item to map';
             if (!subitem || !subitem.id)
                 throw 'no subitem to map';
-            
+
+            console.log("SUBITEM", subitem);
             let items = _.filter(review.items, (i) => i.name.indexOf(subitem.id + '_') == 0);
             items.forEach(item => item.reviewURL = review.reviewURL);
             return of(_.sortBy(items, i => i.created).reverse())
