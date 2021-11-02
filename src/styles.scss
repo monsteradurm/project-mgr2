@@ -780,6 +780,12 @@ span.p-button.p-component:hover, p-button > button:hover, .p-button:hover {
   border-left:none !important;
   border-right:none !important;
   border-bottom:none !important;
+  width:100%;
+}
+.p-fileupload-content {
+  position: absolute;
+  left: 0px;
+  width: calc(100vw - 800px) !important;
 }
 .p-fileupload-buttonbar {
   display: flex;

@@ -21,6 +21,7 @@ import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 import { ProjectService } from 'src/app/services/project.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { ConfluenceService } from 'src/app/services/confluence.service';
 
 @Component({
   selector: 'app-view-task-dlg',
@@ -86,6 +87,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
     private syncSketch: SyncSketchService,
     private box: BoxService,
     private projectService: ProjectService,
+    private confluence: ConfluenceService,
     private sanitizer: DomSanitizer,
     private firebase: FirebaseService,
     private afs: AngularFirestore,
@@ -100,7 +102,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
   RefreshView$ = this.refreshView.asObservable().pipe(shareReplay(1))
   Item$ = this.item.asObservable().pipe(shareReplay(1))
   
-
+  selectedUploadType = "Default";
   SelectedSubItem;
   SyncReview$ = this.Item$.pipe(
     switchMap(Item => Item ?
@@ -137,12 +139,10 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
     shareReplay(1)
     );
 
-
   ReferenceFolder$(department) {
     return this.Item$.pipe(
-      switchMap((item) => {
-        if (!item) return of(null);
-
+      switchMap(item => {
+        let key = item.workspace.name.split('_')[0];
         let path = item.board.name.indexOf('/') > -1 ?
           item.board.name.split('/') : [item.board.name];
 
@@ -150,32 +150,21 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
         path.push(item.element);
         path.push(department);
 
-        return this.firebase.CachedRereferenceFolder(item, path).pipe(
-          switchMap(doc => {
-            if (doc) {
-              console.log("Found cached Box Folder", doc.id);
-              return this.box.GetFolder$(doc.id);
-            }
-            else {
-              return this.firebase.ReferenceFolder$(item).pipe(
-                tap(t => console.log("Could not find Cached Box Folder, Creating..", path)),
-                switchMap((anscestor:string) => 
-                  this.box.FindNestedFolder(path, anscestor, true)
-                )
-              )
-            }
-            //;
-            //return 
-          }),
-          catchError(err => {
-            this.referenceError.next(err);
-            return of(null);
-          })
+        return this.confluence.BoxRoot$(key).pipe(
+          tap(t => console.log(t)),
+          switchMap(root => this.box.ReferenceFolder$(root)),
+          //switchMap(folder => this.box.GetFolder$(folder.id)),
+          switchMap(folder => this.box.FindNestedFolder(path, folder.id, true)),
+          take(1)
         )
+        }),
+      
+      catchError(err => {
+        this.referenceError.next(err);
+        return of(null);
       })
-    ).pipe(take(1))
+    )
   }
-
   ViewMenu$ = this.Item$.pipe(
     map(item => {
       this.ViewMenu = this.actionOutlet.createGroup().enableDropdown().setIcon('playlist_add');
@@ -329,6 +318,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
   public TypeToUpload: string;
   
   OnSelectedFile(evt) {
+    this.selectedUploadType = "Default";
     let file = evt.currentFiles[0];
     this.SizeToUpload = Math.round(file.size / 1024 / 10.24) / 100 ;
     this.FileToUpload = file.name;
@@ -343,7 +333,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
       })
       throw 'Could not find Review Id'
     }
-    let url = this.syncSketch.UploadURL(review.reviewid ? review.reviewid : review.id);
+    let url = this.syncSketch.UploadURL(review.reviewid ? review.reviewid : review.id, this.selectedUploadType);
     this.messager.add({
       severity: 'info',
       detail: subitem.name,
@@ -481,7 +471,8 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
         ),
         tap(t => this.UploadStatus = 'Ready'),
         switchMap(item => this.syncSketch.RenameItem$(item.id,
-          subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name)
+          subitem.id + '_' + this.Item.task + '/' + subitem.name + '/' + file.name, 
+            this.selectedUploadType)
         ),
         tap(t => console.log("Renamed File", t)),
         switchMap(r => this.SyncReview$),

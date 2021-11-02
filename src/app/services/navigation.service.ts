@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { shareReplay, tap, map, filter, take } from 'rxjs/operators';
+import { shareReplay, tap, map, filter, take, switchMap } from 'rxjs/operators';
 import * as _ from 'underscore';
 import { CeloxisService } from './celoxis.service';
 import { ActionOutletFactory, ActionButtonEvent, ActionGroup } from '@ng-action-outlet/core';
@@ -255,11 +255,19 @@ export class NavigationService {
     if (!project || !project.children || project.children.length < 1)
       return of(null);
 
+    return this.confluence.BoxRoot$(project.name.split('_')[0]).pipe(
+      switchMap(id => this.box.ReferenceFolder$(id)),
+      tap(console.log),
+      map(folder => folder.id),
+      take(1)
+    )
+
+      /*
     let settings = _.find(project.children, c => c.name == '_Settings');
 
     if (!settings)
       return of(null);
-
+    
     return this.monday.ProjectSettings$(settings.id).pipe(
       map(
         settings => {
@@ -272,7 +280,7 @@ export class NavigationService {
           return ref.column_values[0].text;
         }
       )
-    )
+    )*/
   }
 
   SetGalleryMenu(navMenu, gallery) {

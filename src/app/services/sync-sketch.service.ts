@@ -120,15 +120,26 @@ export class SyncSketchService {
       take(1)
     );
   }
-  RenameItem$(item_id: string, name: string) {
-    return this.Patch$(`syncsketch/item/${item_id}/`, {
+  RenameItem$(item_id: string, name: string, type:string) {
+    let data = {
       name: name,
       can_download: true
-    });
+    }
+    if (type == '360Image')
+      data['type'] = 'image360';
+    else if (type == '360Video')
+      data['type'] = 'video360';
+
+    return this.Patch$(`syncsketch/item/${item_id}/`, data);
   }
 
-  UploadURL(review_id: string) {
-    return `/syncsketch-upload/items/uploadToReview/${review_id}/?noConvertFlag=1`
+  UploadURL(review_id: string, uploadType: string) {
+    let url = `/syncsketch-upload/items/uploadToReview/${review_id}/?noConvertFlag=1`
+    if (uploadType= "360Image")
+      url += '&type=' + 'image360'
+    else if (uploadType == '360Video')
+      url += '&type=' + 'video360'
+    return url;
   }
 
   Upload$(addr:string, data:FormData) {

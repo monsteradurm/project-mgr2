@@ -16,6 +16,7 @@ import {MessageService} from 'primeng/api';
 import { UserService } from 'src/app/services/user.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { FirebaseService} from 'src/app/services/firebase.service';
+import { ConfluenceService } from 'src/app/services/confluence.service';
 
 const _PAGE_ = '/Projects/Overview';
 
@@ -31,6 +32,7 @@ export class ProjectComponent implements OnInit, OnDestroy
               public syncSketch: SyncSketchService,
               public messenger: MessageService,
               public projectService: ProjectService,
+              public confluence: ConfluenceService,
               public firebase: FirebaseService,
               public box: BoxService,
               public userService: UserService,
@@ -109,7 +111,11 @@ export class ProjectComponent implements OnInit, OnDestroy
     shareReplay(1)
   )
   
+  /*
   ProjectReference$ = this.ProjectSettings$.pipe(
+
+
+
     map(
       settings => {
         if (!settings || !settings['Box Folders'])
@@ -121,7 +127,7 @@ export class ProjectComponent implements OnInit, OnDestroy
         return ref.column_values[0].text;
       }
     )
-  )
+  )*/
 
   Group$ = combineLatest([this.Board$, this.NavigationParameters$]).pipe(
     map(([board, params]) => {
@@ -288,6 +294,9 @@ Please request the production data be extended to include this column.`)
     if (y.indexOf('rig') >= 0)
       return 3;
 
+    if (y.indexOf('layout') >= 0)
+      return 3;
+
     if (y.indexOf('anim') >= 0)
       return 4;
 
@@ -352,6 +361,13 @@ Please request the production data be extended to include this column.`)
         }
       })
   }
+
+  ProjectReference$ = this.Workspace$.pipe(
+    tap(t => console.log("REFERENCE ?", t)),
+    switchMap(workspace => this.confluence.BoxRoot$(workspace.name.split('_')[0])),
+    tap(t => console.log("BOX ROOT?", t)),
+    shareReplay(1)
+  )
 
   subscriptions = [];
   ngOnInit(): void {

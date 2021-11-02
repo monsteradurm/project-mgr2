@@ -41,6 +41,12 @@ export class ConfluenceService {
      return this.Query$('/space/' + key);
    }
 
+   BoxRoot$(key:string): Observable<any> {
+     return this.Query$('/space/' + key + '/property/forge-BoxRoot').pipe(
+       map((t:any) => t.value)
+     )
+   };
+
    SpaceOverview$(key) :Observable<any> {
      return this.Spaces$.pipe(
        map(spaces => _.find(spaces, s=> _.find(spaces, s=> s.key == key))),

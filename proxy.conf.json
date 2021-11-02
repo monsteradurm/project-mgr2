@@ -71,6 +71,15 @@
             "^/box-account/*": ""
         }
     },
+    "/box-rest/*": {
+        "target": "https://liquidanimation.live/box-rest/",
+        "secure": false,
+        "changeOrigin": true,
+        "loglevel": "debug",
+        "pathRewrite": {
+            "^/box-rest/*": ""
+        }
+    },
     "/pm-socket/*": {
         "target": "http://lapm_websocket-acranch908002.codeanyapp.com:3000/socket.io/",
         "secure": false,

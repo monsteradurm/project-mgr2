@@ -44,6 +44,19 @@ export class BoxService {
   constructor(private http: HttpClient) { 
   }
 
+  ReferenceFolder$(root:string) : Observable<any>{
+    return this.http.get('/box-rest/subfolder?root=' + root + '&folder=Reference').pipe(
+      tap(t => console.log("Subfolder", t)),
+      take(1)
+    )
+  } 
+
+  SubFolder$(parent:string, name: string) {
+    return this.http.get('/box-rest/subfolder?root=' + parent + '&folder=' + name).pipe(
+      tap(t => console.log("Subfolder", name, t)),
+      take(1)
+    )
+  }
   GetFolder$(id: string) {
     return this.Query$('/box/folders/' + id);
   }
@@ -63,7 +76,7 @@ export class BoxService {
   }
 
   FindNestedFolder(path: string[], anscestor:string, create_if_missing: boolean) {  
-    console.log("FIND NESTED")
+    console.log("FIND NESTED", path, anscestor);
     let chain = this.QueryFolderExists_AnscestorId(anscestor, path[0], create_if_missing)
     for(let p = 1; p < path.length; p++) {
       

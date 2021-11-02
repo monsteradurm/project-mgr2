@@ -153,15 +153,20 @@
                                                                         </ng-template>
                                                                         <ng-template let-file pTemplate="file">
                                                                             
-                                                                            <div fxLayout="row" style="width:100%" fxLayoutGap="15px">
-                                                                                <div style="width:80px;text-align:center;font-weight:bold">
+                                                                            <div fxLayout="row" style="font-size:10px;" fxLayoutGap="15px">
+                                                                                <div style="width:50px !important;text-align:center;font-weight:bold">
                                                                                     {{UploadStatus}}
                                                                                 </div>
-                                                                                <div>{{fileInput.progress}} %</div>
+                                                                                <div style="overflow-x:hidden;width:35px !important">{{fileInput.progress}} %</div>
                                                                                 
                                                                                 <div>{{FileToUpload}}</div>
-                                                                                <div>{{SizeToUpload}} MB</div>
-                                                                                <div>{{TypeToUpload}}</div>
+                                                                                <div style="max-width:100px !important">{{SizeToUpload}} MB</div>
+                                                                                <!-- <div>{{TypeToUpload}}</div> -->
+                                                                                <mat-select style="width:100px !important" [(ngModel)]="selectedUploadType" name="upload-type">
+                                                                                    <mat-option value="Default">Default</mat-option>
+                                                                                    <mat-option value="360Image">360 Image</mat-option>
+                                                                                    <mat-option value="360Video">360 Video</mat-option>
+                                                                                </mat-select>
                                                                             </div>
                                                                             
                                                                         </ng-template>
