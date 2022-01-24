@@ -53,6 +53,7 @@ export class UserService {
   RemoteProjectIds$ = this.MondayUser$.pipe(
     map(user => user && user.teams ? user.teams : []),
     map(teams => _.filter(teams, t => t != 'Remote' && t != 'Managers')),
+    tap(t => console.log("MY TEAMS", t)),
     shareReplay(1)
   )
   
