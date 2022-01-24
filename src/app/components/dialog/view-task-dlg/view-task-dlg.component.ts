@@ -155,6 +155,7 @@ export class ViewTaskDlgComponent implements OnInit, OnDestroy {
           switchMap(root => this.box.ReferenceFolder$(root)),
           //switchMap(folder => this.box.GetFolder$(folder.id)),
           switchMap(folder => this.box.FindNestedFolder(path, folder.id, true)),
+          tap(t => console.log("HERE", t)),
           take(1)
         )
         }),

@@ -58,7 +58,7 @@ export class BoxService {
     )
   }
   GetFolder$(id: string) {
-    return this.Query$('/box/folders/' + id);
+    return this.Query$('/box-rest/folderInfo?id=' + id);
   }
 
   createImageFromBlob(image: Blob): Observable<any> {

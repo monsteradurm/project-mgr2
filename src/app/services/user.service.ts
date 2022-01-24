@@ -34,7 +34,7 @@ export class UserService {
 
   MondayUser$ = this.User$.pipe(
     switchMap(user => this.MondayUsers$.pipe(
-      map(users => _.find(users, (u: MondayIdentity) => u.email == user.mail.toLowerCase())),
+      map(users => _.find(users, (u: MondayIdentity) => u.email.split('@')[0] == user.mail.toLowerCase().split('@')[0])),
       catchError(err => EMPTY),
       shareReplay(1)
     )) 

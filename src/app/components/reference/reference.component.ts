@@ -60,6 +60,7 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
     tap(t => this.Fetching = true),
     map(([refresh, root]) => root ? root : null),
       shareReplay(1),
+      tap(t => console.log("ROOT", t))
   )
 
   
