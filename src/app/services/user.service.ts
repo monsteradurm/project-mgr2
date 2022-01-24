@@ -45,9 +45,17 @@ export class UserService {
     shareReplay(1)
   )
 
-  GetUserPhoto$(id) {
-    return 
-  }
+  UserIsRemote$ = this.MondayUser$.pipe(
+    map(user => user && user.teams && user.teams.indexOf('Remote') > -1),
+    shareReplay(1)
+  )
+  
+  RemoteProjectIds$ = this.MondayUser$.pipe(
+    map(user => user && user.teams ? user.teams : []),
+    map(teams => _.filter(teams, t => t != 'Remote' && t != 'Managers')),
+    shareReplay(1)
+  )
+  
 
   MyPhoto$ = this.User$.pipe(
     switchMap((user) => {

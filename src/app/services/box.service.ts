@@ -45,20 +45,22 @@ export class BoxService {
   }
 
   ReferenceFolder$(root:string) : Observable<any>{
-    return this.http.get('/box-rest/subfolder?root=' + root + '&folder=Reference').pipe(
+    return this.http.get('/box-rest/subfolder?root=' + root + '&folder=Reference',  { withCredentials: true }).pipe(
       tap(t => console.log("Subfolder", t)),
       take(1)
     )
   } 
 
   SubFolder$(parent:string, name: string) {
-    return this.http.get('/box-rest/subfolder?root=' + parent + '&folder=' + name).pipe(
+    return this.http.get('/box-rest/subfolder?root=' + parent + '&folder=' + name,  { withCredentials: true }).pipe(
       tap(t => console.log("Subfolder", name, t)),
       take(1)
     )
   }
   GetFolder$(id: string) {
-    return this.Query$('/box-rest/folderInfo?id=' + id);
+    return this.http.get('/box-rest/folderInfo?id=' + id, { withCredentials: true }).pipe(
+      take(1)
+    )
   }
 
   createImageFromBlob(image: Blob): Observable<any> {

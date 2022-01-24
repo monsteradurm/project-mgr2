@@ -7,7 +7,7 @@ import { MondayService } from './monday.service';
 import { FirebaseService } from './firebase.service';
 import { UserService } from './user.service';
 import * as _ from 'underscore';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { FirebaseUpdate } from '../models/Firebase';
 import { shareReplayUntil } from '../models/shareReplayUntil';
 
@@ -24,7 +24,26 @@ export class ProjectService {
 
   GroupItems$ = {}
   User$ = this.userService.User$;
-  Projects$ = this.monday.Projects$.pipe(shareReplay(1));
+  Projects$ = combineLatest([
+    this.monday.Projects$, this.userService.UserIsRemote$, this.userService.RemoteProjectIds$
+  ])
+    .pipe(
+      map(([projects, isRemote, remoteProjects]) => {
+        if (!isRemote)
+          return projects;
+
+        return _.filter(projects, p => {
+          let valid = false;
+          _.forEach(remoteProjects, r => {
+            if (p.name.toLowerCase().startsWith(r.toLowerCase())) {
+              valid = true;
+            }
+          });
+          return valid;
+        })
+      }), 
+      shareReplay(1)
+    );
   
   /*this.firebase.Projects$.pipe(
     switchMap((entry) => {
