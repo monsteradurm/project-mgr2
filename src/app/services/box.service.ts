@@ -122,7 +122,7 @@ export class BoxService {
       return null;
 
     let entries = anscestor.item_collection.entries;
-    return _.find(entries, e=> e.type == 'folder' && e.name == subfolder_name);
+    return _.find(entries, e=> e.type == 'folder' && e.name.toLowerCase() == subfolder_name.toLowerCase());
   }
 
   Create_SharedLink$(id) {
