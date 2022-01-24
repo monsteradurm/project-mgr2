@@ -45,20 +45,23 @@ export class BoxService {
   }
 
   ReferenceFolder$(root:string) : Observable<any>{
-    return this.http.get('/box-rest/subfolder?root=' + root + '&folder=Reference',  { withCredentials: true }).pipe(
+    console.log("REFERENCE FOLDER#", root);
+    return this.http.get('https://liquidanimation.live/box-rest/subfolder?root=' + root + '&folder=Reference').pipe(
       tap(t => console.log("Subfolder", t)),
       take(1)
     )
   } 
 
   SubFolder$(parent:string, name: string) {
-    return this.http.get('/box-rest/subfolder?root=' + parent + '&folder=' + name,  { withCredentials: true }).pipe(
+    console.log("SUBFOLDER$")
+    return this.http.get('https://liquidanimation.live/box-rest/subfolder?root=' + parent + '&folder=' + name).pipe(
       tap(t => console.log("Subfolder", name, t)),
       take(1)
     )
   }
   GetFolder$(id: string) {
-    return this.http.get('/box-rest/folderInfo?id=' + id, { withCredentials: true }).pipe(
+    console.log("GETFOLDER$");
+    return this.http.get('https://liquidanimation.live/box-rest/folderInfo?id=' + id).pipe(
       take(1)
     )
   }
