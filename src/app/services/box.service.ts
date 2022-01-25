@@ -60,8 +60,14 @@ export class BoxService {
     )
   }
   GetFolder$(id: string) {
-    console.log("GETFOLDER$");
+    console.log("GETFOLDER$ " + id);
     return this.http.get('https://liquidanimation.live/box-rest/folderInfo?id=' + id).pipe(
+      take(1)
+    )
+  }
+  GetFolderItems$(id: string) {
+    console.log("FolderItems$ " + id);
+    return this.http.get('https://liquidanimation.live/box-rest/folderItems?root=' + id).pipe(
       take(1)
     )
   }
@@ -108,20 +114,23 @@ export class BoxService {
 
   QueryFolderExists_AnscestorId(anscestor, subfolder_name, create: boolean) {
     if (!anscestor || !subfolder_name) return null; 
-    return this.GetFolder$(anscestor).pipe(
-      map((folder:any) => this.QueryFolderExists_Anscestor(folder, subfolder_name)),
+    console.log("QueryFolderExists_AnscestorId", anscestor, subfolder_name, create);
+
+    return this.GetFolderItems$(anscestor).pipe(
+      map((item_collection:any[]) => this.QueryFolderExists_Anscestor(item_collection, subfolder_name)),
+      tap(t => console.log("HERE", t)),
       switchMap(parent => parent && parent.id? of(parent) : 
         create ? this.CreateFolder(anscestor, subfolder_name) : of(null)
       ),
     )
   }
 
-  QueryFolderExists_Anscestor(anscestor, subfolder_name) {
-
-    if (!anscestor || !anscestor.item_collection)
+  QueryFolderExists_Anscestor(item_collection: any[], subfolder_name) {
+    if (!item_collection || !item_collection.entries || item_collection.entries.length < 1)
       return null;
-
-    let entries = anscestor.item_collection.entries;
+    const entries = item_collection.entries;
+    console.log("ENTRIES", entries)
+    console.log("LOOKING FOR ", subfolder_name);
     return _.find(entries, e=> e.type == 'folder' && e.name.toLowerCase() == subfolder_name.toLowerCase());
   }
 
