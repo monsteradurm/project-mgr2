@@ -99,7 +99,7 @@ export class BoxService {
 
 
   CreateFolder(anscestor, name) {
-
+    console.log("Need to Create BoxFolder: ", name, anscestor);
     return this.Post$('/box/folders', {
       name: name,
       parent: {
@@ -116,7 +116,14 @@ export class BoxService {
       map((folder:any) => this.QueryFolderExists_Anscestor(folder, subfolder_name)),
       tap(t => console.log("HERE", t)),
       switchMap(parent => parent && parent.id? of(parent) : 
-        create ? this.CreateFolder(anscestor, subfolder_name) : of(null)
+        create ? this.CreateFolder(anscestor, subfolder_name).pipe(
+          catchError((err)=> {
+              console.log("Caught Error: ", err);
+              if (err && err.error && err.error.code == "item_name_in_use")
+                return this.SubFolder$(anscestor, subfolder_name);
+              return of(null);
+          })
+        ) : of(null)
       ),
     )
   }
@@ -128,6 +135,7 @@ export class BoxService {
 
     let entries = anscestor.item_collection.entries;
     console.log("ENTRIES", entries)
+    console.log("Looking for " + subfolder_name);
     return _.find(entries, e=> e.type == 'folder' && e.name.toLowerCase() == subfolder_name.toLowerCase());
   }
 
