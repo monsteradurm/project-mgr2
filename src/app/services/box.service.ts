@@ -45,7 +45,6 @@ export class BoxService {
   }
 
   ReferenceFolder$(root:string) : Observable<any>{
-    console.log("REFERENCE FOLDER#", root);
     return this.http.get('https://liquidanimation.live/box-rest/subfolder?root=' + root + '&folder=Reference').pipe(
       tap(t => console.log("Subfolder", t)),
       take(1)
@@ -53,25 +52,22 @@ export class BoxService {
   } 
 
   SubFolder$(parent:string, name: string) {
-    console.log("SUBFOLDER$")
     return this.http.get('https://liquidanimation.live/box-rest/subfolder?root=' + parent + '&folder=' + name).pipe(
       tap(t => console.log("Subfolder", name, t)),
       take(1)
     )
   }
   GetFolder$(id: string) {
-    console.log("GETFOLDER$ " + id);
     return this.http.get('https://liquidanimation.live/box-rest/folderInfo?id=' + id).pipe(
+      tap(t => console.log("GET FOLDER RESULT", t)),
       take(1)
     )
   }
   GetFolderItems$(id: string) {
-    console.log("FolderItems$ " + id);
     return this.http.get('https://liquidanimation.live/box-rest/folderItems?root=' + id).pipe(
       take(1)
     )
   }
-
   createImageFromBlob(image: Blob): Observable<any> {
     return new Observable( (subscriber) => {
       const reader = new FileReader();
@@ -116,8 +112,8 @@ export class BoxService {
     if (!anscestor || !subfolder_name) return null; 
     console.log("QueryFolderExists_AnscestorId", anscestor, subfolder_name, create);
 
-    return this.GetFolderItems$(anscestor).pipe(
-      map((item_collection:any[]) => this.QueryFolderExists_Anscestor(item_collection, subfolder_name)),
+    return this.GetFolder$(anscestor).pipe(
+      map((folder:any) => this.QueryFolderExists_Anscestor(folder, subfolder_name)),
       tap(t => console.log("HERE", t)),
       switchMap(parent => parent && parent.id? of(parent) : 
         create ? this.CreateFolder(anscestor, subfolder_name) : of(null)
@@ -125,12 +121,13 @@ export class BoxService {
     )
   }
 
-  QueryFolderExists_Anscestor(item_collection: any[], subfolder_name) {
-    if (!item_collection || !item_collection.entries || item_collection.entries.length < 1)
+  QueryFolderExists_Anscestor(anscestor, subfolder_name) {
+    console.log(anscestor, subfolder_name);
+    if (!anscestor || !anscestor.item_collection)
       return null;
-    const entries = item_collection.entries;
+
+    let entries = anscestor.item_collection.entries;
     console.log("ENTRIES", entries)
-    console.log("LOOKING FOR ", subfolder_name);
     return _.find(entries, e=> e.type == 'folder' && e.name.toLowerCase() == subfolder_name.toLowerCase());
   }
 

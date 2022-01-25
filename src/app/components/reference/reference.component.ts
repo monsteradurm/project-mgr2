@@ -24,6 +24,8 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
     map(h => h - 115)
   );
 
+  fetching = new BehaviorSubject<boolean>(true);
+  Fetching = this.fetching.asObservable().pipe(shareReplay(1))
   @Input() set Height(s) {
     this.height.next(s);
     console.log("HEIGHT", s)
@@ -35,7 +37,10 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
     this.requestHeight.next(true);
   }
 
-  @Output() Fetching: boolean = true;
+  setFetching(val: boolean) {
+    this.fetching.next(val);
+  }
+
   @Input() primaryColor; 
   
   get Root() { return this._Root; }
@@ -57,10 +62,9 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
   Refresh$ = this.onRefresh.asObservable();
 
   Root$ = combineLatest([this.Refresh$, this._Root$]).pipe(
-    tap(t => this.Fetching = true),
+    tap(t => this.setFetching(true)),
     map(([refresh, root]) => root ? root : null),
-      shareReplay(1),
-      tap(t => console.log("ROOT", t))
+    shareReplay(1)
   )
 
   
@@ -71,12 +75,11 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   Current$ = combineLatest([this.Refresh$, this.current.asObservable(), this.Root$]).pipe(
-    tap(t => this.Fetching = true),
+    tap(t => this.setFetching(true)),
     switchMap(([refresh, current, root]) => current ? 
       this.box.GetFolder$(current) : 
       root ? 
       (root.item_collection ? of(root) : this.box.GetFolder$(root.id)) : of(null)),
-    tap(t => this.Fetching = false),
     shareReplay(1),
   )
 
@@ -86,7 +89,8 @@ export class ReferenceComponent implements OnInit, OnDestroy, AfterViewInit {
       return contents.item_collection.entries;
     }),
     tap(t => {
-      this.Fetching = false
+      console.log("CONTENTS", t);
+      this.setFetching(false);
     })
   )
 

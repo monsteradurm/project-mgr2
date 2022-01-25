@@ -10,9 +10,8 @@
 
 
 <ng-container *ngIf="Root; else noRoot">
-    <div *ngIf="Fetching; else showReference" fxLayout="column" fxLayoutAlign="center center"
+    <div *ngIf="(Fetching$ | async); else showReference" fxLayout="column" fxLayoutAlign="center center"
         style="width:100%;margin-top:40px">
-
         <div style="opacity:0.15">
             <app-swapping-squares-spinner [animationDuration]="1000" [color]="primaryColor" [size]="120"
                 style="opacity:0.15;">
