@@ -14,7 +14,7 @@ proxy.on('error', function(e) {
     console.log(e);
 });
 
-  
+
 fs.readFile('proxy.conf.json', (err, data) => {
     if (err) throw err;
     var config = JSON.parse(data);
@@ -42,11 +42,12 @@ fs.readFile('proxy.conf.json', (err, data) => {
     });
 
     app.options('*', cors())
-    
+    app.use(cors());
+    /*
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         next();
-      });
+      });*/
       
     app.use(express.static(__dirname+'/dist/project-mgr2'));
     app.get('*', function(req, res) {
