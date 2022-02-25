@@ -1,29 +1,34 @@
-import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
-import { AfterViewInit, Directive, Renderer2, ElementRef,
-    OnChanges, Input } from '@angular/core';
-import 'tippy.js';
+import { Directive, Input, OnInit, ElementRef, OnChanges } from '@angular/core';
 import tippy from 'tippy.js';
 
-  @Directive({
-    selector: '[addTippy]'
-  })
+@Directive({
+  /* tslint:disable-next-line */
+  selector: '[addTippy]'
+})
+export class AddTippyDirective implements OnInit, OnChanges {
 
-  export class AddTippyDirective {
-  
-    constructor(private el: ElementRef) {
-    }
+  @Input('tippyText') public tippyText: string = "Some Text";
 
-    private _tippyText;
-    get tippyText() { return this._tippyText; }
-    private _tippy;
-    @Input() set tippyText(c) {
-        this._tippyText = c;
-        
-        this._tippy = tippy(this.el.nativeElement, {
-            allowHTML: true,
-            // offset: [0, -10],
-            content: `<div style="border:solid 1px black;
-background:white;color:black; border-radius:5px;padding:5px;">${this.tippyText}</div>`
-        })
-    }
+  constructor(private el: ElementRef) {
+    this.el = el;
   }
+
+  updateTippy() {
+    var el = this.el.nativeElement as HTMLElement;
+    el.setAttribute('data-tippy-contnet', this.tippyText);
+    tippy(this.el.nativeElement, {
+      allowHTML: true,
+      // offset: [0, -10],
+      content: `<div style="border:solid 1px black;
+      background:white;color:black; border-radius:5px;padding:5px;">${this.tippyText}</div>`
+        })
+  }
+
+  public ngOnInit() {
+    this.updateTippy();
+  }
+
+  public ngOnChanges() {
+    this.updateTippy();
+  }
+}

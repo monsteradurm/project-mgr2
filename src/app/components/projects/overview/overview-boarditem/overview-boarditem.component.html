@@ -32,10 +32,11 @@
 
 <mat-menu #removeBadgeMenu="matMenu">
   <div fxLayout="row" 
-  fxLayoutAlign="center center" class="status-option" mat-menu-item *ngFor="let b of (BoardItem$ | Badges$ | async)" [style.background]="b.Background" (click)="onRemoveBadge(b)">
-      <!-- ONLY USES MATEIRAL ICONS -->
-      <div style="display:block">
-        <mat-icon style="color:inherit">{{b.Icon}}</mat-icon>
+  fxLayoutAlign="center center" class="status-option" mat-menu-item *ngFor="let b of (BoardItem$ | Badges$ | async)" 
+  [style.background]="b.Background" (click)="onRemoveBadge(b)">
+      <!-- ONLY USES MATEIRAL ICONS --> 
+      <div style="display:block;z-index:1500">
+        <mat-icon  style="color:inherit" >{{b.Icon}}</mat-icon>
       </div>
       <div style="margin-left:20px" style.color="white !important">{{b.Title}}</div>
   </div>
@@ -63,7 +64,7 @@
       <ng-container *ngIf="(BoardItem$ | Badges$ | async) as badges">
         <div class="element-badges" style="display:block" fxLayout="row" fxLayoutAlign="center center">
           <ng-container *ngFor="let b of badges">
-            <mat-icon [style.color]="b.Background" style="margin-left:5px;margin-right:5px">{{b.Icon}}</mat-icon>
+            <mat-icon [style.color]="b.Background" addTippy [tippyText]="b.Title" style="margin-left:5px;margin-right:5px">{{b.Icon}}</mat-icon>
           </ng-container>
         </div>
       </ng-container>
