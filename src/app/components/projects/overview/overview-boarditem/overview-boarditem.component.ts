@@ -63,6 +63,7 @@ export class OverviewBoarditemComponent implements OnInit {
     this.BoardItem.next(b);
     this.ref.detectChanges();
   }
+  BadgeOptions$ = this.parent.BadgeOptions$;
 
   @Output() itemClicked = new EventEmitter<boolean>(null);
   @Output() onExpand = new EventEmitter<boolean>(null);
@@ -85,6 +86,17 @@ export class OverviewBoarditemComponent implements OnInit {
     
   }
 
+  onSetBadge(column) {
+    this.BoardItem$.pipe(take(1)).subscribe((boarditem) => {
+      this.parent.parent.firebase.AddBadge(boarditem, column).pipe(take(1)).subscribe((result) => {})
+    })
+  }
+
+  onRemoveBadge(badge) {
+    this.BoardItem$.pipe(take(1)).subscribe((boarditem) => {
+      this.parent.parent.firebase.RemoveBadge(boarditem, badge).pipe(take(1)).subscribe((result) => {})
+    })
+  }
   onSetStatus(column) {
     this.BoardItem$.pipe(take(1)).subscribe((boarditem) => {
       let old = JSON.parse(JSON.stringify(boarditem));

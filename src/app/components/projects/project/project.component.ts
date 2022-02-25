@@ -48,6 +48,7 @@ export class ProjectComponent implements OnInit, OnDestroy
     this.errorMessage.next(msg);
   }
 
+  public BadgeOptions$ = this.firebase.Badges$;
   private internalRouteParams = new BehaviorSubject<any>(null);
   private errorMessage = new BehaviorSubject<string>(null);
  

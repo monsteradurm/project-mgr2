@@ -86,6 +86,7 @@
                     style="width:100%;margin-top:50px" [style.height.px]="GanttHeight">
                     <ng-container *ngFor="let item of (items | FilterMilestones)">
                       <app-overview-boarditem [boarditem]="(item | MatchSubitemsWithBoardItem : SubItems)"
+                        [badges]="badges"
                         [Width]="BoardWidth" (itemClicked)="onItemClicked(item)" (onExpand)="onExpand(item.id)">
                       </app-overview-boarditem>
                     </ng-container>

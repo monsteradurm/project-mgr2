@@ -111,6 +111,8 @@ import { ResizeModule } from '@thalesrc/ng-utils/resize';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FindSyncItemFromReviewPipe } from './directives/elements/FindSyncItemFromReview';
 import { GetSyncThumbnail } from './directives/elements/GetSyncThumbnail';
+import { BadgesDirective } from './directives/firebase/Badges.directive';
+import { BadgesUpdatedDirective } from './directives/firebase/badgesUpdated.directive';
 
 declare var google: any;
 
@@ -143,6 +145,8 @@ const declarations = [
   MouseWheelDirective,
   FetchSubItemsFromBoardItemPipe,
   EitherOrValueDirective,
+  BadgesDirective,
+  BadgesUpdatedDirective,
   GroupbyPipe,
   ParseJSONPipe,
   TimelinePipe,

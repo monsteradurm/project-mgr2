@@ -4,12 +4,13 @@ import * as moment from 'moment';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { DropDownMenuGroup } from '../components/navigation/navigation-map';
-import { BoardItem } from '../models/BoardItem';
+import { Board, BoardItem } from '../models/BoardItem';
 import { FirebaseUpdate } from '../models/Firebase';
 import { ScheduledItem } from '../models/Monday';
 import { BoardItemUpdate, BoardUpdate } from '../models/Socket';
 import { UserService } from './user.service';
 import * as _ from 'underscore';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +53,7 @@ export class FirebaseService {
   )
 
   user: string;
-  constructor(private afs: AngularFirestore, private UserService: UserService) {
+  constructor(private afs: AngularFirestore, private UserService: UserService, private messenger: MessageService) {
       this.UserService.User$.subscribe((user) => {
         if (!user)
           return;
@@ -173,6 +174,66 @@ export class FirebaseService {
     .pipe(
       map(doc => doc ? doc : null),
     );
+  }
+
+  Badges$ = this.afs.collection("Badges").get().pipe(
+    map(result => result.docs.map(doc => doc.data())),
+    shareReplay(1)
+  )
+    RemoveBadge(boarditem: BoardItem | ScheduledItem, badge:any) {
+      let items = this.afs.collection('BadgesEarned').doc(boarditem.board.id.toString()).collection('items');
+      return items.doc(boarditem.id.toString()).get().pipe(
+        switchMap(doc => {
+          let data;
+          if (!doc.exists) return of(null);
+
+            console.log("HERE", data);
+            data = doc.data();
+            if (!data.badges) return of(null);
+            data.badges = _.filter(data.badges, b => b.Icon != badge.Icon && b.Title != badge.Title);
+          
+          return items.doc(boarditem.id.toString()).set(data);
+        })
+      )
+    }
+
+  AddBadge(boarditem : BoardItem | ScheduledItem, badge:any) {
+    let items = this.afs.collection('BadgesEarned').doc(boarditem.board.id.toString()).collection('items');
+    return items.doc(boarditem.id.toString()).get().pipe(
+      switchMap(doc => {
+        let data;
+        
+        if (doc.exists) {
+            data = doc.data();
+            if (!data.badges) data.badges = [badge];
+            else {
+              if (data.badges.length > 1) {
+                this.messenger.add({severity: 'error', summary: 'Error Adding Badge', detail: "An Item can have at most 2 badges" });
+                return of(null);
+              }
+              data.badges = _.filter(data.badges, b => b.Icon != badge.Icon && b.Title != badge.Title);
+              data.badges.push(badge);
+            }
+        } else {
+          data = {
+            badges: [badge]
+          }
+        }
+        
+        return items.doc(boarditem.id.toString()).set(data);
+      })
+    )
+  }
+
+
+  BadgesEarned$(boarditem: BoardItem | ScheduledItem) {
+    return this.afs.collection('BadgesEarned').doc(boarditem.board.id.toString()).collection('items').doc(boarditem.id.toString()).valueChanges()
+  }
+
+  BadgesUpdated$(board: string) {
+    return this.afs.collection('BadgesEarned').valueChanges().pipe(
+      tap((t:any) => console.log("BADGE UPDATE!"))
+    )
   }
 
   ReferenceFolder$(item: BoardItem | ScheduledItem) : Observable<any> {

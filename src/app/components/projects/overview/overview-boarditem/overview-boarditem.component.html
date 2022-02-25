@@ -4,6 +4,7 @@
 <mat-menu #ItemContextMenu="matMenu" yPosition="below">
   <ng-template matMenuContent>
     <button mat-menu-item [matMenuTriggerFor]="statusMenu">Status</button>
+    <button mat-menu-item [matMenuTriggerFor]="badgesMenu">Badges</button>
     <button mat-menu-item (click)="onHoursDlg(true)">Time Logging</button>
   </ng-template>
 </mat-menu>
@@ -13,12 +14,40 @@
     style.color="white !important" (click)="onSetStatus(s)">{{s.label}}</button>
 </mat-menu>
 
+<mat-menu #badgesMenu="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="addBadgeMenu">Add</button>
+  <button mat-menu-item [matMenuTriggerFor]="removeBadgeMenu" *ngIf="(BoardItem$ | Badges$ | async)?.length">Remove</button>
+</mat-menu>
+
+<mat-menu #addBadgeMenu="matMenu">
+  <div fxLayout="row" 
+  fxLayoutAlign="center center" class="status-option" mat-menu-item *ngFor="let b of (BadgeOptions$ | async)" [style.background]="b.Background" (click)="onSetBadge(b)">
+      <!-- ONLY USES MATEIRAL ICONS -->
+      <div style="display:block">
+        <mat-icon style="color:inherit">{{b.Icon}}</mat-icon>
+      </div>
+      <div style="margin-left:20px" style.color="white !important">{{b.Title}}</div>
+  </div>
+</mat-menu>
+
+<mat-menu #removeBadgeMenu="matMenu">
+  <div fxLayout="row" 
+  fxLayoutAlign="center center" class="status-option" mat-menu-item *ngFor="let b of (BoardItem$ | Badges$ | async)" [style.background]="b.Background" (click)="onRemoveBadge(b)">
+      <!-- ONLY USES MATEIRAL ICONS -->
+      <div style="display:block">
+        <mat-icon style="color:inherit">{{b.Icon}}</mat-icon>
+      </div>
+      <div style="margin-left:20px" style.color="white !important">{{b.Title}}</div>
+  </div>
+</mat-menu>
+
 <ng-container *ngIf="(BoardItem$ | async) as boarditem">
   <ng-container *ngIf="(BoardItem$ | GetTaskStatus$ | async) as Status">
     <div #container class="element-row" (click)="onClick(boarditem)">
       <div fxLayout="row" style="position:absolute;width:100%;height:100%;bottom:0px" fxLayoutAlign="center end">
         <div #outplug></div>
       </div>
+
       <ng-container *ngIf="boarditem.subitem_ids?.length > 0">
         <div class="subitem-control" fxLayout="row" fxLayoutAlign="center center">
 
@@ -28,6 +57,14 @@
           </button>
           <p-badge styleClass="subitem-badge" [value]="boarditem.subitem_ids.length"
             [style]="{background: Status.color, 'margin-left':'-10px'}"></p-badge>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="(BoardItem$ | Badges$ | async) as badges">
+        <div class="element-badges" style="display:block" fxLayout="row" fxLayoutAlign="center center">
+          <ng-container *ngFor="let b of badges">
+            <mat-icon [style.color]="b.Background" style="margin-left:5px;margin-right:5px">{{b.Icon}}</mat-icon>
+          </ng-container>
         </div>
       </ng-container>
 
@@ -54,8 +91,9 @@
             {{ boarditem.caption?.text }}
           </div>
         </div>
-
+        
       </div>
+      
     </div>
     <ng-container *ngIf="boarditem.isExpanded && boarditem.subitems && boarditem.subitems.length > 0">
       <ng-container *ngFor="let subitem of boarditem.subitems; let s = index;">

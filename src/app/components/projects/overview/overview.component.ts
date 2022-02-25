@@ -155,6 +155,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
     ).pipe(take(1)).subscribe(directors => this.ignoredDirectors.next(directors));
   }
 
+  BoardId$ = this.parent.Board$.pipe(
+    map((board: any) => board.id.toString()),
+    shareReplay(1)
+  )
+
   BoardItems$ =
     of(null).pipe(
       switchMap(t => {
@@ -180,6 +185,8 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ProjectReference$ = this.parent.ProjectReference$;
   Board$ = this.parent.Board$;
+  BadgeOptions$ = this.parent.BadgeOptions$;
+
   Group$ = this.parent.Group$;
   Departments$ = this.parent.Departments$;
   Department$ = this.parent.Department$;
