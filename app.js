@@ -32,6 +32,12 @@ fs.readFile('proxy.conf.json', (err, data) => {
 
             console.log(req.url);
             console.log(config[addr].target);
+            //console.log("HERE", addr);
+
+            if (addr == "/syncsketch/*") {
+                res.header('ContentType', "application/javascript")
+            }
+
             proxy.web(req, res, {
                 
                 target: config[addr].target,
@@ -43,11 +49,13 @@ fs.readFile('proxy.conf.json', (err, data) => {
 
     app.options('*', cors())
     app.use(cors());
-    /*
+    
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
+        console.log(req.headers);
+        res.header('ContentType', "text/javascript");
         next();
-      });*/
+      });
       
     app.use(express.static(__dirname+'/dist/project-mgr2'));
     app.get('*', function(req, res) {
