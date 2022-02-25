@@ -53,7 +53,8 @@ fs.readFile('proxy.conf.json', (err, data) => {
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         console.log(req.headers);
-        res.header('ContentType', "text/javascript");
+        const csp = "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';"
+        res.set("Content-Security-Policy", csp);
         next();
       });
       
