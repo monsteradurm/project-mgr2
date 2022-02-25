@@ -38,6 +38,10 @@ fs.readFile('proxy.conf.json', (err, data) => {
                 res.header('content-type', "application/javascript")
             }
 
+            proxy.on('error', err => { 
+                console.error('proxyRequest', err)
+            })
+
             proxy.web(req, res, {
                 
                 target: config[addr].target,
