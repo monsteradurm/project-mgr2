@@ -35,7 +35,7 @@ fs.readFile('proxy.conf.json', (err, data) => {
             //console.log("HERE", addr);
 
             if (addr == "/syncsketch/*") {
-                res.header('ContentType', "application/javascript")
+                res.header('content-type', "application/javascript")
             }
 
             proxy.web(req, res, {
