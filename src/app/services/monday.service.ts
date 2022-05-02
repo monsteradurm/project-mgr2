@@ -262,7 +262,7 @@ export class MondayService {
     )
   }
 
-  Boards$ = this.Query$(`boards(state:active, limit:50) 
+  Boards$ = this.Query$(`boards(state:active, limit:1000) 
   { id, name, 
     columns {
       id
