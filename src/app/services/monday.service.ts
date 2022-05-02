@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { ajax } from 'rxjs/ajax';
-import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError, pipe } from 'rxjs';
-import { switchMap, tap, shareReplay, map, take, catchError, takeWhile, retryWhen, retry, finalize } from 'rxjs/operators';
+import { from, timer, of, defer, Observable, combineLatest, BehaviorSubject, throwError, pipe, concat, EMPTY } from 'rxjs';
+import { switchMap, tap, shareReplay, map, take, catchError, takeWhile, retryWhen, retry, finalize, concatMap, concatMapTo, mapTo, expand } from 'rxjs/operators';
 
 import mondaySdk from 'monday-sdk-js';
 import * as _ from 'underscore';
@@ -261,23 +261,43 @@ export class MondayService {
       take(1)
     )
   }
+  BoardsByPage$(page=1, result=[]) {
+    return this.Query$(`boards(state:active, limit:100, page:${page}) 
+    { id, name, 
+      columns {
+        id
+        title
+        settings_str
+      }
+      
+      workspace { name, id } 
+      groups { id, title }}`)
+      .pipe(
+        map((data: any) => data && data.boards ? data.boards : []),
+        map((boards: any) => _.filter(boards, b => b.workspace)),
+        map((boards: any) => _.map(boards, b => new Board(b))),
+        map((boards: Board[]) => _.sortBy(boards, b => b.selection)),
+        map((boards: Board[]) => ({ result: result.concat(boards), 
+          nextPage:  boards.length == 100 ? page + 1 : null}) ),
+      ).pipe(take(1))
+  }
 
-  Boards$ = this.Query$(`boards(state:active, limit:500) 
-  { id, name, 
-    columns {
-      id
-      title
-      settings_str
-    }
-    
-    workspace { name, id } 
-    groups { id, title }}`)
-    .pipe(
-      map((data: any) => data && data.boards ? data.boards : []),
-      map((boards: any) => _.filter(boards, b => b.workspace)),
-      map((boards: any) => _.map(boards, b => new Board(b))),
-      map((boards: Board[]) => _.sortBy(boards, b => b.selection)),
-    ).pipe(take(1), shareReplay(1))
+  Boards$ = this.BoardsByPage$().pipe(
+    tap(console.log),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    switchMap((result:any) => result.nextPage ? this.BoardsByPage$(result.nextPage, result.result) : of(result)),
+    map((result: any) => result.result),
+    take(1),
+    shareReplay(1),
+  )
 
   Workspaces$ = this.Boards$.pipe(
     map((boards: Board[]) => _.map(boards, b => b.workspace)),
@@ -355,7 +375,6 @@ export class MondayService {
   API_CMD$(cmd: string, type: string) {
     return new Observable(observer => {
       monday.api(type + ' { ' + cmd + ' }').then((res) => {
-        console.log(type, cmd)
         let cError: number = this.IsComplexityError(res.errors);
         if (cError) {
           

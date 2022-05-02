@@ -32,14 +32,14 @@ export class NavigationService {
   SelectedTitle$ = this.SelectedTitle.asObservable().pipe(shareReplay(1))
 
   Projects$ = this.projectsService.Projects$.pipe(
-    map(projects => _.filter(projects, p=>
-      p.name.indexOf('PM2') < 0 && p.name[0] != '_')),
+    map(projects => projects ? _.filter(projects, p=>
+      p.name && p.name.indexOf('PM2') < 0 && p.name[0] != '_') : []),
 
     shareReplay(1)
   )
 
   System$ = this.projectsService.Projects$.pipe(
-    map(projects => _.find(projects, p => p.name.indexOf('PM2') > -1)),
+    map(projects => projects  ? _.find(projects, p => p.name && p.name.indexOf('PM2') > -1) : []),
     shareReplay(1)
   )
 
