@@ -76,7 +76,7 @@ export class MondayService {
   }
 
   MondayUsers$ = this.Query$(
-    `users { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
+    `users (limit:150) { id name title email is_pending is_view_only is_guest is_admin teams { name } }`
   ).pipe(
     map((res: any) => res && res.users ? res.users : []),
     map((users: any[]) => _.map(users, u => new MondayIdentity(u))),
@@ -262,7 +262,7 @@ export class MondayService {
     )
   }
 
-  Boards$ = this.Query$(`boards(state:active, limit:1000) 
+  Boards$ = this.Query$(`boards(state:active, limit:50) 
   { id, name, 
     columns {
       id
@@ -338,9 +338,9 @@ export class MondayService {
     if (!errors || errors.length < 1)
       return;
     console.log(errors);
-    let error = _.find(errors, e => e.message && e.message.indexOf('Complexity') > -1)
+    let error = _.find(errors, e => e.message && e.message.toLowerCase().indexOf('complexity') > -1)
     if (!error) {
-      console.log(errors);
+      console.log("HERE", errors);
       throw (errors);
     }
     let messageArr = error.message.split(' ')
@@ -355,9 +355,10 @@ export class MondayService {
   API_CMD$(cmd: string, type: string) {
     return new Observable(observer => {
       monday.api(type + ' { ' + cmd + ' }').then((res) => {
+        console.log(type, cmd)
         let cError: number = this.IsComplexityError(res.errors);
-
         if (cError) {
+          
           timer(0, 1000).pipe(
             takeWhile(t => cError > 0)
           ).subscribe(() => {

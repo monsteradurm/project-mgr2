@@ -176,10 +176,17 @@ export class FirebaseService {
     );
   }
 
+  AllBadgesEarned$ = this.afs.collection("BadgesEarned").get().pipe(
+    map(result => result.docs.map(doc => doc.data())),
+    tap(console.log),
+    shareReplay(1)
+  )
+
   Badges$ = this.afs.collection("Badges").get().pipe(
     map(result => result.docs.map(doc => doc.data())),
     shareReplay(1)
   )
+
     RemoveBadge(boarditem: BoardItem | ScheduledItem, badge:any) {
       let items = this.afs.collection('BadgesEarned').doc(boarditem.board.id.toString()).collection('items');
       return items.doc(boarditem.id.toString()).get().pipe(

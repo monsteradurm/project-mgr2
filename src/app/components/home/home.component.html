@@ -87,6 +87,12 @@
               [Items$]="RequiresReview$"></app-kanban-board>
           </div>
 
+          <div *ngSwitchCase="'Edit Update'">
+            <app-badge-board-item [primaryColor]="primaryColor" Title="Requires Edit Update">
+
+            </app-badge-board-item>
+          </div>
+
           <div *ngSwitchCase="'Feedback'">
             <app-kanban-board [primaryColor]="primaryColor" [SubItems$]="SubItems$"
               Status="Receieved Client Feedback, Received Internal Feedback" [Items$]="ReceivedFeedback$">
@@ -102,7 +108,7 @@
             <app-kanban-board [primaryColor]="primaryColor" Status="In Progress" [SubItems$]="SubItems$"
               [Items$]="InProgress$"></app-kanban-board>
           </div>
-
+          
           <div *ngSwitchCase="'Chart'">
             <app-itemchart></app-itemchart>
           </div>

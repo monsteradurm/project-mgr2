@@ -124,7 +124,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private navigation: NavigationService,
     public monday: MondayService,
     public projectService: ProjectService,
-    private firebase: FirebaseService,
+    public firebase: FirebaseService,
     private UserService: UserService,
   ) {
 

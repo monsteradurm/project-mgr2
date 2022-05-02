@@ -113,10 +113,12 @@ import { FindSyncItemFromReviewPipe } from './directives/elements/FindSyncItemFr
 import { GetSyncThumbnail } from './directives/elements/GetSyncThumbnail';
 import { BadgesDirective } from './directives/firebase/Badges.directive';
 import { BadgesUpdatedDirective } from './directives/firebase/badgesUpdated.directive';
+import { BadgeBoardItemComponent } from './components/home/badge-board-item/badge-board-item.component';
 
 declare var google: any;
 
 const declarations = [
+  BadgeBoardItemComponent,
   NavigationComponent,
   TaskTooltipComponent,
   LogHoursDlgComponent,
