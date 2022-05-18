@@ -153,7 +153,15 @@ export class SyncSketchService {
   }
 
   FindReview$(item: BoardItem | ScheduledItem) {
-    return  this.firebase.SyncSketchReview(item);
+    let name = item.board.id + '_' + item.group.title + '/' + item.element;
+    let url = '/syncsketch/review/?name__istartswith=' + name + '&active=1&fields=id,name,item_count,items&'
+    return this.Query$(url).pipe(
+      map((response: any) => response.objects ? response.objects : []),
+      map((reviews: any[]) => _.sortBy(reviews, r => r.item_count).reverse()),
+      map((reviews: any[]) => reviews && reviews.length > 0 ? reviews[0] : null),
+      take(1)
+    )
+    //return  this.firebase.SyncSketchReview(item);
   }
 
   Patch$(addr:string, body: any) {
